@@ -24,6 +24,7 @@ init:
 	go install github.com/go-kratos/kratos/cmd/protoc-gen-go-http/v2@latest
 	go install github.com/google/gnostic/cmd/protoc-gen-openapi@latest
 	go install github.com/google/wire/cmd/wire@latest
+	go install github.com/go-kratos/kratos/cmd/protoc-gen-go-errors/v2@latest
 
 .PHONY: config
 # generate internal proto
@@ -60,12 +61,18 @@ generate:
 wire:
 	cd cmd/user/ && wire
 
+.PHONY: test # 快速测试，运行repo以外的所有测试
+test:
+	ginkgo -r -cover -v .
+
 .PHONY: all
 # generate all
 all:
 	make api;
 	make config;
+	make errors;
 	make generate;
+
 
 # show help
 help:

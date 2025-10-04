@@ -48,7 +48,7 @@ func Init() {
 }
 
 func TestCreateUser() {
-	rsp, err := userClient.CreateUser(context.Background(), &v1.CreateUserRequest{
+	rsp, err := userClient.CreateUser(context.Background(), &v1.CreateUserInfo{
 		Mobile:   "13888888888",
 		Password: "lucien",
 		NickName: fmt.Sprintf("YWWW%d", 1),
@@ -57,4 +57,14 @@ func TestCreateUser() {
 		panic("grpc 创建用户失败" + err.Error())
 	}
 	fmt.Println(rsp.Id)
+}
+
+func TestGetUser() {
+	rsp, err := userClient.GetUserByMobile(context.Background(), &v1.MobileRequest{
+		Mobile: "15283660176",
+	})
+	if err != nil {
+		panic("grpc 获取用户失败" + err.Error())
+	}
+	fmt.Println(rsp)
 }
