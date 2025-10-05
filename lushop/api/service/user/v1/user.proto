@@ -71,4 +71,3 @@ message PasswordCheckInfo{
 message CheckResponse{
   bool success = 1;
 }
-

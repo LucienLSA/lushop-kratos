@@ -16,6 +16,9 @@ require (
 	github.com/onsi/gomega v1.38.2
 	github.com/ory/dockertest/v3 v3.12.0
 	github.com/pkg/errors v0.9.1
+	go.opentelemetry.io/otel v1.24.0
+	go.opentelemetry.io/otel/exporters/jaeger v1.17.0
+	go.opentelemetry.io/otel/sdk v1.24.0
 	go.uber.org/automaxprocs v1.6.0
 	golang.org/x/crypto v0.42.0
 	google.golang.org/grpc v1.65.0
@@ -78,7 +81,6 @@ require (
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
 	github.com/xeipuuv/gojsonschema v1.2.0 // indirect
-	go.opentelemetry.io/otel v1.24.0 // indirect
 	go.opentelemetry.io/otel/metric v1.24.0 // indirect
 	go.opentelemetry.io/otel/trace v1.24.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect

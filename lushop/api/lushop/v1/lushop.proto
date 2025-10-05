@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+package lushop.lushop.v1;
+
+// 这里可以把 proto 文件下载下来，放到项目的 third_party 目录下
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+option go_package = "lushop/api/lushop/v1;v1";
+
+// The Shop service definition.
+service Lushop {
+  rpc Register (RegisterReq) returns (RegisterReply) {
+    option (google.api.http) = {
+      post: "/api/user/register",
+      body: "*",
+    };
+  }
+  rpc Login (LoginReq) returns (RegisterReply) {
+    option  (google.api.http) = {
+      post: "/api/user/login",
+      body: "*",
+    };
+  }
+  rpc Captcha(google.protobuf.Empty) returns (CaptchaReply) {
+    option (google.api.http) = {
+      post: "/api/user/captcha",
+      body: "*",
+    };
+  }
+  rpc Detail (google.protobuf.Empty) returns (UserDetailResponse) {
+    option (google.api.http) = {
+      get: "/api/user/detail",
+    };
+  }
+}
+
+message CreateUserInfo {
+	string nickName = 1;
+	string password = 2;
+	string mobile = 3;
+}
+
+// 用户注册请求
+message RegisterReq {
+  string mobile = 1 [(validate.rules).string.len = 11];
+  string username = 2 [(validate.rules).string = {min_len:3, max_len:15}];
+  string password = 3 [(validate.rules).string = {min_len: 5}];
+}
+
+// 用户注册响应
+message RegisterReply {
+  int64 id = 1;
+  string mobile = 3;
+  string username = 4;
+  string token = 5;
+  int64 expiredAt = 6;
+}
+
+// 用户登录请求
+message LoginReq {
+  string mobile = 1 [(validate.rules).string.len = 11];
+  string password = 2 [(validate.rules).string = {min_len: 5}];
+  string captcha = 3 [(validate.rules).string = {min_len: 4,max_len:6}];
+  string captchaId = 4  [(validate.rules).string ={min_len: 1}];
+}
+
+// user Detail returned
+message UserDetailResponse{
+  int64 id = 1;
+  string mobile = 2;
+  string nickName = 3;
+  int64 birthday = 4;
+  string gender = 5;
+  int32 role = 6;
+}
+
+message CaptchaReply{
+  string captchaId = 1;
+  string picPath = 2;
+  string ans = 3;
+}

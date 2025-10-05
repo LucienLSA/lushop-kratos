@@ -26,9 +26,9 @@ type Bootstrap struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Server        *Server                `protobuf:"bytes,1,opt,name=server,proto3" json:"server,omitempty"`
 	Data          *Data                  `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
-	Trace         *Trace                 `protobuf:"bytes,3,opt,name=trace,proto3" json:"trace,omitempty"`
-	Auth          *Auth                  `protobuf:"bytes,4,opt,name=auth,proto3" json:"auth,omitempty"`
-	Service       *Service               `protobuf:"bytes,5,opt,name=service,proto3" json:"service,omitempty"`
+	Trace         *Trace                 `protobuf:"bytes,3,opt,name=trace,proto3" json:"trace,omitempty"`     // 链路追踪
+	Auth          *Auth                  `protobuf:"bytes,4,opt,name=auth,proto3" json:"auth,omitempty"`       // 认证鉴权
+	Service       *Service               `protobuf:"bytes,5,opt,name=service,proto3" json:"service,omitempty"` // 服务注册与发现
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -795,16 +795,16 @@ var File_conf_conf_proto protoreflect.FileDescriptor
 const file_conf_conf_proto_rawDesc = "" +
 	"\n" +
 	"\x0fconf/conf.proto\x12\n" +
-	"kratos.api\x1a\x1egoogle/protobuf/duration.proto\"\xdb\x01\n" +
+	"lushop.api\x1a\x1egoogle/protobuf/duration.proto\"\xdb\x01\n" +
 	"\tBootstrap\x12*\n" +
-	"\x06server\x18\x01 \x01(\v2\x12.kratos.api.ServerR\x06server\x12$\n" +
-	"\x04data\x18\x02 \x01(\v2\x10.kratos.api.DataR\x04data\x12'\n" +
-	"\x05trace\x18\x03 \x01(\v2\x11.kratos.api.TraceR\x05trace\x12$\n" +
-	"\x04auth\x18\x04 \x01(\v2\x10.kratos.api.AuthR\x04auth\x12-\n" +
-	"\aservice\x18\x05 \x01(\v2\x13.kratos.api.ServiceR\aservice\"\xb8\x02\n" +
+	"\x06server\x18\x01 \x01(\v2\x12.lushop.api.ServerR\x06server\x12$\n" +
+	"\x04data\x18\x02 \x01(\v2\x10.lushop.api.DataR\x04data\x12'\n" +
+	"\x05trace\x18\x03 \x01(\v2\x11.lushop.api.TraceR\x05trace\x12$\n" +
+	"\x04auth\x18\x04 \x01(\v2\x10.lushop.api.AuthR\x04auth\x12-\n" +
+	"\aservice\x18\x05 \x01(\v2\x13.lushop.api.ServiceR\aservice\"\xb8\x02\n" +
 	"\x06Server\x12+\n" +
-	"\x04http\x18\x01 \x01(\v2\x17.kratos.api.Server.HTTPR\x04http\x12+\n" +
-	"\x04grpc\x18\x02 \x01(\v2\x17.kratos.api.Server.GRPCR\x04grpc\x1ai\n" +
+	"\x04http\x18\x01 \x01(\v2\x17.lushop.api.Server.HTTPR\x04http\x12+\n" +
+	"\x04grpc\x18\x02 \x01(\v2\x17.lushop.api.Server.GRPCR\x04grpc\x1ai\n" +
 	"\x04HTTP\x12\x18\n" +
 	"\anetwork\x18\x01 \x01(\tR\anetwork\x12\x12\n" +
 	"\x04addr\x18\x02 \x01(\tR\x04addr\x123\n" +
@@ -814,8 +814,8 @@ const file_conf_conf_proto_rawDesc = "" +
 	"\x04addr\x18\x02 \x01(\tR\x04addr\x123\n" +
 	"\atimeout\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\atimeout\"\xc7\x03\n" +
 	"\x04Data\x125\n" +
-	"\bdatabase\x18\x01 \x01(\v2\x19.kratos.api.Data.DatabaseR\bdatabase\x12,\n" +
-	"\x05redis\x18\x02 \x01(\v2\x16.kratos.api.Data.RedisR\x05redis\x1a:\n" +
+	"\bdatabase\x18\x01 \x01(\v2\x19.lushop.api.Data.DatabaseR\bdatabase\x12,\n" +
+	"\x05redis\x18\x02 \x01(\v2\x16.lushop.api.Data.RedisR\x05redis\x1a:\n" +
 	"\bDatabase\x12\x16\n" +
 	"\x06driver\x18\x01 \x01(\tR\x06driver\x12\x16\n" +
 	"\x06source\x18\x02 \x01(\tR\x06source\x1a\x9d\x02\n" +
@@ -828,8 +828,8 @@ const file_conf_conf_proto_rawDesc = "" +
 	"\fread_timeout\x18\x06 \x01(\v2\x19.google.protobuf.DurationR\vreadTimeout\x12>\n" +
 	"\rwrite_timeout\x18\a \x01(\v2\x19.google.protobuf.DurationR\fwriteTimeout\"\xb1\x01\n" +
 	"\aService\x12,\n" +
-	"\x04user\x18\x01 \x01(\v2\x18.kratos.api.Service.UserR\x04user\x12/\n" +
-	"\x05goods\x18\x02 \x01(\v2\x19.kratos.api.Service.GoodsR\x05goods\x1a\"\n" +
+	"\x04user\x18\x01 \x01(\v2\x18.lushop.api.Service.UserR\x04user\x12/\n" +
+	"\x05goods\x18\x02 \x01(\v2\x19.lushop.api.Service.GoodsR\x05goods\x1a\"\n" +
 	"\x04User\x12\x1a\n" +
 	"\bendpoint\x18\x01 \x01(\tR\bendpoint\x1a#\n" +
 	"\x05Goods\x12\x1a\n" +
@@ -837,12 +837,12 @@ const file_conf_conf_proto_rawDesc = "" +
 	"\x05Trace\x12\x1a\n" +
 	"\bendpoint\x18\x01 \x01(\tR\bendpoint\"{\n" +
 	"\bRegistry\x123\n" +
-	"\x06consul\x18\x01 \x01(\v2\x1b.kratos.api.Registry.ConsulR\x06consul\x1a:\n" +
+	"\x06consul\x18\x01 \x01(\v2\x1b.lushop.api.Registry.ConsulR\x06consul\x1a:\n" +
 	"\x06Consul\x12\x18\n" +
 	"\aaddress\x18\x01 \x01(\tR\aaddress\x12\x16\n" +
 	"\x06scheme\x18\x02 \x01(\tR\x06scheme\"\x1f\n" +
 	"\x04Auth\x12\x17\n" +
-	"\ajwt_key\x18\x01 \x01(\tR\x06jwtKeyB\x19Z\x17user/internal/conf;confb\x06proto3"
+	"\ajwt_key\x18\x01 \x01(\tR\x06jwtKeyB\x1bZ\x19lushop/internal/conf;confb\x06proto3"
 
 var (
 	file_conf_conf_proto_rawDescOnce sync.Once
@@ -858,40 +858,40 @@ func file_conf_conf_proto_rawDescGZIP() []byte {
 
 var file_conf_conf_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_conf_conf_proto_goTypes = []any{
-	(*Bootstrap)(nil),           // 0: kratos.api.Bootstrap
-	(*Server)(nil),              // 1: kratos.api.Server
-	(*Data)(nil),                // 2: kratos.api.Data
-	(*Service)(nil),             // 3: kratos.api.Service
-	(*Trace)(nil),               // 4: kratos.api.Trace
-	(*Registry)(nil),            // 5: kratos.api.Registry
-	(*Auth)(nil),                // 6: kratos.api.Auth
-	(*Server_HTTP)(nil),         // 7: kratos.api.Server.HTTP
-	(*Server_GRPC)(nil),         // 8: kratos.api.Server.GRPC
-	(*Data_Database)(nil),       // 9: kratos.api.Data.Database
-	(*Data_Redis)(nil),          // 10: kratos.api.Data.Redis
-	(*Service_User)(nil),        // 11: kratos.api.Service.User
-	(*Service_Goods)(nil),       // 12: kratos.api.Service.Goods
-	(*Registry_Consul)(nil),     // 13: kratos.api.Registry.Consul
+	(*Bootstrap)(nil),           // 0: lushop.api.Bootstrap
+	(*Server)(nil),              // 1: lushop.api.Server
+	(*Data)(nil),                // 2: lushop.api.Data
+	(*Service)(nil),             // 3: lushop.api.Service
+	(*Trace)(nil),               // 4: lushop.api.Trace
+	(*Registry)(nil),            // 5: lushop.api.Registry
+	(*Auth)(nil),                // 6: lushop.api.Auth
+	(*Server_HTTP)(nil),         // 7: lushop.api.Server.HTTP
+	(*Server_GRPC)(nil),         // 8: lushop.api.Server.GRPC
+	(*Data_Database)(nil),       // 9: lushop.api.Data.Database
+	(*Data_Redis)(nil),          // 10: lushop.api.Data.Redis
+	(*Service_User)(nil),        // 11: lushop.api.Service.User
+	(*Service_Goods)(nil),       // 12: lushop.api.Service.Goods
+	(*Registry_Consul)(nil),     // 13: lushop.api.Registry.Consul
 	(*durationpb.Duration)(nil), // 14: google.protobuf.Duration
 }
 var file_conf_conf_proto_depIdxs = []int32{
-	1,  // 0: kratos.api.Bootstrap.server:type_name -> kratos.api.Server
-	2,  // 1: kratos.api.Bootstrap.data:type_name -> kratos.api.Data
-	4,  // 2: kratos.api.Bootstrap.trace:type_name -> kratos.api.Trace
-	6,  // 3: kratos.api.Bootstrap.auth:type_name -> kratos.api.Auth
-	3,  // 4: kratos.api.Bootstrap.service:type_name -> kratos.api.Service
-	7,  // 5: kratos.api.Server.http:type_name -> kratos.api.Server.HTTP
-	8,  // 6: kratos.api.Server.grpc:type_name -> kratos.api.Server.GRPC
-	9,  // 7: kratos.api.Data.database:type_name -> kratos.api.Data.Database
-	10, // 8: kratos.api.Data.redis:type_name -> kratos.api.Data.Redis
-	11, // 9: kratos.api.Service.user:type_name -> kratos.api.Service.User
-	12, // 10: kratos.api.Service.goods:type_name -> kratos.api.Service.Goods
-	13, // 11: kratos.api.Registry.consul:type_name -> kratos.api.Registry.Consul
-	14, // 12: kratos.api.Server.HTTP.timeout:type_name -> google.protobuf.Duration
-	14, // 13: kratos.api.Server.GRPC.timeout:type_name -> google.protobuf.Duration
-	14, // 14: kratos.api.Data.Redis.dial_timeout:type_name -> google.protobuf.Duration
-	14, // 15: kratos.api.Data.Redis.read_timeout:type_name -> google.protobuf.Duration
-	14, // 16: kratos.api.Data.Redis.write_timeout:type_name -> google.protobuf.Duration
+	1,  // 0: lushop.api.Bootstrap.server:type_name -> lushop.api.Server
+	2,  // 1: lushop.api.Bootstrap.data:type_name -> lushop.api.Data
+	4,  // 2: lushop.api.Bootstrap.trace:type_name -> lushop.api.Trace
+	6,  // 3: lushop.api.Bootstrap.auth:type_name -> lushop.api.Auth
+	3,  // 4: lushop.api.Bootstrap.service:type_name -> lushop.api.Service
+	7,  // 5: lushop.api.Server.http:type_name -> lushop.api.Server.HTTP
+	8,  // 6: lushop.api.Server.grpc:type_name -> lushop.api.Server.GRPC
+	9,  // 7: lushop.api.Data.database:type_name -> lushop.api.Data.Database
+	10, // 8: lushop.api.Data.redis:type_name -> lushop.api.Data.Redis
+	11, // 9: lushop.api.Service.user:type_name -> lushop.api.Service.User
+	12, // 10: lushop.api.Service.goods:type_name -> lushop.api.Service.Goods
+	13, // 11: lushop.api.Registry.consul:type_name -> lushop.api.Registry.Consul
+	14, // 12: lushop.api.Server.HTTP.timeout:type_name -> google.protobuf.Duration
+	14, // 13: lushop.api.Server.GRPC.timeout:type_name -> google.protobuf.Duration
+	14, // 14: lushop.api.Data.Redis.dial_timeout:type_name -> google.protobuf.Duration
+	14, // 15: lushop.api.Data.Redis.read_timeout:type_name -> google.protobuf.Duration
+	14, // 16: lushop.api.Data.Redis.write_timeout:type_name -> google.protobuf.Duration
 	17, // [17:17] is the sub-list for method output_type
 	17, // [17:17] is the sub-list for method input_type
 	17, // [17:17] is the sub-list for extension type_name

@@ -29,7 +29,7 @@ var ctx context.Context
 // ginkgo 使用 BeforeEach 为您的 Specs 设置状态
 var _ = BeforeSuite(func() {
 	// 执行测试数据库操作之前，链接之前 docker 容器创建的 mysql
-	con, f := data.DockerMysql("mysql", "5.7")
+	con, f := data.DockerMysql("mysql", "8.0")
 	// 测试完成，关闭容器的回调方法
 	cleaner = f
 	// 2. 配置数据库连接

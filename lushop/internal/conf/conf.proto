@@ -1,16 +1,16 @@
 syntax = "proto3";
-package kratos.api;
+package lushop.api;
 
-option go_package = "user/internal/conf;conf";
+option go_package = "lushop/internal/conf;conf";
 
 import "google/protobuf/duration.proto";
 
 message Bootstrap {
   Server server = 1;
   Data data = 2;
-  Trace trace = 3;
-  Auth auth = 4;
-  Service service = 5;
+  Trace trace = 3; // 链路追踪
+  Auth auth = 4; // 认证鉴权
+  Service service = 5; // 服务注册与发现
 }
 
 message Server {
@@ -47,10 +47,10 @@ message Data {
 }
 
 message Service {
-  message User {
+  message User { // 用户服务
     string endpoint = 1;
   }
-  message Goods {
+  message Goods { // 商品服务
     string endpoint = 1;
   }
   User user = 1;

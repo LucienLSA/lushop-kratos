@@ -1,0 +1,139 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: Lushop API
+    description: The Shop service definition.
+    version: 0.0.1
+paths:
+    /api/user/captcha:
+        post:
+            tags:
+                - Lushop
+            operationId: Lushop_Captcha
+            requestBody:
+                content:
+                    application/json: {}
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/lushop.lushop.v1.CaptchaReply'
+    /api/user/detail:
+        get:
+            tags:
+                - Lushop
+            operationId: Lushop_Detail
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/lushop.lushop.v1.UserDetailResponse'
+    /api/user/login:
+        post:
+            tags:
+                - Lushop
+            operationId: Lushop_Login
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/lushop.lushop.v1.LoginReq'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/lushop.lushop.v1.RegisterReply'
+    /api/user/register:
+        post:
+            tags:
+                - Lushop
+            operationId: Lushop_Register
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/lushop.lushop.v1.RegisterReq'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/lushop.lushop.v1.RegisterReply'
+components:
+    schemas:
+        lushop.lushop.v1.CaptchaReply:
+            type: object
+            properties:
+                captchaId:
+                    type: string
+                picPath:
+                    type: string
+                ans:
+                    type: string
+        lushop.lushop.v1.LoginReq:
+            type: object
+            properties:
+                mobile:
+                    type: string
+                password:
+                    type: string
+                captcha:
+                    type: string
+                captchaId:
+                    type: string
+            description: 用户登录请求
+        lushop.lushop.v1.RegisterReply:
+            type: object
+            properties:
+                id:
+                    type: string
+                mobile:
+                    type: string
+                username:
+                    type: string
+                token:
+                    type: string
+                expiredAt:
+                    type: string
+            description: 用户注册响应
+        lushop.lushop.v1.RegisterReq:
+            type: object
+            properties:
+                mobile:
+                    type: string
+                username:
+                    type: string
+                password:
+                    type: string
+            description: 用户注册请求
+        lushop.lushop.v1.UserDetailResponse:
+            type: object
+            properties:
+                id:
+                    type: string
+                mobile:
+                    type: string
+                nickName:
+                    type: string
+                birthday:
+                    type: string
+                gender:
+                    type: string
+                role:
+                    type: integer
+                    format: int32
+            description: user Detail returned
+tags:
+    - name: Lushop
