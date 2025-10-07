@@ -4,7 +4,7 @@ import (
 	"flag"
 	"os"
 
-	"lushop/internal/conf"
+	"goods/internal/conf"
 
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
@@ -13,49 +13,47 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/registry"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
-	"github.com/go-kratos/kratos/v2/transport/http"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/jaeger"
 	"go.opentelemetry.io/otel/sdk/resource"
 	tracesdk "go.opentelemetry.io/otel/sdk/trace"
-	semconv "go.opentelemetry.io/otel/semconv/v1.7.0"
+	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
+
+	_ "go.uber.org/automaxprocs"
 )
 
-// go build -ldflags "-X main.Version=x.y.z" 定义版本服务名称等
+// go build -ldflags "-X main.Version=x.y.z"
 var (
 	// Name is the name of the compiled software.
-	Name = "lushop.api"
+	Name = "lushop.goods.service"
 	// Version is the version of the compiled software.
-	Version = "lushop.api.v1"
+	Version = "goods.v1"
 	// flagconf is the config flag.
 	flagconf string
 
 	id, _ = os.Hostname()
 )
 
-// 启动指定路径配置文件
 func init() {
 	flag.StringVar(&flagconf, "conf", "../../configs", "config path, eg: -conf config.yaml")
 }
 
-// wire依赖注入实现的方法，整合了应用所需的依赖，应用实例创建
-func newApp(logger log.Logger, hs *http.Server, gs *grpc.Server, rr registry.Registrar) *kratos.App {
-	// 设置应用的ID、名称、版本、元数据、日志、服务器和注册中心
+func newApp(logger log.Logger, gs *grpc.Server, rr registry.Registrar) *kratos.App {
 	return kratos.New(
-		kratos.ID(id+"lushop.api"),
+		kratos.ID(id+"goods service"),
 		kratos.Name(Name),
 		kratos.Version(Version),
 		kratos.Metadata(map[string]string{}),
 		kratos.Logger(logger),
 		kratos.Server(
-			hs,
 			gs,
 		),
-		kratos.Registrar(rr),
+		kratos.Registrar(rr), // consul 的引入 服务发现和注册
 	)
 }
 
+// Set global trace provider 设置链路追逐的方法
 func setTracerProvider(url string) error {
 	// Create the Jaeger exporter
 	exp, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(url)))
@@ -98,13 +96,12 @@ func main() {
 	if err := c.Load(); err != nil {
 		panic(err)
 	}
-	// 将配置解析到结构体
+
 	var bc conf.Bootstrap
-	// 解析启动配置
 	if err := c.Scan(&bc); err != nil {
 		panic(err)
 	}
-	// 解析注册中心配置
+	// consul 的引入
 	var rc conf.Registry
 	if err := c.Scan(&rc); err != nil {
 		panic(err)
@@ -113,12 +110,12 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	// 通过 wireApp 函数（由 Wire 生成）构建应用实例，并获取清理函数
-	app, cleanup, err := wireApp(bc.Server, bc.Data, bc.Auth, bc.Service, &rc, logger)
+	app, cleanup, err := wireApp(bc.Server, bc.Data, &rc, logger)
 	if err != nil {
 		panic(err)
 	}
 	defer cleanup()
+
 	// start and wait for stop signal
 	if err := app.Run(); err != nil {
 		panic(err)

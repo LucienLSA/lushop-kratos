@@ -1,0 +1,174 @@
+package data
+
+import (
+	"context"
+	"encoding/json"
+	"goods/internal/biz"
+	"goods/internal/domain"
+	"strconv"
+
+	"github.com/go-kratos/kratos/v2/log"
+	"github.com/olivere/elastic/v7"
+)
+
+type esGoodsRepo struct {
+	data *Data
+	log  *log.Helper
+}
+
+// NewEsGoodsRepo .
+func NewEsGoodsRepo(data *Data, logger log.Logger) biz.EsGoodsRepo {
+	return &esGoodsRepo{
+		data: data,
+		log:  log.NewHelper(logger),
+	}
+}
+
+// GetIndexName 设计商品的索引 goods
+func (esGoodsRepo) GetIndexName() string {
+	return "goods"
+}
+
+// GetMapping 设计商品的 mapping 结构
+func (esGoodsRepo) GetMapping() string {
+	goodsMapping := `
+	{
+    "mappings": {
+        "properties": {
+            "id": {
+                "type": "integer"
+            },
+            "brands_id": {
+                "type": "integer"
+            },
+            "category_id": {
+                "type": "integer"
+            },
+            "type_id": {
+                "type": "integer"
+            },
+            "click_num": {
+                "type": "integer"
+            },
+            "fav_num": {
+                "type": "integer"
+            },
+            "is_hot": {
+                "type": "boolean"
+            },
+            "is_new": {
+                "type": "boolean"
+            },
+            "market_price": {
+                "type": "integer"
+            },
+            "name": {
+                "type": "text",
+                "analyzer": "ik_max_word"
+            },
+			"brand_name": {
+                "type": "keyword",
+                "index": false,
+				"dec_values": false,
+            },
+			"category_name": {
+                "type": "keyword",
+                "index": false,
+				"dec_values": false,
+            },
+			"type_name": {
+                "type": "keyword",
+                "index": false,
+				"dec_values": false,
+            },
+            "goods_brief": {
+                "type": "text",
+                "analyzer": "ik_max_word"
+            },
+            "on_sale": {
+                "type": "boolean"
+            },
+            "ship_free": {
+                "type": "boolean"
+            },
+            "shop_price": {
+                "type": "integer"
+            },
+            "sold_num": {
+                "type": "integer"
+            },
+			"sku": {
+				"type": "nested",
+				"sku_id": {
+					"type": "integer",
+            	},
+				"sku_name": {
+					"type": "text",
+					"analyzer": "ik_max_word"
+            	},
+				"sku_price": {
+					"type": "integer",
+				},
+			}
+        }
+    }
+}`
+	return goodsMapping
+}
+
+// 获取商品列表
+func (p esGoodsRepo) GoodsList(ctx context.Context, filter *domain.EsSearch) ([]int64, int64, error) {
+	boolQuery := elastic.NewBoolQuery()
+	boolQuery.Must(filter.MustQuery...)
+	boolQuery.MustNot(filter.MustNotQuery...)
+	boolQuery.Should(filter.ShouldQuery...)
+	boolQuery.Filter(filter.Filters...)
+
+	result, err := p.data.esClient.Search().
+		Index(p.GetIndexName()).
+		Query(boolQuery).
+		SortBy(filter.Sorters...).
+		From(int(filter.Form)).
+		Size(int(filter.Size)).
+		Do(ctx)
+
+	if err != nil {
+		return nil, 0, err
+	}
+
+	// 取出来商品ID
+	goodsIds := make([]int64, 0)
+	for _, value := range result.Hits.Hits {
+		goods := domain.ESGoods{}
+		_ = json.Unmarshal(value.Source, &goods)
+		goodsIds = append(goodsIds, goods.ID)
+	}
+	return goodsIds, result.Hits.TotalHits.Value, nil
+}
+
+// 调用es第三方库的命令进行操作
+func (p esGoodsRepo) InsertEsGoods(ctx context.Context, esModel *domain.ESGoods) error {
+	// 新建 mapping 和 index
+	exists, err := p.data.esClient.IndexExists(p.GetIndexName()).Do(ctx)
+
+	if err != nil {
+		panic(err)
+	}
+	if !exists {
+		_, err = p.data.esClient.CreateIndex(p.GetIndexName()).BodyString(p.GetMapping()).Do(ctx)
+		if err != nil {
+			return err
+		}
+	}
+	// 新增索引
+	_, err = p.data.esClient.Index().Index(p.GetIndexName()).BodyJson(esModel).Id(strconv.Itoa(int(esModel.ID))).Do(ctx)
+	if err != nil {
+		return err
+	}
+	// // 更新索引
+	// _, err = p.data.esClient.Update().Index(p.GetIndexName()).Doc(esModel).Id(strconv.Itoa(int(esModel.ID))).Do(ctx)
+	// if err != nil {
+	// 	return err
+	// }
+	return nil
+}
