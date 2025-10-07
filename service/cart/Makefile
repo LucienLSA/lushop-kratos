@@ -58,7 +58,7 @@ generate:
 	go mod tidy
 # wire
 wire:
-	cd cmd/goods/ && wire
+	cd cmd/cart/ && wire
 
 .PHONY: all
 # generate all

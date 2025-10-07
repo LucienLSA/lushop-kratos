@@ -897,7 +897,7 @@ const file_conf_conf_proto_rawDesc = "" +
 	"\aaddress\x18\x01 \x01(\tR\aaddress\x12\x16\n" +
 	"\x06scheme\x18\x02 \x01(\tR\x06scheme\"\x1f\n" +
 	"\x04Auth\x12\x17\n" +
-	"\ajwt_key\x18\x01 \x01(\tR\x06jwtKeyB\x1aZ\x18goods/internal/conf;confb\x06proto3"
+	"\ajwt_key\x18\x01 \x01(\tR\x06jwtKeyB\x19Z\x17cart/internal/conf;confb\x06proto3"
 
 var (
 	file_conf_conf_proto_rawDescOnce sync.Once
