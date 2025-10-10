@@ -3,10 +3,12 @@ package server
 import (
 	v1 "lushop/api/lushop/v1"
 	"lushop/internal/conf"
+	"lushop/internal/conf/metrix"
 	"lushop/internal/service"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/logging"
+	"github.com/go-kratos/kratos/v2/middleware/metrics"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
@@ -19,6 +21,10 @@ func NewGRPCServer(c *conf.Server, s *service.LushopService, logger log.Logger) 
 			recovery.Recovery(),
 			tracing.Server(),
 			logging.Server(logger),
+			metrics.Server(
+				metrics.WithSeconds(metrix.MetricSeconds),
+				metrics.WithRequests(metrix.MetricRequests),
+			),
 		),
 	}
 	if c.Grpc.Network != "" {

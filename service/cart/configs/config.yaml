@@ -2,6 +2,8 @@ server:
   grpc:
     addr: 0.0.0.0:50053
     timeout: 1s
+service:
+  name: "cart.service"
 data:
   database:
     driver: mysql

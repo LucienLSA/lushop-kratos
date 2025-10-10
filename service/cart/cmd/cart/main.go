@@ -27,7 +27,7 @@ var (
 	// Name is the name of the compiled software.
 	Name = "lushop.cart.service"
 	// Version is the version of the compiled software.
-	Version = "goods.v1"
+	Version = "cart.v1"
 	// flagconf is the config flag.
 	flagconf string
 
@@ -40,7 +40,7 @@ func init() {
 
 func newApp(logger log.Logger, gs *grpc.Server, rr registry.Registrar) *kratos.App {
 	return kratos.New(
-		kratos.ID(id+"goods service"),
+		kratos.ID(id+"cart service"),
 		kratos.Name(Name),
 		kratos.Version(Version),
 		kratos.Metadata(map[string]string{}),

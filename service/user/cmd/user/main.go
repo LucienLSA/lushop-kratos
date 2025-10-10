@@ -113,7 +113,11 @@ func main() {
 		panic(err)
 	}
 	defer cleanup()
-
+	// servicename, err := nacos.GetConfig().Value("service.name").String()
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// log.Debugf("servicename:%s", servicename)
 	// start and wait for stop signal
 	if err := app.Run(); err != nil {
 		panic(err)

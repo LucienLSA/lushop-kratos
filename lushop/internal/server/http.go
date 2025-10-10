@@ -2,20 +2,29 @@ package server
 
 import (
 	"context"
+	"encoding/json"
 	v1 "lushop/api/lushop/v1"
 	"lushop/internal/conf"
+	"lushop/internal/conf/metrix"
 	"lushop/internal/service"
 
+	http2 "lushop/internal/biz/http"
+	httpNet "net/http"
+
+	"github.com/go-kratos/kratos/v2/encoding"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/auth/jwt"
 	"github.com/go-kratos/kratos/v2/middleware/logging"
+	"github.com/go-kratos/kratos/v2/middleware/metrics"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/middleware/selector"
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/middleware/validate"
 	"github.com/go-kratos/kratos/v2/transport/http"
+	"github.com/go-kratos/swagger-api/openapiv2"
 	jwt5 "github.com/golang-jwt/jwt/v5"
 	"github.com/gorilla/handlers"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 // NewHTTPServer new an HTTP server.
@@ -31,12 +40,42 @@ func NewHTTPServer(c *conf.Server, ac *conf.Auth, s *service.LushopService, logg
 				}, jwt.WithSigningMethod(jwt5.SigningMethodHS256)),
 			).Match(NewWhiteListMatcher()).Build(),
 			logging.Server(logger),
+			metrics.Server(
+				metrics.WithSeconds(metrix.MetricSeconds),
+				metrics.WithRequests(metrix.MetricRequests),
+			),
 		),
 		http.Filter(handlers.CORS( // 浏览器跨域
 			handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
 			handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
 			handlers.AllowedOrigins([]string{"*"}),
 		)),
+		http.ErrorEncoder(
+			func(writer httpNet.ResponseWriter, request *httpNet.Request, err error) {
+				log.Infof("拦截到的错误信息是：%s", err.Error())
+				message := extractMessageFromError(err)
+				reply := &http2.BaseResponse{
+					Code: 400,
+					Msg:  message,
+					Data: nil,
+				}
+				codec := encoding.GetCodec("json")
+				data, _ := codec.Marshal(reply)
+				writer.Header().Set("Content-Type", "application/json")
+				writer.Write(data)
+			}),
+		http.ResponseEncoder(func(writer httpNet.ResponseWriter, request *httpNet.Request, i interface{}) error {
+			reply := &http2.BaseResponse{
+				Code: 200,
+				Msg:  "请求成功",
+				Data: i,
+			}
+			codec := encoding.GetCodec("json")
+			data, _ := codec.Marshal(reply)
+			writer.Header().Set("Content-Type", "application/json")
+			writer.Write(data)
+			return nil
+		}),
 	}
 	if c.Http.Network != "" {
 		opts = append(opts, http.Network(c.Http.Network))
@@ -48,6 +87,9 @@ func NewHTTPServer(c *conf.Server, ac *conf.Auth, s *service.LushopService, logg
 		opts = append(opts, http.Timeout(c.Http.Timeout.AsDuration()))
 	}
 	srv := http.NewServer(opts...)
+	handler := openapiv2.NewHandler()
+	srv.HandlePrefix("/q/", handler)
+	srv.Handle("/metrics", promhttp.Handler())
 	v1.RegisterLushopHTTPServer(srv, s)
 	return srv
 }
@@ -64,4 +106,21 @@ func NewWhiteListMatcher() selector.MatchFunc {
 		}
 		return true
 	}
+}
+
+func extractMessageFromError(err error) string {
+	marshal, err2 := json.Marshal(err)
+	if err2 != nil {
+		return "系统错误"
+	}
+	var em ErrorMessage
+	e := json.Unmarshal(marshal, &em)
+	if e != nil {
+		return "系统错误"
+	}
+	return em.Message
+}
+
+type ErrorMessage struct {
+	Message string `json:"message"`
 }

@@ -109,10 +109,12 @@ func main() {
 	if err := c.Scan(&rc); err != nil {
 		panic(err)
 	}
+	// 初始化链路追踪
 	err := setTracerProvider(bc.Trace.Endpoint)
 	if err != nil {
 		panic(err)
 	}
+
 	// 通过 wireApp 函数（由 Wire 生成）构建应用实例，并获取清理函数
 	app, cleanup, err := wireApp(bc.Server, bc.Data, bc.Auth, bc.Service, &rc, logger)
 	if err != nil {

@@ -1,0 +1,30 @@
+name: lushop.api
+id: "1"
+version: "1.0"
+environment: "dev"
+
+server:
+  http:
+    addr: 0.0.0.0:8001
+    timeout: 1s
+  grpc:
+    addr: 0.0.0.0:9001
+    timeout: 1s
+data:
+  database:
+    driver: mysql
+    source: root:123456@tcp(127.0.0.1:3306)/lushop_user?charset=utf8mb4&parseTime=True&loc=Local
+  redis:
+    addr: 127.0.0.1:6379
+    dial_timeout: 1s
+    read_timeout: 0.5s
+    write_timeout: 0.5s
+trace:
+  endpoint: http://127.0.0.1:14268/api/traces
+auth:
+  jwt_key: lushop-api-jwt
+service:
+  user:
+    endpoint: discovery:///lushop.user.service
+  goods:
+    endpoint: discovery:///lushop.goods.service

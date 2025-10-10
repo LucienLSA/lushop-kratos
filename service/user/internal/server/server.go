@@ -45,3 +45,14 @@ func (noOpRegistrar) Register(ctx context.Context, service *registry.ServiceInst
 func (noOpRegistrar) Deregister(ctx context.Context, service *registry.ServiceInstance) error {
 	return nil
 }
+
+// NewDiscovery 创建 Consul 服务发现客户端
+func NewDiscovery(conf *conf.Registry) registry.Discovery {
+	c := consulAPI.DefaultConfig()
+	c.Address = conf.Consul.Address
+	client, err := consulAPI.NewClient(c)
+	if err != nil {
+		panic(err)
+	}
+	return consul.New(client)
+}
