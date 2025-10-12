@@ -1,9 +1,21 @@
+nacos:
+  addr: 127.0.0.1
+  port: 8848
+  namespace_id: de9c6a0e-1fbc-425d-8d3b-09066fea6889
+  data_id: user.yaml
+  group_id: lushop_grpc
+
+
+# 以下配置将被 Nacos 配置中心覆盖
+# 如果 Nacos 不可用，将使用这些默认配置
 # server:
 #   grpc:
 #     addr: 0.0.0.0:50051
 #     timeout: 1s
+
 # service:
-#   name: "user.service"
+#   name: "lushop.user.service"
+
 # data:
 #   database:
 #     driver: mysql
@@ -13,11 +25,15 @@
 #     dial_timeout: 1s
 #     read_timeout: 0.2s
 #     write_timeout: 0.2s
+
 # trace:
 #   endpoint: http://127.0.0.1:14268/api/traces
-nacos:
-  addr: 127.0.0.1
-  port: 8848
-  namespaceId: de9c6a0e-1fbc-425d-8d3b-09066fea6889
-  dataId: user.yaml
-  groupId: lushop_grpc
+
+# auth:
+#   jwt_key: "lushop-jwt-secret-key"
+
+# registry:
+#   consul:
+#     address: 127.0.0.1:8500
+#     scheme: http
+

@@ -2,13 +2,10 @@ package main
 
 import (
 	"flag"
+	nacosconfig "lushop/internal/conf/nacos"
 	"os"
 
-	"lushop/internal/conf"
-
 	"github.com/go-kratos/kratos/v2"
-	"github.com/go-kratos/kratos/v2/config"
-	"github.com/go-kratos/kratos/v2/config/file"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/registry"
@@ -88,35 +85,43 @@ func main() {
 		"trace.id", tracing.TraceID(),
 		"span.id", tracing.SpanID(),
 	)
-	c := config.New(
-		config.WithSource(
-			file.NewSource(flagconf),
-		),
-	)
+	// 创建配置加载器
+	configLoader := nacosconfig.NewNacosConfigLoader(logger)
+	// 首先加载本地配置获取 Nacos 连接信息
+	localConfig, err := configLoader.CreateLocalConfig(flagconf)
+	if err != nil {
+		panic(err)
+	}
+	defer localConfig.Close()
+	// 获取初始配置
+	bc, err := configLoader.LoadBootstrapConfig(localConfig)
+	if err != nil {
+		panic(err)
+	}
+	// 使用 Nacos 或本地配置加载完整配置
+	c, err := configLoader.LoadConfigWithNacos(bc, flagconf)
+	if err != nil {
+		panic(err)
+	}
 	defer c.Close()
-
-	if err := c.Load(); err != nil {
+	// 重新加载配置（可能来自 Nacos）
+	bc, err = configLoader.LoadBootstrapConfig(c)
+	if err != nil {
 		panic(err)
 	}
-	// 将配置解析到结构体
-	var bc conf.Bootstrap
-	// 解析启动配置
-	if err := c.Scan(&bc); err != nil {
-		panic(err)
-	}
-	// 解析注册中心配置
-	var rc conf.Registry
-	if err := c.Scan(&rc); err != nil {
+	// 加载注册中心配置
+	rc, err := configLoader.LoadRegistryConfig(c)
+	if err != nil {
 		panic(err)
 	}
 	// 初始化链路追踪
-	err := setTracerProvider(bc.Trace.Endpoint)
+	err = setTracerProvider(bc.Trace.Endpoint)
 	if err != nil {
 		panic(err)
 	}
 
 	// 通过 wireApp 函数（由 Wire 生成）构建应用实例，并获取清理函数
-	app, cleanup, err := wireApp(bc.Server, bc.Data, bc.Auth, bc.Service, &rc, logger)
+	app, cleanup, err := wireApp(bc.Server, bc.Data, bc.Auth, bc.Service, rc, logger)
 	if err != nil {
 		panic(err)
 	}
