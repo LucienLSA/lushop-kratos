@@ -21,3 +21,19 @@ func (s *LushopService) Captcha(ctx context.Context, req *emptypb.Empty) (*v1.Ca
 func (s *LushopService) Detail(ctx context.Context, req *emptypb.Empty) (*v1.UserDetailResponse, error) {
 	return s.uc.UserDetailByID(ctx)
 }
+
+func (s *LushopService) Update(ctx context.Context, req *v1.UpdateReq) (*v1.UserDetailResponse, error) {
+	return s.uc.UpdateUser(ctx, req)
+}
+
+func (s *LushopService) UpdatePwd(ctx context.Context, req *v1.UpdatePwdReq) (*v1.UpdatePwdReply, error) {
+	return s.uc.UpdatePassword(ctx, req)
+}
+
+func (s *LushopService) Logout(ctx context.Context, req *emptypb.Empty) (*v1.LogoutReply, error) {
+	return s.uc.Logout(ctx)
+}
+
+func (s *LushopService) List(ctx context.Context, req *v1.ListUsersReq) (*v1.ListUsersReply, error) {
+	return s.uc.ListUsers(ctx, req)
+}

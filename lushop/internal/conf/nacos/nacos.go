@@ -39,6 +39,8 @@ func (loader *NacosConfigLoader) LoadConfigWithNacos(bc *conf.Bootstrap, flagcon
 			LogDir:              "/tmp/nacos/log",
 			CacheDir:            "/tmp/nacos/cache",
 			LogLevel:            "info",
+			Username:            "nacos",
+			Password:            "nacos",
 		}
 
 		serverConfigs := []constant.ServerConfig{

@@ -7,6 +7,39 @@ info:
     description: The Shop service definition.
     version: 0.0.1
 paths:
+    /api/admin/users:
+        get:
+            tags:
+                - Lushop
+            description: 添加管理员接口
+            operationId: Lushop_ListUsers
+            parameters:
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: keyword
+                  in: query
+                  schema:
+                    type: string
+                - name: role
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/lushop.lushop.v1.ListUsersReply'
     /api/user/captcha:
         post:
             tags:
@@ -71,6 +104,53 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/lushop.lushop.v1.RegisterReply'
+    /api/user/update:
+        put:
+            tags:
+                - Lushop
+            operationId: Lushop_Update
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/lushop.lushop.v1.UpdateReq'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/lushop.lushop.v1.UserDetailResponse'
+    /api/user/update_pwd:
+        put:
+            tags:
+                - Lushop
+            operationId: Lushop_UpdatePwd
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/lushop.lushop.v1.UpdatePwdReq'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/lushop.lushop.v1.UpdatePwdReply'
+        delete:
+            tags:
+                - Lushop
+            operationId: Lushop_Logout
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/lushop.lushop.v1.LogoutReply'
 components:
     schemas:
         lushop.lushop.v1.CaptchaReply:
@@ -82,6 +162,22 @@ components:
                     type: string
                 ans:
                     type: string
+        lushop.lushop.v1.ListUsersReply:
+            type: object
+            properties:
+                users:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/lushop.lushop.v1.UserDetailResponse'
+                total:
+                    type: integer
+                    format: int32
+                page:
+                    type: integer
+                    format: int32
+                pageSize:
+                    type: integer
+                    format: int32
         lushop.lushop.v1.LoginReq:
             type: object
             properties:
@@ -94,6 +190,11 @@ components:
                 captchaId:
                     type: string
             description: 用户登录请求
+        lushop.lushop.v1.LogoutReply:
+            type: object
+            properties:
+                success:
+                    type: boolean
         lushop.lushop.v1.RegisterReply:
             type: object
             properties:
@@ -117,7 +218,32 @@ components:
                     type: string
                 password:
                     type: string
+                captcha:
+                    type: string
+                captchaId:
+                    type: string
             description: 用户注册请求
+        lushop.lushop.v1.UpdatePwdReply:
+            type: object
+            properties:
+                success:
+                    type: boolean
+        lushop.lushop.v1.UpdatePwdReq:
+            type: object
+            properties:
+                oldPassword:
+                    type: string
+                newPassword:
+                    type: string
+        lushop.lushop.v1.UpdateReq:
+            type: object
+            properties:
+                nickName:
+                    type: string
+                birthday:
+                    type: string
+                gender:
+                    type: string
         lushop.lushop.v1.UserDetailResponse:
             type: object
             properties:

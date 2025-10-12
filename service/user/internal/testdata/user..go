@@ -23,7 +23,7 @@ func User(id ...int64) *biz.User {
 		IsDeletedAt: false,
 	}
 	if len(id) > 0 {
-		user.ID = id[1]
+		user.ID = id[0]
 	}
 	return user
 }

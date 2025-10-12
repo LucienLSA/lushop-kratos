@@ -1,6 +1,7 @@
 package data
 
 import (
+	"context"
 	"os"
 	"time"
 	"user/internal/conf"
@@ -32,6 +33,14 @@ func NewData(c *conf.Data, logger log.Logger, db *gorm.DB, rdb *redis.Client) (*
 		log.NewHelper(logger).Info("closing the data resources")
 	}
 	return &Data{db: db, rdb: rdb}, cleanup, nil
+}
+
+// CleanTestData 清理测试数据
+func (d *Data) CleanTestData() error {
+	if d.db != nil {
+		return d.db.Exec("DELETE FROM user WHERE mobile LIKE '1380388%'").Error
+	}
+	return nil
 }
 
 // NewDB .
@@ -73,8 +82,11 @@ func NewRedis(c *conf.Data) *redis.Client {
 		ReadTimeout:  c.Redis.ReadTimeout.AsDuration(),
 	})
 	rdb.AddHook(redisotel.TracingHook{})
-	if err := rdb.Close(); err != nil {
-		log.Error(err)
+	// 测试连接是否正常
+	ctx := context.Background()
+	if err := rdb.Ping(ctx).Err(); err != nil {
+		log.Errorf("Failed to connect to Redis: %v", err)
+		// 不要关闭连接，让调用者处理错误
 	}
 	return rdb
 }

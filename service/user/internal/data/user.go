@@ -199,9 +199,15 @@ func (r *userRepo) UpdateUser(ctx context.Context, user *biz.User) (bool, error)
 
 // CheckPassword .
 func (r *userRepo) CheckPassword(ctx context.Context, psd, encryptedPsd string) (bool, error) {
+	// 如果密码或加密密码为空，直接返回 false
+	if psd == "" || encryptedPsd == "" {
+		return false, nil
+	}
+	
 	err := bcrypt.CompareHashAndPassword([]byte(encryptedPsd), []byte(psd))
 	if err != nil {
-		return false, errors.InternalServer("USER_PWD_ERROR", "user check pwd error")
+		// 密码不匹配时返回 false，而不是错误
+		return false, nil
 	}
 	return true, nil
 }

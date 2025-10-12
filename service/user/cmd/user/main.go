@@ -96,8 +96,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	// 使用 Nacos 或本地配置加载完整配置
-	c, err := configLoader.LoadConfigWithNacos(bc, flagconf)
+	// 使用 Nacos 优先的配置加载策略
+	c, err := configLoader.LoadConfigWithNacosPriority(bc, flagconf)
 	if err != nil {
 		panic(err)
 	}

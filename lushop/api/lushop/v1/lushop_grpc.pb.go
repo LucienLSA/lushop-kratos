@@ -20,10 +20,14 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Lushop_Register_FullMethodName = "/lushop.lushop.v1.Lushop/Register"
-	Lushop_Login_FullMethodName    = "/lushop.lushop.v1.Lushop/Login"
-	Lushop_Captcha_FullMethodName  = "/lushop.lushop.v1.Lushop/Captcha"
-	Lushop_Detail_FullMethodName   = "/lushop.lushop.v1.Lushop/Detail"
+	Lushop_Register_FullMethodName  = "/lushop.lushop.v1.Lushop/Register"
+	Lushop_Login_FullMethodName     = "/lushop.lushop.v1.Lushop/Login"
+	Lushop_Captcha_FullMethodName   = "/lushop.lushop.v1.Lushop/Captcha"
+	Lushop_Detail_FullMethodName    = "/lushop.lushop.v1.Lushop/Detail"
+	Lushop_Update_FullMethodName    = "/lushop.lushop.v1.Lushop/Update"
+	Lushop_UpdatePwd_FullMethodName = "/lushop.lushop.v1.Lushop/UpdatePwd"
+	Lushop_Logout_FullMethodName    = "/lushop.lushop.v1.Lushop/Logout"
+	Lushop_ListUsers_FullMethodName = "/lushop.lushop.v1.Lushop/ListUsers"
 )
 
 // LushopClient is the client API for Lushop service.
@@ -36,6 +40,11 @@ type LushopClient interface {
 	Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*RegisterReply, error)
 	Captcha(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*CaptchaReply, error)
 	Detail(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*UserDetailResponse, error)
+	Update(ctx context.Context, in *UpdateReq, opts ...grpc.CallOption) (*UserDetailResponse, error)
+	UpdatePwd(ctx context.Context, in *UpdatePwdReq, opts ...grpc.CallOption) (*UpdatePwdReply, error)
+	Logout(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*LogoutReply, error)
+	// 添加管理员接口
+	ListUsers(ctx context.Context, in *ListUsersReq, opts ...grpc.CallOption) (*ListUsersReply, error)
 }
 
 type lushopClient struct {
@@ -86,6 +95,46 @@ func (c *lushopClient) Detail(ctx context.Context, in *emptypb.Empty, opts ...gr
 	return out, nil
 }
 
+func (c *lushopClient) Update(ctx context.Context, in *UpdateReq, opts ...grpc.CallOption) (*UserDetailResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UserDetailResponse)
+	err := c.cc.Invoke(ctx, Lushop_Update_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *lushopClient) UpdatePwd(ctx context.Context, in *UpdatePwdReq, opts ...grpc.CallOption) (*UpdatePwdReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdatePwdReply)
+	err := c.cc.Invoke(ctx, Lushop_UpdatePwd_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *lushopClient) Logout(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*LogoutReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LogoutReply)
+	err := c.cc.Invoke(ctx, Lushop_Logout_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *lushopClient) ListUsers(ctx context.Context, in *ListUsersReq, opts ...grpc.CallOption) (*ListUsersReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListUsersReply)
+	err := c.cc.Invoke(ctx, Lushop_ListUsers_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // LushopServer is the server API for Lushop service.
 // All implementations must embed UnimplementedLushopServer
 // for forward compatibility.
@@ -96,6 +145,11 @@ type LushopServer interface {
 	Login(context.Context, *LoginReq) (*RegisterReply, error)
 	Captcha(context.Context, *emptypb.Empty) (*CaptchaReply, error)
 	Detail(context.Context, *emptypb.Empty) (*UserDetailResponse, error)
+	Update(context.Context, *UpdateReq) (*UserDetailResponse, error)
+	UpdatePwd(context.Context, *UpdatePwdReq) (*UpdatePwdReply, error)
+	Logout(context.Context, *emptypb.Empty) (*LogoutReply, error)
+	// 添加管理员接口
+	ListUsers(context.Context, *ListUsersReq) (*ListUsersReply, error)
 	mustEmbedUnimplementedLushopServer()
 }
 
@@ -117,6 +171,18 @@ func (UnimplementedLushopServer) Captcha(context.Context, *emptypb.Empty) (*Capt
 }
 func (UnimplementedLushopServer) Detail(context.Context, *emptypb.Empty) (*UserDetailResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Detail not implemented")
+}
+func (UnimplementedLushopServer) Update(context.Context, *UpdateReq) (*UserDetailResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
+}
+func (UnimplementedLushopServer) UpdatePwd(context.Context, *UpdatePwdReq) (*UpdatePwdReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdatePwd not implemented")
+}
+func (UnimplementedLushopServer) Logout(context.Context, *emptypb.Empty) (*LogoutReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Logout not implemented")
+}
+func (UnimplementedLushopServer) ListUsers(context.Context, *ListUsersReq) (*ListUsersReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListUsers not implemented")
 }
 func (UnimplementedLushopServer) mustEmbedUnimplementedLushopServer() {}
 func (UnimplementedLushopServer) testEmbeddedByValue()                {}
@@ -211,6 +277,78 @@ func _Lushop_Detail_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Lushop_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LushopServer).Update(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Lushop_Update_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LushopServer).Update(ctx, req.(*UpdateReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Lushop_UpdatePwd_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdatePwdReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LushopServer).UpdatePwd(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Lushop_UpdatePwd_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LushopServer).UpdatePwd(ctx, req.(*UpdatePwdReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Lushop_Logout_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LushopServer).Logout(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Lushop_Logout_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LushopServer).Logout(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Lushop_ListUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListUsersReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LushopServer).ListUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Lushop_ListUsers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LushopServer).ListUsers(ctx, req.(*ListUsersReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Lushop_ServiceDesc is the grpc.ServiceDesc for Lushop service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -233,6 +371,22 @@ var Lushop_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Detail",
 			Handler:    _Lushop_Detail_Handler,
+		},
+		{
+			MethodName: "Update",
+			Handler:    _Lushop_Update_Handler,
+		},
+		{
+			MethodName: "UpdatePwd",
+			Handler:    _Lushop_UpdatePwd_Handler,
+		},
+		{
+			MethodName: "Logout",
+			Handler:    _Lushop_Logout_Handler,
+		},
+		{
+			MethodName: "ListUsers",
+			Handler:    _Lushop_ListUsers_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

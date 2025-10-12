@@ -17,6 +17,7 @@ data:
   redis:
     addr: 127.0.0.1:6379
     dial_timeout: 1s
+    password: "123456"
     read_timeout: 0.5s
     write_timeout: 0.5s
 trace:
