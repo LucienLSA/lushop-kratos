@@ -84,6 +84,7 @@ func (u *UserService) UpdateUser(ctx context.Context, req *v1.UpdateUserInfo) (*
 		Gender:   req.Gender,
 		Birthday: &birthDay,
 		NickName: req.NickName,
+		Password: req.Password,
 	})
 	if err != nil {
 		return nil, err

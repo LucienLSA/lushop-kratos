@@ -167,8 +167,9 @@ type RegisterReply struct {
 	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Mobile        string                 `protobuf:"bytes,3,opt,name=mobile,proto3" json:"mobile,omitempty"`
 	Username      string                 `protobuf:"bytes,4,opt,name=username,proto3" json:"username,omitempty"`
-	Token         string                 `protobuf:"bytes,5,opt,name=token,proto3" json:"token,omitempty"`
-	ExpiredAt     int64                  `protobuf:"varint,6,opt,name=expiredAt,proto3" json:"expiredAt,omitempty"`
+	AccessToken   string                 `protobuf:"bytes,5,opt,name=accessToken,proto3" json:"accessToken,omitempty"`
+	RefreshToken  string                 `protobuf:"bytes,6,opt,name=refreshToken,proto3" json:"refreshToken,omitempty"`
+	ExpiredAt     int64                  `protobuf:"varint,7,opt,name=expiredAt,proto3" json:"expiredAt,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -224,9 +225,16 @@ func (x *RegisterReply) GetUsername() string {
 	return ""
 }
 
-func (x *RegisterReply) GetToken() string {
+func (x *RegisterReply) GetAccessToken() string {
 	if x != nil {
-		return x.Token
+		return x.AccessToken
+	}
+	return ""
+}
+
+func (x *RegisterReply) GetRefreshToken() string {
+	if x != nil {
+		return x.RefreshToken
 	}
 	return ""
 }
@@ -307,6 +315,149 @@ func (x *LoginReq) GetCaptchaId() string {
 	return ""
 }
 
+// 发送手机验证码
+type SendSmsReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Mobile        string                 `protobuf:"bytes,1,opt,name=mobile,proto3" json:"mobile,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SendSmsReq) Reset() {
+	*x = SendSmsReq{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SendSmsReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SendSmsReq) ProtoMessage() {}
+
+func (x *SendSmsReq) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SendSmsReq.ProtoReflect.Descriptor instead.
+func (*SendSmsReq) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *SendSmsReq) GetMobile() string {
+	if x != nil {
+		return x.Mobile
+	}
+	return ""
+}
+
+// 发送手机验证码响应
+type SendSmsReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SendSmsReply) Reset() {
+	*x = SendSmsReply{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SendSmsReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SendSmsReply) ProtoMessage() {}
+
+func (x *SendSmsReply) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SendSmsReply.ProtoReflect.Descriptor instead.
+func (*SendSmsReply) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *SendSmsReply) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+// 验证手机验证码
+type VerifySmsReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Mobile        string                 `protobuf:"bytes,1,opt,name=mobile,proto3" json:"mobile,omitempty"`
+	SmsCode       string                 `protobuf:"bytes,2,opt,name=smsCode,proto3" json:"smsCode,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *VerifySmsReq) Reset() {
+	*x = VerifySmsReq{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *VerifySmsReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*VerifySmsReq) ProtoMessage() {}
+
+func (x *VerifySmsReq) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use VerifySmsReq.ProtoReflect.Descriptor instead.
+func (*VerifySmsReq) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *VerifySmsReq) GetMobile() string {
+	if x != nil {
+		return x.Mobile
+	}
+	return ""
+}
+
+func (x *VerifySmsReq) GetSmsCode() string {
+	if x != nil {
+		return x.SmsCode
+	}
+	return ""
+}
+
 // user Detail returned
 type UserDetailResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -322,7 +473,7 @@ type UserDetailResponse struct {
 
 func (x *UserDetailResponse) Reset() {
 	*x = UserDetailResponse{}
-	mi := &file_lushop_v1_lushop_proto_msgTypes[4]
+	mi := &file_lushop_v1_lushop_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -334,7 +485,7 @@ func (x *UserDetailResponse) String() string {
 func (*UserDetailResponse) ProtoMessage() {}
 
 func (x *UserDetailResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_lushop_v1_lushop_proto_msgTypes[4]
+	mi := &file_lushop_v1_lushop_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -347,7 +498,7 @@ func (x *UserDetailResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserDetailResponse.ProtoReflect.Descriptor instead.
 func (*UserDetailResponse) Descriptor() ([]byte, []int) {
-	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{4}
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *UserDetailResponse) GetId() int64 {
@@ -403,7 +554,7 @@ type CaptchaReply struct {
 
 func (x *CaptchaReply) Reset() {
 	*x = CaptchaReply{}
-	mi := &file_lushop_v1_lushop_proto_msgTypes[5]
+	mi := &file_lushop_v1_lushop_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -415,7 +566,7 @@ func (x *CaptchaReply) String() string {
 func (*CaptchaReply) ProtoMessage() {}
 
 func (x *CaptchaReply) ProtoReflect() protoreflect.Message {
-	mi := &file_lushop_v1_lushop_proto_msgTypes[5]
+	mi := &file_lushop_v1_lushop_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -428,7 +579,7 @@ func (x *CaptchaReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CaptchaReply.ProtoReflect.Descriptor instead.
 func (*CaptchaReply) Descriptor() ([]byte, []int) {
-	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{5}
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *CaptchaReply) GetCaptchaId() string {
@@ -455,7 +606,7 @@ func (x *CaptchaReply) GetAns() string {
 type UpdateReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	NickName      string                 `protobuf:"bytes,1,opt,name=nickName,proto3" json:"nickName,omitempty"`
-	Birthday      int64                  `protobuf:"varint,2,opt,name=birthday,proto3" json:"birthday,omitempty"`
+	Birthday      string                 `protobuf:"bytes,2,opt,name=birthday,proto3" json:"birthday,omitempty"`
 	Gender        string                 `protobuf:"bytes,3,opt,name=gender,proto3" json:"gender,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -463,7 +614,7 @@ type UpdateReq struct {
 
 func (x *UpdateReq) Reset() {
 	*x = UpdateReq{}
-	mi := &file_lushop_v1_lushop_proto_msgTypes[6]
+	mi := &file_lushop_v1_lushop_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -475,7 +626,7 @@ func (x *UpdateReq) String() string {
 func (*UpdateReq) ProtoMessage() {}
 
 func (x *UpdateReq) ProtoReflect() protoreflect.Message {
-	mi := &file_lushop_v1_lushop_proto_msgTypes[6]
+	mi := &file_lushop_v1_lushop_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -488,7 +639,7 @@ func (x *UpdateReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateReq.ProtoReflect.Descriptor instead.
 func (*UpdateReq) Descriptor() ([]byte, []int) {
-	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{6}
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *UpdateReq) GetNickName() string {
@@ -498,11 +649,11 @@ func (x *UpdateReq) GetNickName() string {
 	return ""
 }
 
-func (x *UpdateReq) GetBirthday() int64 {
+func (x *UpdateReq) GetBirthday() string {
 	if x != nil {
 		return x.Birthday
 	}
-	return 0
+	return ""
 }
 
 func (x *UpdateReq) GetGender() string {
@@ -522,7 +673,7 @@ type UpdatePwdReq struct {
 
 func (x *UpdatePwdReq) Reset() {
 	*x = UpdatePwdReq{}
-	mi := &file_lushop_v1_lushop_proto_msgTypes[7]
+	mi := &file_lushop_v1_lushop_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -534,7 +685,7 @@ func (x *UpdatePwdReq) String() string {
 func (*UpdatePwdReq) ProtoMessage() {}
 
 func (x *UpdatePwdReq) ProtoReflect() protoreflect.Message {
-	mi := &file_lushop_v1_lushop_proto_msgTypes[7]
+	mi := &file_lushop_v1_lushop_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -547,7 +698,7 @@ func (x *UpdatePwdReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdatePwdReq.ProtoReflect.Descriptor instead.
 func (*UpdatePwdReq) Descriptor() ([]byte, []int) {
-	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{7}
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *UpdatePwdReq) GetOldPassword() string {
@@ -573,7 +724,7 @@ type UpdatePwdReply struct {
 
 func (x *UpdatePwdReply) Reset() {
 	*x = UpdatePwdReply{}
-	mi := &file_lushop_v1_lushop_proto_msgTypes[8]
+	mi := &file_lushop_v1_lushop_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -585,7 +736,7 @@ func (x *UpdatePwdReply) String() string {
 func (*UpdatePwdReply) ProtoMessage() {}
 
 func (x *UpdatePwdReply) ProtoReflect() protoreflect.Message {
-	mi := &file_lushop_v1_lushop_proto_msgTypes[8]
+	mi := &file_lushop_v1_lushop_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -598,7 +749,7 @@ func (x *UpdatePwdReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdatePwdReply.ProtoReflect.Descriptor instead.
 func (*UpdatePwdReply) Descriptor() ([]byte, []int) {
-	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{8}
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *UpdatePwdReply) GetSuccess() bool {
@@ -606,6 +757,102 @@ func (x *UpdatePwdReply) GetSuccess() bool {
 		return x.Success
 	}
 	return false
+}
+
+type RefreshTokenReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	RefreshToken  string                 `protobuf:"bytes,1,opt,name=refreshToken,proto3" json:"refreshToken,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RefreshTokenReq) Reset() {
+	*x = RefreshTokenReq{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RefreshTokenReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RefreshTokenReq) ProtoMessage() {}
+
+func (x *RefreshTokenReq) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RefreshTokenReq.ProtoReflect.Descriptor instead.
+func (*RefreshTokenReq) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *RefreshTokenReq) GetRefreshToken() string {
+	if x != nil {
+		return x.RefreshToken
+	}
+	return ""
+}
+
+type RefreshTokenReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AccessToken   string                 `protobuf:"bytes,1,opt,name=accessToken,proto3" json:"accessToken,omitempty"`
+	RefreshToken  string                 `protobuf:"bytes,2,opt,name=refreshToken,proto3" json:"refreshToken,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RefreshTokenReply) Reset() {
+	*x = RefreshTokenReply{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RefreshTokenReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RefreshTokenReply) ProtoMessage() {}
+
+func (x *RefreshTokenReply) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RefreshTokenReply.ProtoReflect.Descriptor instead.
+func (*RefreshTokenReply) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *RefreshTokenReply) GetAccessToken() string {
+	if x != nil {
+		return x.AccessToken
+	}
+	return ""
+}
+
+func (x *RefreshTokenReply) GetRefreshToken() string {
+	if x != nil {
+		return x.RefreshToken
+	}
+	return ""
 }
 
 type LogoutReply struct {
@@ -617,7 +864,7 @@ type LogoutReply struct {
 
 func (x *LogoutReply) Reset() {
 	*x = LogoutReply{}
-	mi := &file_lushop_v1_lushop_proto_msgTypes[9]
+	mi := &file_lushop_v1_lushop_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -629,7 +876,7 @@ func (x *LogoutReply) String() string {
 func (*LogoutReply) ProtoMessage() {}
 
 func (x *LogoutReply) ProtoReflect() protoreflect.Message {
-	mi := &file_lushop_v1_lushop_proto_msgTypes[9]
+	mi := &file_lushop_v1_lushop_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -642,7 +889,7 @@ func (x *LogoutReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LogoutReply.ProtoReflect.Descriptor instead.
 func (*LogoutReply) Descriptor() ([]byte, []int) {
-	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{9}
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *LogoutReply) GetSuccess() bool {
@@ -664,7 +911,7 @@ type ListUsersReq struct {
 
 func (x *ListUsersReq) Reset() {
 	*x = ListUsersReq{}
-	mi := &file_lushop_v1_lushop_proto_msgTypes[10]
+	mi := &file_lushop_v1_lushop_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -676,7 +923,7 @@ func (x *ListUsersReq) String() string {
 func (*ListUsersReq) ProtoMessage() {}
 
 func (x *ListUsersReq) ProtoReflect() protoreflect.Message {
-	mi := &file_lushop_v1_lushop_proto_msgTypes[10]
+	mi := &file_lushop_v1_lushop_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -689,7 +936,7 @@ func (x *ListUsersReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListUsersReq.ProtoReflect.Descriptor instead.
 func (*ListUsersReq) Descriptor() ([]byte, []int) {
-	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{10}
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *ListUsersReq) GetPage() int32 {
@@ -732,7 +979,7 @@ type ListUsersReply struct {
 
 func (x *ListUsersReply) Reset() {
 	*x = ListUsersReply{}
-	mi := &file_lushop_v1_lushop_proto_msgTypes[11]
+	mi := &file_lushop_v1_lushop_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -744,7 +991,7 @@ func (x *ListUsersReply) String() string {
 func (*ListUsersReply) ProtoMessage() {}
 
 func (x *ListUsersReply) ProtoReflect() protoreflect.Message {
-	mi := &file_lushop_v1_lushop_proto_msgTypes[11]
+	mi := &file_lushop_v1_lushop_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -757,7 +1004,7 @@ func (x *ListUsersReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListUsersReply.ProtoReflect.Descriptor instead.
 func (*ListUsersReply) Descriptor() ([]byte, []int) {
-	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{11}
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *ListUsersReply) GetUsers() []*UserDetailResponse {
@@ -788,6 +1035,94 @@ func (x *ListUsersReply) GetPageSize() int32 {
 	return 0
 }
 
+type KickUserReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *KickUserReq) Reset() {
+	*x = KickUserReq{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *KickUserReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*KickUserReq) ProtoMessage() {}
+
+func (x *KickUserReq) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use KickUserReq.ProtoReflect.Descriptor instead.
+func (*KickUserReq) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *KickUserReq) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+type KickUserReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *KickUserReply) Reset() {
+	*x = KickUserReply{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *KickUserReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*KickUserReply) ProtoMessage() {}
+
+func (x *KickUserReply) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use KickUserReply.ProtoReflect.Descriptor instead.
+func (*KickUserReply) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *KickUserReply) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
 var File_lushop_v1_lushop_proto protoreflect.FileDescriptor
 
 const file_lushop_v1_lushop_proto_rawDesc = "" +
@@ -802,18 +1137,27 @@ const file_lushop_v1_lushop_proto_rawDesc = "" +
 	"\busername\x18\x02 \x01(\tB\t\xfaB\x06r\x04\x10\x03\x18\x0fR\busername\x12#\n" +
 	"\bpassword\x18\x03 \x01(\tB\a\xfaB\x04r\x02\x10\x05R\bpassword\x12#\n" +
 	"\acaptcha\x18\x04 \x01(\tB\t\xfaB\x06r\x04\x10\x04\x18\x06R\acaptcha\x12%\n" +
-	"\tcaptchaId\x18\x05 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\tcaptchaId\"\x87\x01\n" +
+	"\tcaptchaId\x18\x05 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\tcaptchaId\"\xb7\x01\n" +
 	"\rRegisterReply\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x16\n" +
 	"\x06mobile\x18\x03 \x01(\tR\x06mobile\x12\x1a\n" +
-	"\busername\x18\x04 \x01(\tR\busername\x12\x14\n" +
-	"\x05token\x18\x05 \x01(\tR\x05token\x12\x1c\n" +
-	"\texpiredAt\x18\x06 \x01(\x03R\texpiredAt\"\x9d\x01\n" +
+	"\busername\x18\x04 \x01(\tR\busername\x12 \n" +
+	"\vaccessToken\x18\x05 \x01(\tR\vaccessToken\x12\"\n" +
+	"\frefreshToken\x18\x06 \x01(\tR\frefreshToken\x12\x1c\n" +
+	"\texpiredAt\x18\a \x01(\x03R\texpiredAt\"\x9d\x01\n" +
 	"\bLoginReq\x12 \n" +
 	"\x06mobile\x18\x01 \x01(\tB\b\xfaB\x05r\x03\x98\x01\vR\x06mobile\x12#\n" +
 	"\bpassword\x18\x02 \x01(\tB\a\xfaB\x04r\x02\x10\x05R\bpassword\x12#\n" +
 	"\acaptcha\x18\x03 \x01(\tB\t\xfaB\x06r\x04\x10\x04\x18\x06R\acaptcha\x12%\n" +
-	"\tcaptchaId\x18\x04 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\tcaptchaId\"\xa0\x01\n" +
+	"\tcaptchaId\x18\x04 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\tcaptchaId\".\n" +
+	"\n" +
+	"SendSmsReq\x12 \n" +
+	"\x06mobile\x18\x01 \x01(\tB\b\xfaB\x05r\x03\x98\x01\vR\x06mobile\"(\n" +
+	"\fSendSmsReply\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"U\n" +
+	"\fVerifySmsReq\x12 \n" +
+	"\x06mobile\x18\x01 \x01(\tB\b\xfaB\x05r\x03\x98\x01\vR\x06mobile\x12#\n" +
+	"\asmsCode\x18\x02 \x01(\tB\t\xfaB\x06r\x04\x10\x06\x18\x06R\asmsCode\"\xa0\x01\n" +
 	"\x12UserDetailResponse\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x16\n" +
 	"\x06mobile\x18\x02 \x01(\tR\x06mobile\x12\x1a\n" +
@@ -827,13 +1171,18 @@ const file_lushop_v1_lushop_proto_rawDesc = "" +
 	"\x03ans\x18\x03 \x01(\tR\x03ans\"[\n" +
 	"\tUpdateReq\x12\x1a\n" +
 	"\bnickName\x18\x01 \x01(\tR\bnickName\x12\x1a\n" +
-	"\bbirthday\x18\x02 \x01(\x03R\bbirthday\x12\x16\n" +
+	"\bbirthday\x18\x02 \x01(\tR\bbirthday\x12\x16\n" +
 	"\x06gender\x18\x03 \x01(\tR\x06gender\"R\n" +
 	"\fUpdatePwdReq\x12 \n" +
 	"\voldPassword\x18\x01 \x01(\tR\voldPassword\x12 \n" +
 	"\vnewPassword\x18\x02 \x01(\tR\vnewPassword\"*\n" +
 	"\x0eUpdatePwdReply\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\"'\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"5\n" +
+	"\x0fRefreshTokenReq\x12\"\n" +
+	"\frefreshToken\x18\x01 \x01(\tR\frefreshToken\"Y\n" +
+	"\x11RefreshTokenReply\x12 \n" +
+	"\vaccessToken\x18\x01 \x01(\tR\vaccessToken\x12\"\n" +
+	"\frefreshToken\x18\x02 \x01(\tR\frefreshToken\"'\n" +
 	"\vLogoutReply\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\"m\n" +
 	"\fListUsersReq\x12\x12\n" +
@@ -845,16 +1194,24 @@ const file_lushop_v1_lushop_proto_rawDesc = "" +
 	"\x05users\x18\x01 \x03(\v2$.lushop.lushop.v1.UserDetailResponseR\x05users\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x05R\x05total\x12\x12\n" +
 	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x1b\n" +
-	"\tpage_size\x18\x04 \x01(\x05R\bpageSize2\xba\x06\n" +
+	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\"\x1d\n" +
+	"\vKickUserReq\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\")\n" +
+	"\rKickUserReply\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess2\xf1\t\n" +
 	"\x06Lushop\x12i\n" +
 	"\bRegister\x12\x1d.lushop.lushop.v1.RegisterReq\x1a\x1f.lushop.lushop.v1.RegisterReply\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/api/user/register\x12`\n" +
 	"\x05Login\x12\x1a.lushop.lushop.v1.LoginReq\x1a\x1f.lushop.lushop.v1.RegisterReply\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/api/user/login\x12_\n" +
 	"\aCaptcha\x12\x16.google.protobuf.Empty\x1a\x1e.lushop.lushop.v1.CaptchaReply\"\x1c\x82\xd3\xe4\x93\x02\x16:\x01*\"\x11/api/user/captcha\x12`\n" +
 	"\x06Detail\x12\x16.google.protobuf.Empty\x1a$.lushop.lushop.v1.UserDetailResponse\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/api/user/detail\x12h\n" +
 	"\x06Update\x12\x1b.lushop.lushop.v1.UpdateReq\x1a$.lushop.lushop.v1.UserDetailResponse\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*\x1a\x10/api/user/update\x12n\n" +
-	"\tUpdatePwd\x12\x1e.lushop.lushop.v1.UpdatePwdReq\x1a .lushop.lushop.v1.UpdatePwdReply\"\x1f\x82\xd3\xe4\x93\x02\x19:\x01*\x1a\x14/api/user/update_pwd\x12]\n" +
-	"\x06Logout\x12\x16.google.protobuf.Empty\x1a\x1d.lushop.lushop.v1.LogoutReply\"\x1c\x82\xd3\xe4\x93\x02\x16*\x14/api/user/update_pwd\x12g\n" +
-	"\tListUsers\x12\x1e.lushop.lushop.v1.ListUsersReq\x1a .lushop.lushop.v1.ListUsersReply\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/api/admin/usersB\x19Z\x17lushop/api/lushop/v1;v1b\x06proto3"
+	"\tUpdatePwd\x12\x1e.lushop.lushop.v1.UpdatePwdReq\x1a .lushop.lushop.v1.UpdatePwdReply\"\x1f\x82\xd3\xe4\x93\x02\x19:\x01*\x1a\x14/api/user/update_pwd\x12z\n" +
+	"\fRefreshToken\x12!.lushop.lushop.v1.RefreshTokenReq\x1a#.lushop.lushop.v1.RefreshTokenReply\"\"\x82\xd3\xe4\x93\x02\x1c:\x01*\"\x17/api/user/refresh_token\x12Y\n" +
+	"\x06Logout\x12\x16.google.protobuf.Empty\x1a\x1d.lushop.lushop.v1.LogoutReply\"\x18\x82\xd3\xe4\x93\x02\x12*\x10/api/user/logout\x12f\n" +
+	"\aSendSms\x12\x1c.lushop.lushop.v1.SendSmsReq\x1a\x1e.lushop.lushop.v1.SendSmsReply\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/api/user/send_sms\x12j\n" +
+	"\tVerifySms\x12\x1e.lushop.lushop.v1.VerifySmsReq\x1a\x1f.lushop.lushop.v1.RegisterReply\"\x1c\x82\xd3\xe4\x93\x02\x16\x12\x14/api/user/verify_sms\x12g\n" +
+	"\tListUsers\x12\x1e.lushop.lushop.v1.ListUsersReq\x1a .lushop.lushop.v1.ListUsersReply\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/api/admin/users\x12i\n" +
+	"\bKickUser\x12\x1d.lushop.lushop.v1.KickUserReq\x1a\x1f.lushop.lushop.v1.KickUserReply\"\x1d\x82\xd3\xe4\x93\x02\x17*\x15/api/admin/users/{id}B\x19Z\x17lushop/api/lushop/v1;v1b\x06proto3"
 
 var (
 	file_lushop_v1_lushop_proto_rawDescOnce sync.Once
@@ -868,42 +1225,57 @@ func file_lushop_v1_lushop_proto_rawDescGZIP() []byte {
 	return file_lushop_v1_lushop_proto_rawDescData
 }
 
-var file_lushop_v1_lushop_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_lushop_v1_lushop_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
 var file_lushop_v1_lushop_proto_goTypes = []any{
 	(*CreateUserInfo)(nil),     // 0: lushop.lushop.v1.CreateUserInfo
 	(*RegisterReq)(nil),        // 1: lushop.lushop.v1.RegisterReq
 	(*RegisterReply)(nil),      // 2: lushop.lushop.v1.RegisterReply
 	(*LoginReq)(nil),           // 3: lushop.lushop.v1.LoginReq
-	(*UserDetailResponse)(nil), // 4: lushop.lushop.v1.UserDetailResponse
-	(*CaptchaReply)(nil),       // 5: lushop.lushop.v1.CaptchaReply
-	(*UpdateReq)(nil),          // 6: lushop.lushop.v1.UpdateReq
-	(*UpdatePwdReq)(nil),       // 7: lushop.lushop.v1.UpdatePwdReq
-	(*UpdatePwdReply)(nil),     // 8: lushop.lushop.v1.UpdatePwdReply
-	(*LogoutReply)(nil),        // 9: lushop.lushop.v1.LogoutReply
-	(*ListUsersReq)(nil),       // 10: lushop.lushop.v1.ListUsersReq
-	(*ListUsersReply)(nil),     // 11: lushop.lushop.v1.ListUsersReply
-	(*emptypb.Empty)(nil),      // 12: google.protobuf.Empty
+	(*SendSmsReq)(nil),         // 4: lushop.lushop.v1.SendSmsReq
+	(*SendSmsReply)(nil),       // 5: lushop.lushop.v1.SendSmsReply
+	(*VerifySmsReq)(nil),       // 6: lushop.lushop.v1.VerifySmsReq
+	(*UserDetailResponse)(nil), // 7: lushop.lushop.v1.UserDetailResponse
+	(*CaptchaReply)(nil),       // 8: lushop.lushop.v1.CaptchaReply
+	(*UpdateReq)(nil),          // 9: lushop.lushop.v1.UpdateReq
+	(*UpdatePwdReq)(nil),       // 10: lushop.lushop.v1.UpdatePwdReq
+	(*UpdatePwdReply)(nil),     // 11: lushop.lushop.v1.UpdatePwdReply
+	(*RefreshTokenReq)(nil),    // 12: lushop.lushop.v1.RefreshTokenReq
+	(*RefreshTokenReply)(nil),  // 13: lushop.lushop.v1.RefreshTokenReply
+	(*LogoutReply)(nil),        // 14: lushop.lushop.v1.LogoutReply
+	(*ListUsersReq)(nil),       // 15: lushop.lushop.v1.ListUsersReq
+	(*ListUsersReply)(nil),     // 16: lushop.lushop.v1.ListUsersReply
+	(*KickUserReq)(nil),        // 17: lushop.lushop.v1.KickUserReq
+	(*KickUserReply)(nil),      // 18: lushop.lushop.v1.KickUserReply
+	(*emptypb.Empty)(nil),      // 19: google.protobuf.Empty
 }
 var file_lushop_v1_lushop_proto_depIdxs = []int32{
-	4,  // 0: lushop.lushop.v1.ListUsersReply.users:type_name -> lushop.lushop.v1.UserDetailResponse
+	7,  // 0: lushop.lushop.v1.ListUsersReply.users:type_name -> lushop.lushop.v1.UserDetailResponse
 	1,  // 1: lushop.lushop.v1.Lushop.Register:input_type -> lushop.lushop.v1.RegisterReq
 	3,  // 2: lushop.lushop.v1.Lushop.Login:input_type -> lushop.lushop.v1.LoginReq
-	12, // 3: lushop.lushop.v1.Lushop.Captcha:input_type -> google.protobuf.Empty
-	12, // 4: lushop.lushop.v1.Lushop.Detail:input_type -> google.protobuf.Empty
-	6,  // 5: lushop.lushop.v1.Lushop.Update:input_type -> lushop.lushop.v1.UpdateReq
-	7,  // 6: lushop.lushop.v1.Lushop.UpdatePwd:input_type -> lushop.lushop.v1.UpdatePwdReq
-	12, // 7: lushop.lushop.v1.Lushop.Logout:input_type -> google.protobuf.Empty
-	10, // 8: lushop.lushop.v1.Lushop.ListUsers:input_type -> lushop.lushop.v1.ListUsersReq
-	2,  // 9: lushop.lushop.v1.Lushop.Register:output_type -> lushop.lushop.v1.RegisterReply
-	2,  // 10: lushop.lushop.v1.Lushop.Login:output_type -> lushop.lushop.v1.RegisterReply
-	5,  // 11: lushop.lushop.v1.Lushop.Captcha:output_type -> lushop.lushop.v1.CaptchaReply
-	4,  // 12: lushop.lushop.v1.Lushop.Detail:output_type -> lushop.lushop.v1.UserDetailResponse
-	4,  // 13: lushop.lushop.v1.Lushop.Update:output_type -> lushop.lushop.v1.UserDetailResponse
-	8,  // 14: lushop.lushop.v1.Lushop.UpdatePwd:output_type -> lushop.lushop.v1.UpdatePwdReply
-	9,  // 15: lushop.lushop.v1.Lushop.Logout:output_type -> lushop.lushop.v1.LogoutReply
-	11, // 16: lushop.lushop.v1.Lushop.ListUsers:output_type -> lushop.lushop.v1.ListUsersReply
-	9,  // [9:17] is the sub-list for method output_type
-	1,  // [1:9] is the sub-list for method input_type
+	19, // 3: lushop.lushop.v1.Lushop.Captcha:input_type -> google.protobuf.Empty
+	19, // 4: lushop.lushop.v1.Lushop.Detail:input_type -> google.protobuf.Empty
+	9,  // 5: lushop.lushop.v1.Lushop.Update:input_type -> lushop.lushop.v1.UpdateReq
+	10, // 6: lushop.lushop.v1.Lushop.UpdatePwd:input_type -> lushop.lushop.v1.UpdatePwdReq
+	12, // 7: lushop.lushop.v1.Lushop.RefreshToken:input_type -> lushop.lushop.v1.RefreshTokenReq
+	19, // 8: lushop.lushop.v1.Lushop.Logout:input_type -> google.protobuf.Empty
+	4,  // 9: lushop.lushop.v1.Lushop.SendSms:input_type -> lushop.lushop.v1.SendSmsReq
+	6,  // 10: lushop.lushop.v1.Lushop.VerifySms:input_type -> lushop.lushop.v1.VerifySmsReq
+	15, // 11: lushop.lushop.v1.Lushop.ListUsers:input_type -> lushop.lushop.v1.ListUsersReq
+	17, // 12: lushop.lushop.v1.Lushop.KickUser:input_type -> lushop.lushop.v1.KickUserReq
+	2,  // 13: lushop.lushop.v1.Lushop.Register:output_type -> lushop.lushop.v1.RegisterReply
+	2,  // 14: lushop.lushop.v1.Lushop.Login:output_type -> lushop.lushop.v1.RegisterReply
+	8,  // 15: lushop.lushop.v1.Lushop.Captcha:output_type -> lushop.lushop.v1.CaptchaReply
+	7,  // 16: lushop.lushop.v1.Lushop.Detail:output_type -> lushop.lushop.v1.UserDetailResponse
+	7,  // 17: lushop.lushop.v1.Lushop.Update:output_type -> lushop.lushop.v1.UserDetailResponse
+	11, // 18: lushop.lushop.v1.Lushop.UpdatePwd:output_type -> lushop.lushop.v1.UpdatePwdReply
+	13, // 19: lushop.lushop.v1.Lushop.RefreshToken:output_type -> lushop.lushop.v1.RefreshTokenReply
+	14, // 20: lushop.lushop.v1.Lushop.Logout:output_type -> lushop.lushop.v1.LogoutReply
+	5,  // 21: lushop.lushop.v1.Lushop.SendSms:output_type -> lushop.lushop.v1.SendSmsReply
+	2,  // 22: lushop.lushop.v1.Lushop.VerifySms:output_type -> lushop.lushop.v1.RegisterReply
+	16, // 23: lushop.lushop.v1.Lushop.ListUsers:output_type -> lushop.lushop.v1.ListUsersReply
+	18, // 24: lushop.lushop.v1.Lushop.KickUser:output_type -> lushop.lushop.v1.KickUserReply
+	13, // [13:25] is the sub-list for method output_type
+	1,  // [1:13] is the sub-list for method input_type
 	1,  // [1:1] is the sub-list for extension type_name
 	1,  // [1:1] is the sub-list for extension extendee
 	0,  // [0:1] is the sub-list for field type_name
@@ -920,7 +1292,7 @@ func file_lushop_v1_lushop_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_lushop_v1_lushop_proto_rawDesc), len(file_lushop_v1_lushop_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   12,
+			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

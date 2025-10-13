@@ -121,7 +121,7 @@ func main() {
 	}
 
 	// 通过 wireApp 函数（由 Wire 生成）构建应用实例，并获取清理函数
-	app, cleanup, err := wireApp(bc.Server, bc.Data, bc.Auth, bc.Service, rc, logger)
+	app, cleanup, err := wireApp(bc.Server, bc.Data, bc.Auth, bc.Service, bc.Sms, rc, logger)
 	if err != nil {
 		panic(err)
 	}

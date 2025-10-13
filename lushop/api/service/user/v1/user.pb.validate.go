@@ -725,6 +725,8 @@ func (m *UpdateUserInfo) validate(all bool) error {
 
 	// no validation rules for Gender
 
+	// no validation rules for Password
+
 	// no validation rules for Birthday
 
 	if len(errors) > 0 {

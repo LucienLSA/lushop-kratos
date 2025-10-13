@@ -20,14 +20,18 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Lushop_Register_FullMethodName  = "/lushop.lushop.v1.Lushop/Register"
-	Lushop_Login_FullMethodName     = "/lushop.lushop.v1.Lushop/Login"
-	Lushop_Captcha_FullMethodName   = "/lushop.lushop.v1.Lushop/Captcha"
-	Lushop_Detail_FullMethodName    = "/lushop.lushop.v1.Lushop/Detail"
-	Lushop_Update_FullMethodName    = "/lushop.lushop.v1.Lushop/Update"
-	Lushop_UpdatePwd_FullMethodName = "/lushop.lushop.v1.Lushop/UpdatePwd"
-	Lushop_Logout_FullMethodName    = "/lushop.lushop.v1.Lushop/Logout"
-	Lushop_ListUsers_FullMethodName = "/lushop.lushop.v1.Lushop/ListUsers"
+	Lushop_Register_FullMethodName     = "/lushop.lushop.v1.Lushop/Register"
+	Lushop_Login_FullMethodName        = "/lushop.lushop.v1.Lushop/Login"
+	Lushop_Captcha_FullMethodName      = "/lushop.lushop.v1.Lushop/Captcha"
+	Lushop_Detail_FullMethodName       = "/lushop.lushop.v1.Lushop/Detail"
+	Lushop_Update_FullMethodName       = "/lushop.lushop.v1.Lushop/Update"
+	Lushop_UpdatePwd_FullMethodName    = "/lushop.lushop.v1.Lushop/UpdatePwd"
+	Lushop_RefreshToken_FullMethodName = "/lushop.lushop.v1.Lushop/RefreshToken"
+	Lushop_Logout_FullMethodName       = "/lushop.lushop.v1.Lushop/Logout"
+	Lushop_SendSms_FullMethodName      = "/lushop.lushop.v1.Lushop/SendSms"
+	Lushop_VerifySms_FullMethodName    = "/lushop.lushop.v1.Lushop/VerifySms"
+	Lushop_ListUsers_FullMethodName    = "/lushop.lushop.v1.Lushop/ListUsers"
+	Lushop_KickUser_FullMethodName     = "/lushop.lushop.v1.Lushop/KickUser"
 )
 
 // LushopClient is the client API for Lushop service.
@@ -42,9 +46,13 @@ type LushopClient interface {
 	Detail(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*UserDetailResponse, error)
 	Update(ctx context.Context, in *UpdateReq, opts ...grpc.CallOption) (*UserDetailResponse, error)
 	UpdatePwd(ctx context.Context, in *UpdatePwdReq, opts ...grpc.CallOption) (*UpdatePwdReply, error)
+	RefreshToken(ctx context.Context, in *RefreshTokenReq, opts ...grpc.CallOption) (*RefreshTokenReply, error)
 	Logout(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*LogoutReply, error)
+	SendSms(ctx context.Context, in *SendSmsReq, opts ...grpc.CallOption) (*SendSmsReply, error)
+	VerifySms(ctx context.Context, in *VerifySmsReq, opts ...grpc.CallOption) (*RegisterReply, error)
 	// 添加管理员接口
 	ListUsers(ctx context.Context, in *ListUsersReq, opts ...grpc.CallOption) (*ListUsersReply, error)
+	KickUser(ctx context.Context, in *KickUserReq, opts ...grpc.CallOption) (*KickUserReply, error)
 }
 
 type lushopClient struct {
@@ -115,6 +123,16 @@ func (c *lushopClient) UpdatePwd(ctx context.Context, in *UpdatePwdReq, opts ...
 	return out, nil
 }
 
+func (c *lushopClient) RefreshToken(ctx context.Context, in *RefreshTokenReq, opts ...grpc.CallOption) (*RefreshTokenReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RefreshTokenReply)
+	err := c.cc.Invoke(ctx, Lushop_RefreshToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *lushopClient) Logout(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*LogoutReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(LogoutReply)
@@ -125,10 +143,40 @@ func (c *lushopClient) Logout(ctx context.Context, in *emptypb.Empty, opts ...gr
 	return out, nil
 }
 
+func (c *lushopClient) SendSms(ctx context.Context, in *SendSmsReq, opts ...grpc.CallOption) (*SendSmsReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SendSmsReply)
+	err := c.cc.Invoke(ctx, Lushop_SendSms_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *lushopClient) VerifySms(ctx context.Context, in *VerifySmsReq, opts ...grpc.CallOption) (*RegisterReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RegisterReply)
+	err := c.cc.Invoke(ctx, Lushop_VerifySms_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *lushopClient) ListUsers(ctx context.Context, in *ListUsersReq, opts ...grpc.CallOption) (*ListUsersReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListUsersReply)
 	err := c.cc.Invoke(ctx, Lushop_ListUsers_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *lushopClient) KickUser(ctx context.Context, in *KickUserReq, opts ...grpc.CallOption) (*KickUserReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(KickUserReply)
+	err := c.cc.Invoke(ctx, Lushop_KickUser_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -147,9 +195,13 @@ type LushopServer interface {
 	Detail(context.Context, *emptypb.Empty) (*UserDetailResponse, error)
 	Update(context.Context, *UpdateReq) (*UserDetailResponse, error)
 	UpdatePwd(context.Context, *UpdatePwdReq) (*UpdatePwdReply, error)
+	RefreshToken(context.Context, *RefreshTokenReq) (*RefreshTokenReply, error)
 	Logout(context.Context, *emptypb.Empty) (*LogoutReply, error)
+	SendSms(context.Context, *SendSmsReq) (*SendSmsReply, error)
+	VerifySms(context.Context, *VerifySmsReq) (*RegisterReply, error)
 	// 添加管理员接口
 	ListUsers(context.Context, *ListUsersReq) (*ListUsersReply, error)
+	KickUser(context.Context, *KickUserReq) (*KickUserReply, error)
 	mustEmbedUnimplementedLushopServer()
 }
 
@@ -178,11 +230,23 @@ func (UnimplementedLushopServer) Update(context.Context, *UpdateReq) (*UserDetai
 func (UnimplementedLushopServer) UpdatePwd(context.Context, *UpdatePwdReq) (*UpdatePwdReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatePwd not implemented")
 }
+func (UnimplementedLushopServer) RefreshToken(context.Context, *RefreshTokenReq) (*RefreshTokenReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RefreshToken not implemented")
+}
 func (UnimplementedLushopServer) Logout(context.Context, *emptypb.Empty) (*LogoutReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Logout not implemented")
 }
+func (UnimplementedLushopServer) SendSms(context.Context, *SendSmsReq) (*SendSmsReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendSms not implemented")
+}
+func (UnimplementedLushopServer) VerifySms(context.Context, *VerifySmsReq) (*RegisterReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifySms not implemented")
+}
 func (UnimplementedLushopServer) ListUsers(context.Context, *ListUsersReq) (*ListUsersReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListUsers not implemented")
+}
+func (UnimplementedLushopServer) KickUser(context.Context, *KickUserReq) (*KickUserReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method KickUser not implemented")
 }
 func (UnimplementedLushopServer) mustEmbedUnimplementedLushopServer() {}
 func (UnimplementedLushopServer) testEmbeddedByValue()                {}
@@ -313,6 +377,24 @@ func _Lushop_UpdatePwd_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Lushop_RefreshToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RefreshTokenReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LushopServer).RefreshToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Lushop_RefreshToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LushopServer).RefreshToken(ctx, req.(*RefreshTokenReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Lushop_Logout_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
@@ -331,6 +413,42 @@ func _Lushop_Logout_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Lushop_SendSms_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SendSmsReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LushopServer).SendSms(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Lushop_SendSms_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LushopServer).SendSms(ctx, req.(*SendSmsReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Lushop_VerifySms_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifySmsReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LushopServer).VerifySms(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Lushop_VerifySms_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LushopServer).VerifySms(ctx, req.(*VerifySmsReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Lushop_ListUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListUsersReq)
 	if err := dec(in); err != nil {
@@ -345,6 +463,24 @@ func _Lushop_ListUsers_Handler(srv interface{}, ctx context.Context, dec func(in
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(LushopServer).ListUsers(ctx, req.(*ListUsersReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Lushop_KickUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(KickUserReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LushopServer).KickUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Lushop_KickUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LushopServer).KickUser(ctx, req.(*KickUserReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -381,12 +517,28 @@ var Lushop_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Lushop_UpdatePwd_Handler,
 		},
 		{
+			MethodName: "RefreshToken",
+			Handler:    _Lushop_RefreshToken_Handler,
+		},
+		{
 			MethodName: "Logout",
 			Handler:    _Lushop_Logout_Handler,
 		},
 		{
+			MethodName: "SendSms",
+			Handler:    _Lushop_SendSms_Handler,
+		},
+		{
+			MethodName: "VerifySms",
+			Handler:    _Lushop_VerifySms_Handler,
+		},
+		{
 			MethodName: "ListUsers",
 			Handler:    _Lushop_ListUsers_Handler,
+		},
+		{
+			MethodName: "KickUser",
+			Handler:    _Lushop_KickUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

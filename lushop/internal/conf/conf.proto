@@ -12,6 +12,7 @@ message Bootstrap {
   Auth auth = 4; // 认证鉴权
   Service service = 5; // 服务注册与发现
   Nacos nacos = 6;
+  Sms sms = 7;
 }
 
 message Server {
@@ -45,6 +46,15 @@ message Data {
   }
   Database database = 1;
   Redis redis = 2;
+}
+
+message Sms {
+  string api_key = 1;
+  string api_secret = 2;
+  string sign_name = 3;
+  string template_code = 4;
+  string phone_number = 5;
+  string region_id = 6;
 }
 
 message Service {

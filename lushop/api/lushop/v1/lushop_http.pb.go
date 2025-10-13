@@ -22,23 +22,31 @@ const _ = http.SupportPackageIsVersion1
 
 const OperationLushopCaptcha = "/lushop.lushop.v1.Lushop/Captcha"
 const OperationLushopDetail = "/lushop.lushop.v1.Lushop/Detail"
+const OperationLushopKickUser = "/lushop.lushop.v1.Lushop/KickUser"
 const OperationLushopListUsers = "/lushop.lushop.v1.Lushop/ListUsers"
 const OperationLushopLogin = "/lushop.lushop.v1.Lushop/Login"
 const OperationLushopLogout = "/lushop.lushop.v1.Lushop/Logout"
+const OperationLushopRefreshToken = "/lushop.lushop.v1.Lushop/RefreshToken"
 const OperationLushopRegister = "/lushop.lushop.v1.Lushop/Register"
+const OperationLushopSendSms = "/lushop.lushop.v1.Lushop/SendSms"
 const OperationLushopUpdate = "/lushop.lushop.v1.Lushop/Update"
 const OperationLushopUpdatePwd = "/lushop.lushop.v1.Lushop/UpdatePwd"
+const OperationLushopVerifySms = "/lushop.lushop.v1.Lushop/VerifySms"
 
 type LushopHTTPServer interface {
 	Captcha(context.Context, *emptypb.Empty) (*CaptchaReply, error)
 	Detail(context.Context, *emptypb.Empty) (*UserDetailResponse, error)
+	KickUser(context.Context, *KickUserReq) (*KickUserReply, error)
 	// ListUsers 添加管理员接口
 	ListUsers(context.Context, *ListUsersReq) (*ListUsersReply, error)
 	Login(context.Context, *LoginReq) (*RegisterReply, error)
 	Logout(context.Context, *emptypb.Empty) (*LogoutReply, error)
+	RefreshToken(context.Context, *RefreshTokenReq) (*RefreshTokenReply, error)
 	Register(context.Context, *RegisterReq) (*RegisterReply, error)
+	SendSms(context.Context, *SendSmsReq) (*SendSmsReply, error)
 	Update(context.Context, *UpdateReq) (*UserDetailResponse, error)
 	UpdatePwd(context.Context, *UpdatePwdReq) (*UpdatePwdReply, error)
+	VerifySms(context.Context, *VerifySmsReq) (*RegisterReply, error)
 }
 
 func RegisterLushopHTTPServer(s *http.Server, srv LushopHTTPServer) {
@@ -49,8 +57,12 @@ func RegisterLushopHTTPServer(s *http.Server, srv LushopHTTPServer) {
 	r.GET("/api/user/detail", _Lushop_Detail0_HTTP_Handler(srv))
 	r.PUT("/api/user/update", _Lushop_Update0_HTTP_Handler(srv))
 	r.PUT("/api/user/update_pwd", _Lushop_UpdatePwd0_HTTP_Handler(srv))
-	r.DELETE("/api/user/update_pwd", _Lushop_Logout0_HTTP_Handler(srv))
+	r.POST("/api/user/refresh_token", _Lushop_RefreshToken0_HTTP_Handler(srv))
+	r.DELETE("/api/user/logout", _Lushop_Logout0_HTTP_Handler(srv))
+	r.POST("/api/user/send_sms", _Lushop_SendSms0_HTTP_Handler(srv))
+	r.GET("/api/user/verify_sms", _Lushop_VerifySms0_HTTP_Handler(srv))
 	r.GET("/api/admin/users", _Lushop_ListUsers0_HTTP_Handler(srv))
+	r.DELETE("/api/admin/users/{id}", _Lushop_KickUser0_HTTP_Handler(srv))
 }
 
 func _Lushop_Register0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context) error {
@@ -182,6 +194,28 @@ func _Lushop_UpdatePwd0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context
 	}
 }
 
+func _Lushop_RefreshToken0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in RefreshTokenReq
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationLushopRefreshToken)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.RefreshToken(ctx, req.(*RefreshTokenReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*RefreshTokenReply)
+		return ctx.Result(200, reply)
+	}
+}
+
 func _Lushop_Logout0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in emptypb.Empty
@@ -197,6 +231,47 @@ func _Lushop_Logout0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context) e
 			return err
 		}
 		reply := out.(*LogoutReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _Lushop_SendSms0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in SendSmsReq
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationLushopSendSms)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.SendSms(ctx, req.(*SendSmsReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*SendSmsReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _Lushop_VerifySms0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in VerifySmsReq
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationLushopVerifySms)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.VerifySms(ctx, req.(*VerifySmsReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*RegisterReply)
 		return ctx.Result(200, reply)
 	}
 }
@@ -220,16 +295,42 @@ func _Lushop_ListUsers0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context
 	}
 }
 
+func _Lushop_KickUser0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in KickUserReq
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationLushopKickUser)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.KickUser(ctx, req.(*KickUserReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*KickUserReply)
+		return ctx.Result(200, reply)
+	}
+}
+
 type LushopHTTPClient interface {
 	Captcha(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *CaptchaReply, err error)
 	Detail(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *UserDetailResponse, err error)
+	KickUser(ctx context.Context, req *KickUserReq, opts ...http.CallOption) (rsp *KickUserReply, err error)
 	// ListUsers 添加管理员接口
 	ListUsers(ctx context.Context, req *ListUsersReq, opts ...http.CallOption) (rsp *ListUsersReply, err error)
 	Login(ctx context.Context, req *LoginReq, opts ...http.CallOption) (rsp *RegisterReply, err error)
 	Logout(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *LogoutReply, err error)
+	RefreshToken(ctx context.Context, req *RefreshTokenReq, opts ...http.CallOption) (rsp *RefreshTokenReply, err error)
 	Register(ctx context.Context, req *RegisterReq, opts ...http.CallOption) (rsp *RegisterReply, err error)
+	SendSms(ctx context.Context, req *SendSmsReq, opts ...http.CallOption) (rsp *SendSmsReply, err error)
 	Update(ctx context.Context, req *UpdateReq, opts ...http.CallOption) (rsp *UserDetailResponse, err error)
 	UpdatePwd(ctx context.Context, req *UpdatePwdReq, opts ...http.CallOption) (rsp *UpdatePwdReply, err error)
+	VerifySms(ctx context.Context, req *VerifySmsReq, opts ...http.CallOption) (rsp *RegisterReply, err error)
 }
 
 type LushopHTTPClientImpl struct {
@@ -266,6 +367,19 @@ func (c *LushopHTTPClientImpl) Detail(ctx context.Context, in *emptypb.Empty, op
 	return &out, nil
 }
 
+func (c *LushopHTTPClientImpl) KickUser(ctx context.Context, in *KickUserReq, opts ...http.CallOption) (*KickUserReply, error) {
+	var out KickUserReply
+	pattern := "/api/admin/users/{id}"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationLushopKickUser))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
 // ListUsers 添加管理员接口
 func (c *LushopHTTPClientImpl) ListUsers(ctx context.Context, in *ListUsersReq, opts ...http.CallOption) (*ListUsersReply, error) {
 	var out ListUsersReply
@@ -295,11 +409,24 @@ func (c *LushopHTTPClientImpl) Login(ctx context.Context, in *LoginReq, opts ...
 
 func (c *LushopHTTPClientImpl) Logout(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*LogoutReply, error) {
 	var out LogoutReply
-	pattern := "/api/user/update_pwd"
+	pattern := "/api/user/logout"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationLushopLogout))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *LushopHTTPClientImpl) RefreshToken(ctx context.Context, in *RefreshTokenReq, opts ...http.CallOption) (*RefreshTokenReply, error) {
+	var out RefreshTokenReply
+	pattern := "/api/user/refresh_token"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationLushopRefreshToken))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -311,6 +438,19 @@ func (c *LushopHTTPClientImpl) Register(ctx context.Context, in *RegisterReq, op
 	pattern := "/api/user/register"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationLushopRegister))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *LushopHTTPClientImpl) SendSms(ctx context.Context, in *SendSmsReq, opts ...http.CallOption) (*SendSmsReply, error) {
+	var out SendSmsReply
+	pattern := "/api/user/send_sms"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationLushopSendSms))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
@@ -339,6 +479,19 @@ func (c *LushopHTTPClientImpl) UpdatePwd(ctx context.Context, in *UpdatePwdReq, 
 	opts = append(opts, http.Operation(OperationLushopUpdatePwd))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *LushopHTTPClientImpl) VerifySms(ctx context.Context, in *VerifySmsReq, opts ...http.CallOption) (*RegisterReply, error) {
+	var out RegisterReply
+	pattern := "/api/user/verify_sms"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationLushopVerifySms))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

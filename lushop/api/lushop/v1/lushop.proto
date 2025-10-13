@@ -45,15 +45,37 @@ service Lushop {
       body: "*",  
     };
   }
+  rpc RefreshToken(RefreshTokenReq) returns (RefreshTokenReply) {
+    option (google.api.http) = {
+      post: "/api/user/refresh_token",
+      body: "*",
+    };
+  }
   rpc Logout(google.protobuf.Empty) returns (LogoutReply) {
     option (google.api.http) = {
-      delete: "/api/user/update_pwd",
+      delete: "/api/user/logout",
+    };
+  }
+  rpc SendSms(SendSmsReq) returns (SendSmsReply) {
+    option  (google.api.http) = {
+      post: "/api/user/send_sms",
+      body: "*",
+    };
+  }
+  rpc VerifySms(VerifySmsReq) returns (RegisterReply) {
+    option (google.api.http) = {
+      get: "/api/user/verify_sms",
     };
   }
   // 添加管理员接口
   rpc ListUsers(ListUsersReq) returns (ListUsersReply) {
     option (google.api.http) = {
       get: "/api/admin/users",
+    };
+  }
+  rpc KickUser(KickUserReq) returns (KickUserReply) {
+    option (google.api.http) = {
+      delete: "/api/admin/users/{id}",
     };
   }
 }
@@ -78,8 +100,9 @@ message RegisterReply {
   int64 id = 1;
   string mobile = 3;
   string username = 4;
-  string token = 5;
-  int64 expiredAt = 6;
+  string accessToken = 5;
+  string refreshToken = 6;
+  int64 expiredAt = 7;
 }
 
 // 用户登录请求
@@ -89,6 +112,23 @@ message LoginReq {
   string captcha = 3 [(validate.rules).string = {min_len: 4,max_len:6}];
   string captchaId = 4  [(validate.rules).string ={min_len: 1}];
 }
+
+// 发送手机验证码
+message SendSmsReq {
+  string mobile = 1 [(validate.rules).string.len = 11];
+}
+
+// 发送手机验证码响应
+message SendSmsReply {
+  bool success = 1;
+}
+
+// 验证手机验证码
+message VerifySmsReq {
+  string mobile = 1 [(validate.rules).string.len = 11];
+  string smsCode = 2 [(validate.rules).string = {min_len: 6,max_len:6}];
+}
+
 
 // user Detail returned
 message UserDetailResponse{
@@ -108,7 +148,7 @@ message CaptchaReply{
 
 message UpdateReq {
   string nickName = 1;
-  int64 birthday = 2;
+  string birthday = 2;
   string gender = 3;
 }
 
@@ -119,6 +159,15 @@ message UpdatePwdReq {
 
 message UpdatePwdReply {
   bool success = 1;
+}
+
+message RefreshTokenReq {
+  string refreshToken = 1;
+}
+
+message RefreshTokenReply {
+  string accessToken = 1;
+  string refreshToken = 2;
 }
 
 message LogoutReply {
@@ -137,4 +186,12 @@ message ListUsersReply {
   int32 total = 2;
   int32 page = 3;
   int32 page_size = 4;
+}
+
+message KickUserReq {
+  int64 id = 1;
+}
+
+message KickUserReply {
+  bool success = 1;
 }

@@ -40,6 +40,24 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/lushop.lushop.v1.ListUsersReply'
+    /api/admin/users/{id}:
+        delete:
+            tags:
+                - Lushop
+            operationId: Lushop_KickUser
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/lushop.lushop.v1.KickUserReply'
     /api/user/captcha:
         post:
             tags:
@@ -86,6 +104,36 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/lushop.lushop.v1.RegisterReply'
+    /api/user/logout:
+        delete:
+            tags:
+                - Lushop
+            operationId: Lushop_Logout
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/lushop.lushop.v1.LogoutReply'
+    /api/user/refresh_token:
+        post:
+            tags:
+                - Lushop
+            operationId: Lushop_RefreshToken
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/lushop.lushop.v1.RefreshTokenReq'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/lushop.lushop.v1.RefreshTokenReply'
     /api/user/register:
         post:
             tags:
@@ -104,6 +152,24 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/lushop.lushop.v1.RegisterReply'
+    /api/user/send_sms:
+        post:
+            tags:
+                - Lushop
+            operationId: Lushop_SendSms
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/lushop.lushop.v1.SendSmsReq'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/lushop.lushop.v1.SendSmsReply'
     /api/user/update:
         put:
             tags:
@@ -140,17 +206,27 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/lushop.lushop.v1.UpdatePwdReply'
-        delete:
+    /api/user/verify_sms:
+        get:
             tags:
                 - Lushop
-            operationId: Lushop_Logout
+            operationId: Lushop_VerifySms
+            parameters:
+                - name: mobile
+                  in: query
+                  schema:
+                    type: string
+                - name: smsCode
+                  in: query
+                  schema:
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/lushop.lushop.v1.LogoutReply'
+                                $ref: '#/components/schemas/lushop.lushop.v1.RegisterReply'
 components:
     schemas:
         lushop.lushop.v1.CaptchaReply:
@@ -162,6 +238,11 @@ components:
                     type: string
                 ans:
                     type: string
+        lushop.lushop.v1.KickUserReply:
+            type: object
+            properties:
+                success:
+                    type: boolean
         lushop.lushop.v1.ListUsersReply:
             type: object
             properties:
@@ -195,6 +276,18 @@ components:
             properties:
                 success:
                     type: boolean
+        lushop.lushop.v1.RefreshTokenReply:
+            type: object
+            properties:
+                accessToken:
+                    type: string
+                refreshToken:
+                    type: string
+        lushop.lushop.v1.RefreshTokenReq:
+            type: object
+            properties:
+                refreshToken:
+                    type: string
         lushop.lushop.v1.RegisterReply:
             type: object
             properties:
@@ -204,7 +297,9 @@ components:
                     type: string
                 username:
                     type: string
-                token:
+                accessToken:
+                    type: string
+                refreshToken:
                     type: string
                 expiredAt:
                     type: string
@@ -223,6 +318,18 @@ components:
                 captchaId:
                     type: string
             description: 用户注册请求
+        lushop.lushop.v1.SendSmsReply:
+            type: object
+            properties:
+                success:
+                    type: boolean
+            description: 发送手机验证码响应
+        lushop.lushop.v1.SendSmsReq:
+            type: object
+            properties:
+                mobile:
+                    type: string
+            description: 发送手机验证码
         lushop.lushop.v1.UpdatePwdReply:
             type: object
             properties:

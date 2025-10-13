@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	v1 "lushop/api/lushop/v1"
 	userService "lushop/api/service/user/v1"
 	"lushop/internal/biz"
 
@@ -79,8 +80,8 @@ func (u *userRepo) DeleteToken(ctx context.Context, key string) error {
 }
 
 // StoreRefreshToken 存储refresh token到Redis
-func (u *userRepo) StoreRefreshToken(ctx context.Context, userId int64, deviceId, token string, expiration time.Duration) error {
-	key := fmt.Sprintf("user_refresh_token:%d:%s", userId, deviceId)
+func (u *userRepo) StoreRefreshToken(ctx context.Context, userId int64, token string, expiration time.Duration) error {
+	key := fmt.Sprintf("user_refresh_token:%d", userId)
 	err := u.data.rdb.Set(ctx, key, token, expiration).Err()
 	if err != nil {
 		u.log.Errorf("存储refresh token失败: %v", err)
@@ -90,8 +91,8 @@ func (u *userRepo) StoreRefreshToken(ctx context.Context, userId int64, deviceId
 }
 
 // GetRefreshToken 从Redis获取refresh token
-func (u *userRepo) GetRefreshToken(ctx context.Context, userId int64, deviceId string) (string, error) {
-	key := fmt.Sprintf("user_refresh_token:%d:%s", userId, deviceId)
+func (u *userRepo) GetRefreshToken(ctx context.Context, userId int64) (string, error) {
+	key := fmt.Sprintf("user_refresh_token:%d", userId)
 	token, err := u.data.rdb.Get(ctx, key).Result()
 	if err != nil {
 		u.log.Errorf("获取refresh token失败: %v", err)
@@ -101,8 +102,8 @@ func (u *userRepo) GetRefreshToken(ctx context.Context, userId int64, deviceId s
 }
 
 // DeleteRefreshToken 从Redis删除refresh token
-func (u *userRepo) DeleteRefreshToken(ctx context.Context, userId int64, deviceId string) error {
-	key := fmt.Sprintf("user_refresh_token:%d:%s", userId, deviceId)
+func (u *userRepo) DeleteRefreshToken(ctx context.Context, userId int64) error {
+	key := fmt.Sprintf("user_refresh_token:%d", userId)
 	err := u.data.rdb.Del(ctx, key).Err()
 	if err != nil {
 		u.log.Errorf("删除refresh token失败: %v", err)
@@ -122,6 +123,10 @@ func (u *userRepo) UserByMobile(ctx context.Context, mobile string) (*biz.User, 
 		Mobile:   byMobile.Mobile,
 		ID:       byMobile.Id,
 		NickName: byMobile.NickName,
+		Password: byMobile.Password,
+		Role:     int(byMobile.Role),
+		Birthday: int64(byMobile.Birthday),
+		Gender:   byMobile.Gender,
 	}, nil
 }
 
@@ -149,6 +154,7 @@ func (u *userRepo) UserById(ctx context.Context, id int64) (*biz.User, error) {
 		NickName: user.NickName,
 		Gender:   user.Gender,
 		Role:     int(user.Role),
+		Password: user.Password,
 	}, nil
 }
 
@@ -157,6 +163,7 @@ func (u *userRepo) UpdateUser(ctx context.Context, user *biz.User) (*biz.User, e
 	_, err := u.data.uc.UpdateUser(ctx, &userService.UpdateUserInfo{
 		Id:       user.ID,
 		NickName: user.NickName,
+		Password: user.Password,
 		Gender:   user.Gender,
 		Birthday: uint64(user.Birthday),
 	})
@@ -177,12 +184,100 @@ func (u *userRepo) UpdateUser(ctx context.Context, user *biz.User) (*biz.User, e
 		ID:       updatedUser.Id,
 		Mobile:   updatedUser.Mobile,
 		NickName: updatedUser.NickName,
+		Password: updatedUser.Password,
 		Birthday: int64(updatedUser.Birthday),
 		Gender:   updatedUser.Gender,
 		Role:     int(updatedUser.Role),
 	}, nil
 }
 
-func (u *userRepo) ListUser(ctx context.Context) ([]*biz.User, int, error) {
+func (u *userRepo) StoreLogoutBlacklist(ctx context.Context, userId int64) error {
+	key := fmt.Sprintf("logout_blacklist:%d", userId)
+	timestamp := time.Now().Unix()
+	err := u.data.rdb.Set(ctx, key, timestamp, 24*time.Hour).Err()
+	if err != nil {
+		u.log.Errorf("存储登出黑名单失败: %v", err)
+		return err
+	}
+	return nil
+}
 
+// CheckLogoutBlacklist 检查用户是否在黑名单中
+func (u *userRepo) CheckLogoutBlacklist(ctx context.Context, userId int64) (bool, error) {
+	key := fmt.Sprintf("logout_blacklist:%d", userId)
+	exists, err := u.data.rdb.Exists(ctx, key).Result()
+	if err != nil {
+		u.log.Errorf("检查登出黑名单失败: %v", err)
+		return false, err
+	}
+	return exists > 0, nil
+}
+
+// StoreSmsCode 将短信验证码存入Redis
+func (u *userRepo) StoreSmsCode(ctx context.Context, mobile, code string, expiration time.Duration) error {
+	key := fmt.Sprintf("sms_code:%s", mobile)
+	if err := u.data.rdb.Set(ctx, key, code, expiration).Err(); err != nil {
+		u.log.Errorf("存储短信验证码失败: %v", err)
+		return err
+	}
+	return nil
+}
+
+// GetSmsCode 获取短信验证码
+func (u *userRepo) GetSmsCode(ctx context.Context, mobile string) (string, error) {
+	key := fmt.Sprintf("sms_code:%s", mobile)
+	code, err := u.data.rdb.Get(ctx, key).Result()
+	if err != nil {
+		u.log.Errorf("获取短信验证码失败: %v", err)
+		return "", err
+	}
+	return code, nil
+}
+
+// SetSmsCooldown 设置短信发送冷却标记
+func (u *userRepo) SetSmsCooldown(ctx context.Context, mobile string, expiration time.Duration) error {
+	key := fmt.Sprintf("sms_cooldown:%s", mobile)
+	if err := u.data.rdb.Set(ctx, key, 1, expiration).Err(); err != nil {
+		u.log.Errorf("设置短信冷却失败: %v", err)
+		return err
+	}
+	return nil
+}
+
+// CheckSmsCooldown 检查手机号是否处于冷却中
+func (u *userRepo) CheckSmsCooldown(ctx context.Context, mobile string) (bool, error) {
+	key := fmt.Sprintf("sms_cooldown:%s", mobile)
+	exists, err := u.data.rdb.Exists(ctx, key).Result()
+	if err != nil {
+		u.log.Errorf("检查短信冷却失败: %v", err)
+		return false, err
+	}
+	return exists > 0, nil
+}
+
+func (u *userRepo) ListUsers(ctx context.Context, req *v1.ListUsersReq) ([]*biz.User, int, error) {
+	// 调用用户服务获取用户列表
+	pageInfo := &userService.PageInfo{
+		Pn:    uint32(req.Page),
+		PSize: uint32(req.PageSize),
+	}
+
+	userListResp, err := u.data.uc.GetUserList(ctx, pageInfo)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	// 转换为业务层结构
+	result := make([]*biz.User, 0, len(userListResp.Data))
+	for _, user := range userListResp.Data {
+		result = append(result, &biz.User{
+			ID:       user.Id,
+			Mobile:   user.Mobile,
+			NickName: user.NickName,
+			Role:     int(user.Role),
+			Password: user.Password,
+		})
+	}
+
+	return result, int(userListResp.Total), nil
 }

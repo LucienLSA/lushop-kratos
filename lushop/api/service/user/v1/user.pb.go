@@ -376,7 +376,8 @@ type UpdateUserInfo struct {
 	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	NickName      string                 `protobuf:"bytes,2,opt,name=nickName,proto3" json:"nickName,omitempty"`
 	Gender        string                 `protobuf:"bytes,3,opt,name=gender,proto3" json:"gender,omitempty"`
-	Birthday      uint64                 `protobuf:"varint,4,opt,name=birthday,proto3" json:"birthday,omitempty"`
+	Password      string                 `protobuf:"bytes,4,opt,name=password,proto3" json:"password,omitempty"`
+	Birthday      uint64                 `protobuf:"varint,5,opt,name=birthday,proto3" json:"birthday,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -428,6 +429,13 @@ func (x *UpdateUserInfo) GetNickName() string {
 func (x *UpdateUserInfo) GetGender() string {
 	if x != nil {
 		return x.Gender
+	}
+	return ""
+}
+
+func (x *UpdateUserInfo) GetPassword() string {
+	if x != nil {
+		return x.Password
 	}
 	return ""
 }
@@ -563,12 +571,13 @@ const file_service_user_v1_user_proto_rawDesc = "" +
 	"\rMobileRequest\x12\x16\n" +
 	"\x06mobile\x18\x01 \x01(\tR\x06mobile\"\x1b\n" +
 	"\tIdRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id\"p\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\"\x8c\x01\n" +
 	"\x0eUpdateUserInfo\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1a\n" +
 	"\bnickName\x18\x02 \x01(\tR\bnickName\x12\x16\n" +
 	"\x06gender\x18\x03 \x01(\tR\x06gender\x12\x1a\n" +
-	"\bbirthday\x18\x04 \x01(\x04R\bbirthday\"]\n" +
+	"\bpassword\x18\x04 \x01(\tR\bpassword\x12\x1a\n" +
+	"\bbirthday\x18\x05 \x01(\x04R\bbirthday\"]\n" +
 	"\x11PasswordCheckInfo\x12\x1a\n" +
 	"\bpassword\x18\x01 \x01(\tR\bpassword\x12,\n" +
 	"\x11encryptedPassword\x18\x02 \x01(\tR\x11encryptedPassword\")\n" +

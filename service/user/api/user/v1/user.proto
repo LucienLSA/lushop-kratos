@@ -58,7 +58,8 @@ message  UpdateUserInfo{
   int64 id = 1;
   string nickName = 2;
   string gender = 3;
-  uint64 birthday = 4;
+  string password = 4;
+  uint64 birthday = 5;
 }
 
 // 密码验证请求

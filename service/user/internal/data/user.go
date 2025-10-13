@@ -7,6 +7,7 @@ import (
 	"github.com/go-kratos/kratos/v2/errors"
 
 	"user/internal/biz"
+	"user/internal/pkg/snowflake"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"golang.org/x/crypto/bcrypt"
@@ -15,7 +16,7 @@ import (
 
 // 定义数据表结构体
 type User struct {
-	ID          int64      `gorm:"primarykey"`
+	ID          int64      `gorm:"primarykey;autoIncrement:false"` // 使用雪花算法生成ID，禁用自增
 	Mobile      string     `gorm:"index:idx_mobile;unique;type:varchar(11) comment '手机号码，用户唯一标识';not null"`
 	Password    string     `gorm:"type:varchar(100);not null "` // 用户密码的保存需要注意是否加密
 	NickName    string     `gorm:"type:varchar(25) comment '用户昵称'"`
@@ -68,9 +69,13 @@ func (r *userRepo) CreateUser(ctx context.Context, u *biz.User) (*biz.User, erro
 	if result.RowsAffected == 1 {
 		return nil, errors.New(500, "USER_EXIST", "用户已存在"+u.Mobile)
 	}
+
+	// 使用雪花算法生成用户ID
+	user.ID = snowflake.GenerateID()
 	user.Mobile = u.Mobile
 	user.NickName = u.NickName
 	user.Password = setPassword(u.Password)
+
 	res := r.data.db.Create(&user)
 	if res.Error != nil {
 		return nil, errors.New(500, "CREAT_USER_ERROR", "用户创建失败")
@@ -179,6 +184,7 @@ func (r *userRepo) UpdateUser(ctx context.Context, user *biz.User) (bool, error)
 	userInfo.NickName = user.NickName
 	userInfo.Birthday = user.Birthday
 	userInfo.Gender = user.Gender
+	userInfo.Password = setPassword(user.Password)
 	res := r.data.db.Save(&userInfo)
 	if res.Error != nil {
 		return false, errors.InternalServer("USER_UPDATE_ERROR", "user save error")
@@ -203,7 +209,7 @@ func (r *userRepo) CheckPassword(ctx context.Context, psd, encryptedPsd string) 
 	if psd == "" || encryptedPsd == "" {
 		return false, nil
 	}
-	
+
 	err := bcrypt.CompareHashAndPassword([]byte(encryptedPsd), []byte(psd))
 	if err != nil {
 		// 密码不匹配时返回 false，而不是错误

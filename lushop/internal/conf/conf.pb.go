@@ -30,6 +30,7 @@ type Bootstrap struct {
 	Auth          *Auth                  `protobuf:"bytes,4,opt,name=auth,proto3" json:"auth,omitempty"`       // 认证鉴权
 	Service       *Service               `protobuf:"bytes,5,opt,name=service,proto3" json:"service,omitempty"` // 服务注册与发现
 	Nacos         *Nacos                 `protobuf:"bytes,6,opt,name=nacos,proto3" json:"nacos,omitempty"`
+	Sms           *Sms                   `protobuf:"bytes,7,opt,name=sms,proto3" json:"sms,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -102,6 +103,13 @@ func (x *Bootstrap) GetService() *Service {
 func (x *Bootstrap) GetNacos() *Nacos {
 	if x != nil {
 		return x.Nacos
+	}
+	return nil
+}
+
+func (x *Bootstrap) GetSms() *Sms {
+	if x != nil {
+		return x.Sms
 	}
 	return nil
 }
@@ -210,6 +218,90 @@ func (x *Data) GetRedis() *Data_Redis {
 	return nil
 }
 
+type Sms struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ApiKey        string                 `protobuf:"bytes,1,opt,name=api_key,json=apiKey,proto3" json:"api_key,omitempty"`
+	ApiSecret     string                 `protobuf:"bytes,2,opt,name=api_secret,json=apiSecret,proto3" json:"api_secret,omitempty"`
+	SignName      string                 `protobuf:"bytes,3,opt,name=sign_name,json=signName,proto3" json:"sign_name,omitempty"`
+	TemplateCode  string                 `protobuf:"bytes,4,opt,name=template_code,json=templateCode,proto3" json:"template_code,omitempty"`
+	PhoneNumber   string                 `protobuf:"bytes,5,opt,name=phone_number,json=phoneNumber,proto3" json:"phone_number,omitempty"`
+	RegionId      string                 `protobuf:"bytes,6,opt,name=region_id,json=regionId,proto3" json:"region_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Sms) Reset() {
+	*x = Sms{}
+	mi := &file_conf_conf_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Sms) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Sms) ProtoMessage() {}
+
+func (x *Sms) ProtoReflect() protoreflect.Message {
+	mi := &file_conf_conf_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Sms.ProtoReflect.Descriptor instead.
+func (*Sms) Descriptor() ([]byte, []int) {
+	return file_conf_conf_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *Sms) GetApiKey() string {
+	if x != nil {
+		return x.ApiKey
+	}
+	return ""
+}
+
+func (x *Sms) GetApiSecret() string {
+	if x != nil {
+		return x.ApiSecret
+	}
+	return ""
+}
+
+func (x *Sms) GetSignName() string {
+	if x != nil {
+		return x.SignName
+	}
+	return ""
+}
+
+func (x *Sms) GetTemplateCode() string {
+	if x != nil {
+		return x.TemplateCode
+	}
+	return ""
+}
+
+func (x *Sms) GetPhoneNumber() string {
+	if x != nil {
+		return x.PhoneNumber
+	}
+	return ""
+}
+
+func (x *Sms) GetRegionId() string {
+	if x != nil {
+		return x.RegionId
+	}
+	return ""
+}
+
 type Service struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	User          *Service_User          `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
@@ -220,7 +312,7 @@ type Service struct {
 
 func (x *Service) Reset() {
 	*x = Service{}
-	mi := &file_conf_conf_proto_msgTypes[3]
+	mi := &file_conf_conf_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -232,7 +324,7 @@ func (x *Service) String() string {
 func (*Service) ProtoMessage() {}
 
 func (x *Service) ProtoReflect() protoreflect.Message {
-	mi := &file_conf_conf_proto_msgTypes[3]
+	mi := &file_conf_conf_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -245,7 +337,7 @@ func (x *Service) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Service.ProtoReflect.Descriptor instead.
 func (*Service) Descriptor() ([]byte, []int) {
-	return file_conf_conf_proto_rawDescGZIP(), []int{3}
+	return file_conf_conf_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *Service) GetUser() *Service_User {
@@ -271,7 +363,7 @@ type Trace struct {
 
 func (x *Trace) Reset() {
 	*x = Trace{}
-	mi := &file_conf_conf_proto_msgTypes[4]
+	mi := &file_conf_conf_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -283,7 +375,7 @@ func (x *Trace) String() string {
 func (*Trace) ProtoMessage() {}
 
 func (x *Trace) ProtoReflect() protoreflect.Message {
-	mi := &file_conf_conf_proto_msgTypes[4]
+	mi := &file_conf_conf_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -296,7 +388,7 @@ func (x *Trace) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Trace.ProtoReflect.Descriptor instead.
 func (*Trace) Descriptor() ([]byte, []int) {
-	return file_conf_conf_proto_rawDescGZIP(), []int{4}
+	return file_conf_conf_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *Trace) GetEndpoint() string {
@@ -315,7 +407,7 @@ type Registry struct {
 
 func (x *Registry) Reset() {
 	*x = Registry{}
-	mi := &file_conf_conf_proto_msgTypes[5]
+	mi := &file_conf_conf_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -327,7 +419,7 @@ func (x *Registry) String() string {
 func (*Registry) ProtoMessage() {}
 
 func (x *Registry) ProtoReflect() protoreflect.Message {
-	mi := &file_conf_conf_proto_msgTypes[5]
+	mi := &file_conf_conf_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -340,7 +432,7 @@ func (x *Registry) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Registry.ProtoReflect.Descriptor instead.
 func (*Registry) Descriptor() ([]byte, []int) {
-	return file_conf_conf_proto_rawDescGZIP(), []int{5}
+	return file_conf_conf_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *Registry) GetConsul() *Registry_Consul {
@@ -359,7 +451,7 @@ type Auth struct {
 
 func (x *Auth) Reset() {
 	*x = Auth{}
-	mi := &file_conf_conf_proto_msgTypes[6]
+	mi := &file_conf_conf_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -371,7 +463,7 @@ func (x *Auth) String() string {
 func (*Auth) ProtoMessage() {}
 
 func (x *Auth) ProtoReflect() protoreflect.Message {
-	mi := &file_conf_conf_proto_msgTypes[6]
+	mi := &file_conf_conf_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -384,7 +476,7 @@ func (x *Auth) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Auth.ProtoReflect.Descriptor instead.
 func (*Auth) Descriptor() ([]byte, []int) {
-	return file_conf_conf_proto_rawDescGZIP(), []int{6}
+	return file_conf_conf_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *Auth) GetJwtKey() string {
@@ -407,7 +499,7 @@ type Nacos struct {
 
 func (x *Nacos) Reset() {
 	*x = Nacos{}
-	mi := &file_conf_conf_proto_msgTypes[7]
+	mi := &file_conf_conf_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -419,7 +511,7 @@ func (x *Nacos) String() string {
 func (*Nacos) ProtoMessage() {}
 
 func (x *Nacos) ProtoReflect() protoreflect.Message {
-	mi := &file_conf_conf_proto_msgTypes[7]
+	mi := &file_conf_conf_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -432,7 +524,7 @@ func (x *Nacos) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Nacos.ProtoReflect.Descriptor instead.
 func (*Nacos) Descriptor() ([]byte, []int) {
-	return file_conf_conf_proto_rawDescGZIP(), []int{7}
+	return file_conf_conf_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *Nacos) GetAddr() string {
@@ -481,7 +573,7 @@ type Server_HTTP struct {
 
 func (x *Server_HTTP) Reset() {
 	*x = Server_HTTP{}
-	mi := &file_conf_conf_proto_msgTypes[8]
+	mi := &file_conf_conf_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -493,7 +585,7 @@ func (x *Server_HTTP) String() string {
 func (*Server_HTTP) ProtoMessage() {}
 
 func (x *Server_HTTP) ProtoReflect() protoreflect.Message {
-	mi := &file_conf_conf_proto_msgTypes[8]
+	mi := &file_conf_conf_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -541,7 +633,7 @@ type Server_GRPC struct {
 
 func (x *Server_GRPC) Reset() {
 	*x = Server_GRPC{}
-	mi := &file_conf_conf_proto_msgTypes[9]
+	mi := &file_conf_conf_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -553,7 +645,7 @@ func (x *Server_GRPC) String() string {
 func (*Server_GRPC) ProtoMessage() {}
 
 func (x *Server_GRPC) ProtoReflect() protoreflect.Message {
-	mi := &file_conf_conf_proto_msgTypes[9]
+	mi := &file_conf_conf_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -600,7 +692,7 @@ type Data_Database struct {
 
 func (x *Data_Database) Reset() {
 	*x = Data_Database{}
-	mi := &file_conf_conf_proto_msgTypes[10]
+	mi := &file_conf_conf_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -612,7 +704,7 @@ func (x *Data_Database) String() string {
 func (*Data_Database) ProtoMessage() {}
 
 func (x *Data_Database) ProtoReflect() protoreflect.Message {
-	mi := &file_conf_conf_proto_msgTypes[10]
+	mi := &file_conf_conf_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -657,7 +749,7 @@ type Data_Redis struct {
 
 func (x *Data_Redis) Reset() {
 	*x = Data_Redis{}
-	mi := &file_conf_conf_proto_msgTypes[11]
+	mi := &file_conf_conf_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -669,7 +761,7 @@ func (x *Data_Redis) String() string {
 func (*Data_Redis) ProtoMessage() {}
 
 func (x *Data_Redis) ProtoReflect() protoreflect.Message {
-	mi := &file_conf_conf_proto_msgTypes[11]
+	mi := &file_conf_conf_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -743,7 +835,7 @@ type Service_User struct {
 
 func (x *Service_User) Reset() {
 	*x = Service_User{}
-	mi := &file_conf_conf_proto_msgTypes[12]
+	mi := &file_conf_conf_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -755,7 +847,7 @@ func (x *Service_User) String() string {
 func (*Service_User) ProtoMessage() {}
 
 func (x *Service_User) ProtoReflect() protoreflect.Message {
-	mi := &file_conf_conf_proto_msgTypes[12]
+	mi := &file_conf_conf_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -768,7 +860,7 @@ func (x *Service_User) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Service_User.ProtoReflect.Descriptor instead.
 func (*Service_User) Descriptor() ([]byte, []int) {
-	return file_conf_conf_proto_rawDescGZIP(), []int{3, 0}
+	return file_conf_conf_proto_rawDescGZIP(), []int{4, 0}
 }
 
 func (x *Service_User) GetEndpoint() string {
@@ -787,7 +879,7 @@ type Service_Goods struct {
 
 func (x *Service_Goods) Reset() {
 	*x = Service_Goods{}
-	mi := &file_conf_conf_proto_msgTypes[13]
+	mi := &file_conf_conf_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -799,7 +891,7 @@ func (x *Service_Goods) String() string {
 func (*Service_Goods) ProtoMessage() {}
 
 func (x *Service_Goods) ProtoReflect() protoreflect.Message {
-	mi := &file_conf_conf_proto_msgTypes[13]
+	mi := &file_conf_conf_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -812,7 +904,7 @@ func (x *Service_Goods) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Service_Goods.ProtoReflect.Descriptor instead.
 func (*Service_Goods) Descriptor() ([]byte, []int) {
-	return file_conf_conf_proto_rawDescGZIP(), []int{3, 1}
+	return file_conf_conf_proto_rawDescGZIP(), []int{4, 1}
 }
 
 func (x *Service_Goods) GetEndpoint() string {
@@ -832,7 +924,7 @@ type Registry_Consul struct {
 
 func (x *Registry_Consul) Reset() {
 	*x = Registry_Consul{}
-	mi := &file_conf_conf_proto_msgTypes[14]
+	mi := &file_conf_conf_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -844,7 +936,7 @@ func (x *Registry_Consul) String() string {
 func (*Registry_Consul) ProtoMessage() {}
 
 func (x *Registry_Consul) ProtoReflect() protoreflect.Message {
-	mi := &file_conf_conf_proto_msgTypes[14]
+	mi := &file_conf_conf_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -857,7 +949,7 @@ func (x *Registry_Consul) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Registry_Consul.ProtoReflect.Descriptor instead.
 func (*Registry_Consul) Descriptor() ([]byte, []int) {
-	return file_conf_conf_proto_rawDescGZIP(), []int{5, 0}
+	return file_conf_conf_proto_rawDescGZIP(), []int{6, 0}
 }
 
 func (x *Registry_Consul) GetAddress() string {
@@ -879,14 +971,15 @@ var File_conf_conf_proto protoreflect.FileDescriptor
 const file_conf_conf_proto_rawDesc = "" +
 	"\n" +
 	"\x0fconf/conf.proto\x12\n" +
-	"lushop.api\x1a\x1egoogle/protobuf/duration.proto\"\x84\x02\n" +
+	"lushop.api\x1a\x1egoogle/protobuf/duration.proto\"\xa7\x02\n" +
 	"\tBootstrap\x12*\n" +
 	"\x06server\x18\x01 \x01(\v2\x12.lushop.api.ServerR\x06server\x12$\n" +
 	"\x04data\x18\x02 \x01(\v2\x10.lushop.api.DataR\x04data\x12'\n" +
 	"\x05trace\x18\x03 \x01(\v2\x11.lushop.api.TraceR\x05trace\x12$\n" +
 	"\x04auth\x18\x04 \x01(\v2\x10.lushop.api.AuthR\x04auth\x12-\n" +
 	"\aservice\x18\x05 \x01(\v2\x13.lushop.api.ServiceR\aservice\x12'\n" +
-	"\x05nacos\x18\x06 \x01(\v2\x11.lushop.api.NacosR\x05nacos\"\xb8\x02\n" +
+	"\x05nacos\x18\x06 \x01(\v2\x11.lushop.api.NacosR\x05nacos\x12!\n" +
+	"\x03sms\x18\a \x01(\v2\x0f.lushop.api.SmsR\x03sms\"\xb8\x02\n" +
 	"\x06Server\x12+\n" +
 	"\x04http\x18\x01 \x01(\v2\x17.lushop.api.Server.HTTPR\x04http\x12+\n" +
 	"\x04grpc\x18\x02 \x01(\v2\x17.lushop.api.Server.GRPCR\x04grpc\x1ai\n" +
@@ -911,7 +1004,15 @@ const file_conf_conf_proto_rawDesc = "" +
 	"\x02db\x18\x04 \x01(\x05R\x02db\x12<\n" +
 	"\fdial_timeout\x18\x05 \x01(\v2\x19.google.protobuf.DurationR\vdialTimeout\x12<\n" +
 	"\fread_timeout\x18\x06 \x01(\v2\x19.google.protobuf.DurationR\vreadTimeout\x12>\n" +
-	"\rwrite_timeout\x18\a \x01(\v2\x19.google.protobuf.DurationR\fwriteTimeout\"\xb1\x01\n" +
+	"\rwrite_timeout\x18\a \x01(\v2\x19.google.protobuf.DurationR\fwriteTimeout\"\xbf\x01\n" +
+	"\x03Sms\x12\x17\n" +
+	"\aapi_key\x18\x01 \x01(\tR\x06apiKey\x12\x1d\n" +
+	"\n" +
+	"api_secret\x18\x02 \x01(\tR\tapiSecret\x12\x1b\n" +
+	"\tsign_name\x18\x03 \x01(\tR\bsignName\x12#\n" +
+	"\rtemplate_code\x18\x04 \x01(\tR\ftemplateCode\x12!\n" +
+	"\fphone_number\x18\x05 \x01(\tR\vphoneNumber\x12\x1b\n" +
+	"\tregion_id\x18\x06 \x01(\tR\bregionId\"\xb1\x01\n" +
 	"\aService\x12,\n" +
 	"\x04user\x18\x01 \x01(\v2\x18.lushop.api.Service.UserR\x04user\x12/\n" +
 	"\x05goods\x18\x02 \x01(\v2\x19.lushop.api.Service.GoodsR\x05goods\x1a\"\n" +
@@ -947,49 +1048,51 @@ func file_conf_conf_proto_rawDescGZIP() []byte {
 	return file_conf_conf_proto_rawDescData
 }
 
-var file_conf_conf_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
+var file_conf_conf_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
 var file_conf_conf_proto_goTypes = []any{
 	(*Bootstrap)(nil),           // 0: lushop.api.Bootstrap
 	(*Server)(nil),              // 1: lushop.api.Server
 	(*Data)(nil),                // 2: lushop.api.Data
-	(*Service)(nil),             // 3: lushop.api.Service
-	(*Trace)(nil),               // 4: lushop.api.Trace
-	(*Registry)(nil),            // 5: lushop.api.Registry
-	(*Auth)(nil),                // 6: lushop.api.Auth
-	(*Nacos)(nil),               // 7: lushop.api.Nacos
-	(*Server_HTTP)(nil),         // 8: lushop.api.Server.HTTP
-	(*Server_GRPC)(nil),         // 9: lushop.api.Server.GRPC
-	(*Data_Database)(nil),       // 10: lushop.api.Data.Database
-	(*Data_Redis)(nil),          // 11: lushop.api.Data.Redis
-	(*Service_User)(nil),        // 12: lushop.api.Service.User
-	(*Service_Goods)(nil),       // 13: lushop.api.Service.Goods
-	(*Registry_Consul)(nil),     // 14: lushop.api.Registry.Consul
-	(*durationpb.Duration)(nil), // 15: google.protobuf.Duration
+	(*Sms)(nil),                 // 3: lushop.api.Sms
+	(*Service)(nil),             // 4: lushop.api.Service
+	(*Trace)(nil),               // 5: lushop.api.Trace
+	(*Registry)(nil),            // 6: lushop.api.Registry
+	(*Auth)(nil),                // 7: lushop.api.Auth
+	(*Nacos)(nil),               // 8: lushop.api.Nacos
+	(*Server_HTTP)(nil),         // 9: lushop.api.Server.HTTP
+	(*Server_GRPC)(nil),         // 10: lushop.api.Server.GRPC
+	(*Data_Database)(nil),       // 11: lushop.api.Data.Database
+	(*Data_Redis)(nil),          // 12: lushop.api.Data.Redis
+	(*Service_User)(nil),        // 13: lushop.api.Service.User
+	(*Service_Goods)(nil),       // 14: lushop.api.Service.Goods
+	(*Registry_Consul)(nil),     // 15: lushop.api.Registry.Consul
+	(*durationpb.Duration)(nil), // 16: google.protobuf.Duration
 }
 var file_conf_conf_proto_depIdxs = []int32{
 	1,  // 0: lushop.api.Bootstrap.server:type_name -> lushop.api.Server
 	2,  // 1: lushop.api.Bootstrap.data:type_name -> lushop.api.Data
-	4,  // 2: lushop.api.Bootstrap.trace:type_name -> lushop.api.Trace
-	6,  // 3: lushop.api.Bootstrap.auth:type_name -> lushop.api.Auth
-	3,  // 4: lushop.api.Bootstrap.service:type_name -> lushop.api.Service
-	7,  // 5: lushop.api.Bootstrap.nacos:type_name -> lushop.api.Nacos
-	8,  // 6: lushop.api.Server.http:type_name -> lushop.api.Server.HTTP
-	9,  // 7: lushop.api.Server.grpc:type_name -> lushop.api.Server.GRPC
-	10, // 8: lushop.api.Data.database:type_name -> lushop.api.Data.Database
-	11, // 9: lushop.api.Data.redis:type_name -> lushop.api.Data.Redis
-	12, // 10: lushop.api.Service.user:type_name -> lushop.api.Service.User
-	13, // 11: lushop.api.Service.goods:type_name -> lushop.api.Service.Goods
-	14, // 12: lushop.api.Registry.consul:type_name -> lushop.api.Registry.Consul
-	15, // 13: lushop.api.Server.HTTP.timeout:type_name -> google.protobuf.Duration
-	15, // 14: lushop.api.Server.GRPC.timeout:type_name -> google.protobuf.Duration
-	15, // 15: lushop.api.Data.Redis.dial_timeout:type_name -> google.protobuf.Duration
-	15, // 16: lushop.api.Data.Redis.read_timeout:type_name -> google.protobuf.Duration
-	15, // 17: lushop.api.Data.Redis.write_timeout:type_name -> google.protobuf.Duration
-	18, // [18:18] is the sub-list for method output_type
-	18, // [18:18] is the sub-list for method input_type
-	18, // [18:18] is the sub-list for extension type_name
-	18, // [18:18] is the sub-list for extension extendee
-	0,  // [0:18] is the sub-list for field type_name
+	5,  // 2: lushop.api.Bootstrap.trace:type_name -> lushop.api.Trace
+	7,  // 3: lushop.api.Bootstrap.auth:type_name -> lushop.api.Auth
+	4,  // 4: lushop.api.Bootstrap.service:type_name -> lushop.api.Service
+	8,  // 5: lushop.api.Bootstrap.nacos:type_name -> lushop.api.Nacos
+	3,  // 6: lushop.api.Bootstrap.sms:type_name -> lushop.api.Sms
+	9,  // 7: lushop.api.Server.http:type_name -> lushop.api.Server.HTTP
+	10, // 8: lushop.api.Server.grpc:type_name -> lushop.api.Server.GRPC
+	11, // 9: lushop.api.Data.database:type_name -> lushop.api.Data.Database
+	12, // 10: lushop.api.Data.redis:type_name -> lushop.api.Data.Redis
+	13, // 11: lushop.api.Service.user:type_name -> lushop.api.Service.User
+	14, // 12: lushop.api.Service.goods:type_name -> lushop.api.Service.Goods
+	15, // 13: lushop.api.Registry.consul:type_name -> lushop.api.Registry.Consul
+	16, // 14: lushop.api.Server.HTTP.timeout:type_name -> google.protobuf.Duration
+	16, // 15: lushop.api.Server.GRPC.timeout:type_name -> google.protobuf.Duration
+	16, // 16: lushop.api.Data.Redis.dial_timeout:type_name -> google.protobuf.Duration
+	16, // 17: lushop.api.Data.Redis.read_timeout:type_name -> google.protobuf.Duration
+	16, // 18: lushop.api.Data.Redis.write_timeout:type_name -> google.protobuf.Duration
+	19, // [19:19] is the sub-list for method output_type
+	19, // [19:19] is the sub-list for method input_type
+	19, // [19:19] is the sub-list for extension type_name
+	19, // [19:19] is the sub-list for extension extendee
+	0,  // [0:19] is the sub-list for field type_name
 }
 
 func init() { file_conf_conf_proto_init() }
@@ -1003,7 +1106,7 @@ func file_conf_conf_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_conf_conf_proto_rawDesc), len(file_conf_conf_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   15,
+			NumMessages:   16,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
