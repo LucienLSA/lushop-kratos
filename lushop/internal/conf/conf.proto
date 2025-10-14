@@ -13,6 +13,7 @@ message Bootstrap {
   Service service = 5; // 服务注册与发现
   Nacos nacos = 6;
   Sms sms = 7;
+  Task task = 8;
 }
 
 message Server {
@@ -90,4 +91,15 @@ message Nacos {
   string namespace_id = 3;
   string data_id = 4;
   string group_id = 5;
+}
+message Task {
+  repeated TaskItem items = 1;
+}
+
+message TaskItem {
+  string name = 1;         // 任务名 = Handler.Type()
+  string spec = 2;         // cron表达式
+  string payload_json = 3; // JSON 载荷
+  string queue = 4;        // 可选队列名: critical/default/low
+  int32  max_retry = 5;    // 可选重试次数
 }

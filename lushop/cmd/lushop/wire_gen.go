@@ -14,12 +14,13 @@ import (
 	"lushop/internal/data"
 	"lushop/internal/server"
 	"lushop/internal/service"
+	"lushop/internal/task"
 )
 
 // Injectors from wire.go:
 
 // wireApp init kratos application.
-func wireApp(confServer *conf.Server, confData *conf.Data, auth *conf.Auth, confService *conf.Service, sms *conf.Sms, registry *conf.Registry, logger log.Logger) (*kratos.App, func(), error) {
+func wireApp(confServer *conf.Server, confData *conf.Data, auth *conf.Auth, confService *conf.Service, sms *conf.Sms, registry *conf.Registry, confTask *conf.Task, logger log.Logger) (*kratos.App, func(), error) {
 	discovery := data.NewDiscovery(registry)
 	userClient := data.NewUserServiceClient(auth, confService, discovery)
 	client := data.NewRedis(confData)
@@ -33,7 +34,12 @@ func wireApp(confServer *conf.Server, confData *conf.Data, auth *conf.Auth, conf
 	httpServer := server.NewHTTPServer(confServer, auth, lushopService, logger)
 	grpcServer := server.NewGRPCServer(confServer, lushopService, logger)
 	registrar := data.NewRegister(registry)
-	app := newApp(logger, httpServer, grpcServer, registrar)
+	asynqComponent, cleanup, err := task.NewAsynqComponent(confData, confTask, logger)
+	if err != nil {
+		return nil, nil, err
+	}
+	app := newApp(logger, httpServer, grpcServer, registrar, asynqComponent)
 	return app, func() {
+		cleanup()
 	}, nil
 }

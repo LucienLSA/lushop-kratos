@@ -4,12 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	v1 "lushop/api/lushop/v1"
+	http2 "lushop/internal/biz/http"
 	"lushop/internal/conf"
 	"lushop/internal/conf/metrix"
 	"lushop/internal/pkg/middleware/auth"
+	"lushop/internal/pkg/middleware/i18n"
 	"lushop/internal/service"
-
-	http2 "lushop/internal/biz/http"
 	httpNet "net/http"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -41,6 +41,7 @@ func NewHTTPServer(c *conf.Server, ac *conf.Auth, s *service.LushopService, logg
 		}),
 		http.Middleware(
 			recovery.Recovery(),
+			i18n.Translator(),
 			validate.Validator(), // 接口访问的参数校验
 			tracing.Server(),     // 链路追踪
 			// JWT 验证 - 对所有需要认证的接口生效

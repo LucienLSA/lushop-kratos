@@ -213,6 +213,31 @@ func (u *userRepo) CheckLogoutBlacklist(ctx context.Context, userId int64) (bool
 	return exists > 0, nil
 }
 
+// GetTokenTTL 获取指定token key的剩余过期时间
+func (u *userRepo) GetTokenTTL(ctx context.Context, key string) (time.Duration, error) {
+	ttl, err := u.data.rdb.TTL(ctx, key).Result()
+	if err != nil {
+		u.log.Errorf("获取token TTL失败: %v", err)
+		return 0, err
+	}
+	return ttl, nil
+}
+
+// StoreLogoutBlacklistWithTTL 以自定义TTL写入登出黑名单
+func (u *userRepo) StoreLogoutBlacklistWithTTL(ctx context.Context, userId int64, ttl time.Duration) error {
+	key := fmt.Sprintf("logout_blacklist:%d", userId)
+	timestamp := time.Now().Unix()
+	if ttl <= 0 {
+		ttl = 24 * time.Hour
+	}
+	err := u.data.rdb.Set(ctx, key, timestamp, ttl).Err()
+	if err != nil {
+		u.log.Errorf("存储登出黑名单(自定义TTL)失败: %v", err)
+		return err
+	}
+	return nil
+}
+
 // StoreSmsCode 将短信验证码存入Redis
 func (u *userRepo) StoreSmsCode(ctx context.Context, mobile, code string, expiration time.Duration) error {
 	key := fmt.Sprintf("sms_code:%s", mobile)

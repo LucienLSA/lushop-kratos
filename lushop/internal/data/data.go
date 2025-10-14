@@ -30,6 +30,11 @@ type Data struct {
 	rdb *redis.Client
 }
 
+// Rdb 返回共享的 Redis 客户端，供其他组件（如任务服务）复用
+func (d *Data) Rdb() *redis.Client {
+	return d.rdb
+}
+
 // NewData .
 func NewData(c *conf.Data, uc userV1.UserClient, logger log.Logger, rdb *redis.Client) (*Data, error) {
 	l := log.NewHelper(log.With(logger, "module", "data"))

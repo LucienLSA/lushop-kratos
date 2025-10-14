@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	nacosconfig "lushop/internal/conf/nacos"
+	"lushop/internal/task"
 	"os"
 
 	"github.com/go-kratos/kratos/v2"
@@ -37,7 +38,7 @@ func init() {
 }
 
 // wire依赖注入实现的方法，整合了应用所需的依赖，应用实例创建
-func newApp(logger log.Logger, hs *http.Server, gs *grpc.Server, rr registry.Registrar) *kratos.App {
+func newApp(logger log.Logger, hs *http.Server, gs *grpc.Server, rr registry.Registrar, ts *task.AsynqComponent) *kratos.App {
 	// 设置应用的ID、名称、版本、元数据、日志、服务器和注册中心
 	return kratos.New(
 		kratos.ID(id+"lushop.api"),
@@ -48,6 +49,7 @@ func newApp(logger log.Logger, hs *http.Server, gs *grpc.Server, rr registry.Reg
 		kratos.Server(
 			hs,
 			gs,
+			ts, // Asynq component implements Start/Stop
 		),
 		kratos.Registrar(rr),
 	)
@@ -119,9 +121,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
 	// 通过 wireApp 函数（由 Wire 生成）构建应用实例，并获取清理函数
-	app, cleanup, err := wireApp(bc.Server, bc.Data, bc.Auth, bc.Service, bc.Sms, rc, logger)
+	app, cleanup, err := wireApp(bc.Server, bc.Data,
+		bc.Auth, bc.Service, bc.Sms, rc, bc.Task, logger)
 	if err != nil {
 		panic(err)
 	}

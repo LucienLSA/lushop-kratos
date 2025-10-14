@@ -64,6 +64,8 @@ type UserRepo interface {
 	DeleteRefreshToken(ctx context.Context, userId int64) error
 	StoreLogoutBlacklist(ctx context.Context, userId int64) error
 	CheckLogoutBlacklist(ctx context.Context, userId int64) (bool, error)
+	GetTokenTTL(ctx context.Context, key string) (time.Duration, error)
+	StoreLogoutBlacklistWithTTL(ctx context.Context, userId int64, ttl time.Duration) error
 
 	// sms
 	StoreSmsCode(ctx context.Context, mobile, code string, expiration time.Duration) error
@@ -194,7 +196,7 @@ func (uc *UserUsecase) PasswordLogin(ctx context.Context, req *v1.LoginReq) (*v1
 					uc.log.Errorf("存储refresh token失败: %v", err)
 					return nil, ErrGenerateTokenFailed
 				}
-
+				// 删除redis的验证码
 				return &v1.RegisterReply{
 					Id:           user.ID,
 					Mobile:       user.Mobile,
@@ -289,7 +291,7 @@ func (uc *UserUsecase) CreateUser(ctx context.Context, req *v1.RegisterReq) (*v1
 		uc.log.Errorf("存储refresh token失败: %v", err)
 		return nil, ErrGenerateTokenFailed
 	}
-
+	// 删除redis验证码
 	return &v1.RegisterReply{
 		Id:           creatuser.ID,
 		Mobile:       creatuser.Mobile,
@@ -429,7 +431,7 @@ func (uc *UserUsecase) VerifySms(ctx context.Context, req *v1.VerifySmsReq) (*v1
 		uc.log.Errorf("存储refresh token失败: %v", err)
 		return nil, ErrGenerateTokenFailed
 	}
-
+	// 验证码使用后删除验证码
 	return &v1.RegisterReply{
 		Id:           user.ID,
 		Mobile:       user.Mobile,
@@ -579,9 +581,17 @@ func (uc *UserUsecase) Logout(ctx context.Context) (*v1.LogoutReply, error) {
 	}
 
 	// 将用户登出信息存入redis黑名单
-	err = uc.uRepo.StoreLogoutBlacklist(ctx, uid)
+	ttl, err := uc.uRepo.GetTokenTTL(ctx, accessTokenKey)
 	if err != nil {
-		uc.log.Errorf("存储用户登出信息失败: %v", err)
+		uc.log.Errorf("获取用户%d token TTL失败: %v", uid, err)
+	}
+	if ttl <= 0 {
+		// 若获取失败或无效，使用一个安全的最小TTL（例如30分钟）
+		ttl = 30 * time.Minute
+	}
+	if err := uc.uRepo.StoreLogoutBlacklistWithTTL(ctx, uid, ttl); err != nil {
+		uc.log.Errorf("加入用户%d到登出黑名单失败: %v", uid, err)
+		return nil, ErrAuthFailed
 	}
 
 	return &v1.LogoutReply{
@@ -735,8 +745,16 @@ func (uc *UserUsecase) DeleteUser(ctx context.Context, req *v1.KickUserReq) (*v1
 		uc.log.Errorf("删除用户%d refresh token失败: %v", req.GetId(), err)
 	}
 
-	// 3) 将用户加入登出黑名单
-	if err := uc.uRepo.StoreLogoutBlacklist(ctx, req.GetId()); err != nil {
+	// 3) 将用户加入登出黑名单，过期时间为 access token 剩余时间
+	ttl, err := uc.uRepo.GetTokenTTL(ctx, accessTokenKey)
+	if err != nil {
+		uc.log.Errorf("获取用户%d token TTL失败: %v", req.GetId(), err)
+	}
+	if ttl <= 0 {
+		// 若获取失败或无效，使用一个安全的最小TTL（例如30分钟）
+		ttl = 30 * time.Minute
+	}
+	if err := uc.uRepo.StoreLogoutBlacklistWithTTL(ctx, req.GetId(), ttl); err != nil {
 		uc.log.Errorf("加入用户%d到登出黑名单失败: %v", req.GetId(), err)
 		return nil, ErrAuthFailed
 	}
