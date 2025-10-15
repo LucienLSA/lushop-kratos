@@ -33,6 +33,13 @@ nacos:
 #     endpoint: discovery:///lushop.user.service
 #   goods:
 #     endpoint: discovery:///lushop.goods.service
+# sms:
+#   api_key: 'Ali_ApiKey'
+#   api_secret: 'Ali_ApiSecret'
+#   sign_name: '阿里云短信测试'
+#   template_code: 'SMS_154950909'
+#   phone_number: '19821216806'
+#   region_id: 'cn-hangzhou'
 # task:
 #   cronspec: "* * * * *"
 #   task_type: "task:periodic"

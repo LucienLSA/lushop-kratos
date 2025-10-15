@@ -1,0 +1,15 @@
+# p, 角色/用户, 资源路径模式, 方法
+# Admin 权限：可以访问所有 API
+p, admin, /api/*, (GET|POST|PUT|DELETE)
+
+# User 权限：只能访问用户相关接口
+p, user,  /api/user/detail, GET
+p, user,  /api/user/update, PUT
+p, user,  /api/user/update_pwd, PUT
+p, user,  /api/user/refresh_token, POST
+p, user,  /api/user/logout, DELETE
+p, user,  /api/user/send_sms, POST
+p, user,  /api/user/verify_sms, GET
+
+# 角色继承（可选）：g, 用户ID或角色, 角色
+# g, 1001, admin

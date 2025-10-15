@@ -14,6 +14,7 @@ message Bootstrap {
   Nacos nacos = 6;
   Sms sms = 7;
   Task task = 8;
+  Authz authz = 9;
 }
 
 message Server {
@@ -102,4 +103,14 @@ message TaskItem {
   string payload_json = 3; // JSON 载荷
   string queue = 4;        // 可选队列名: critical/default/low
   int32  max_retry = 5;    // 可选重试次数
+}
+
+// 后续新增基于gorm数据库的casbin策略
+message Authz {
+  string adapter = 1;  // "file" | "gorm"
+  string model = 2;    // 模型文件路径（file 模式）
+  string policy = 3;   // 策略文件路径（file 模式）
+  // GORM 相关（gorm 模式）
+  string table_name = 4;  // 策略表名，默认 "casbin_rule"
+  bool auto_migrate = 5;  // 是否自动建表
 }

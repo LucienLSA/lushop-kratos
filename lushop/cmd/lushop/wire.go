@@ -6,6 +6,7 @@
 package main
 
 import (
+	"lushop/internal/authorization"
 	"lushop/internal/biz"
 	"lushop/internal/conf"
 	"lushop/internal/data"
@@ -19,6 +20,8 @@ import (
 )
 
 // wireApp init kratos application.
-func wireApp(*conf.Server, *conf.Data, *conf.Auth, *conf.Service, *conf.Sms, *conf.Registry, *conf.Task, log.Logger) (*kratos.App, func(), error) {
-	panic(wire.Build(server.ProviderSet, data.ProviderSet, biz.ProviderSet, service.ProviderSet, task.ProviderSet, newApp))
+func wireApp(*conf.Server, *conf.Data, *conf.Auth, *conf.Service,
+	*conf.Sms, *conf.Registry, *conf.Task, log.Logger) (*kratos.App, func(), error) {
+	panic(wire.Build(server.ProviderSet, data.ProviderSet,
+		biz.ProviderSet, service.ProviderSet, task.ProviderSet, authorization.ProviderSet, newApp))
 }

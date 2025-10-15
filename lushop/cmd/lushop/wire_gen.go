@@ -9,6 +9,7 @@ package main
 import (
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
+	"lushop/internal/authorization"
 	"lushop/internal/biz"
 	"lushop/internal/conf"
 	"lushop/internal/data"
@@ -21,6 +22,10 @@ import (
 
 // wireApp init kratos application.
 func wireApp(confServer *conf.Server, confData *conf.Data, auth *conf.Auth, confService *conf.Service, sms *conf.Sms, registry *conf.Registry, confTask *conf.Task, logger log.Logger) (*kratos.App, func(), error) {
+	enforcer, err := authorization.NewEnforcer()
+	if err != nil {
+		return nil, nil, err
+	}
 	discovery := data.NewDiscovery(registry)
 	userClient := data.NewUserServiceClient(auth, confService, discovery)
 	client := data.NewRedis(confData)
@@ -31,7 +36,7 @@ func wireApp(confServer *conf.Server, confData *conf.Data, auth *conf.Auth, conf
 	userRepo := data.NewUserRepo(dataData, logger)
 	userUsecase := biz.NewUserUsecase(userRepo, logger, auth, sms)
 	lushopService := service.NewLushopService(userUsecase, logger)
-	httpServer := server.NewHTTPServer(confServer, auth, lushopService, logger)
+	httpServer := server.NewHTTPServer(confServer, auth, enforcer, lushopService, logger)
 	grpcServer := server.NewGRPCServer(confServer, lushopService, logger)
 	registrar := data.NewRegister(registry)
 	asynqComponent, cleanup, err := task.NewAsynqComponent(confData, confTask, logger)

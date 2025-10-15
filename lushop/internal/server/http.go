@@ -8,10 +8,12 @@ import (
 	"lushop/internal/conf"
 	"lushop/internal/conf/metrix"
 	"lushop/internal/pkg/middleware/auth"
+	casbinmw "lushop/internal/pkg/middleware/casbin"
 	"lushop/internal/pkg/middleware/i18n"
 	"lushop/internal/service"
 	httpNet "net/http"
 
+	"github.com/casbin/casbin/v2"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/auth/jwt"
 	"github.com/go-kratos/kratos/v2/middleware/logging"
@@ -28,7 +30,8 @@ import (
 )
 
 // NewHTTPServer new an HTTP server.
-func NewHTTPServer(c *conf.Server, ac *conf.Auth, s *service.LushopService, logger log.Logger) *http.Server {
+func NewHTTPServer(c *conf.Server, ac *conf.Auth,
+	e *casbin.Enforcer, s *service.LushopService, logger log.Logger) *http.Server {
 	var opts = []http.ServerOption{
 		// 设置请求解码器，处理GET请求的Content-Type问题
 		http.RequestDecoder(func(r *httpNet.Request, v interface{}) error {
@@ -50,6 +53,11 @@ func NewHTTPServer(c *conf.Server, ac *conf.Auth, s *service.LushopService, logg
 					return []byte(ac.JwtKey), nil
 				}, jwt.WithSigningMethod(jwt5.SigningMethodHS256)),
 			).Match(NewAuthMatcher()).Build(),
+			// Casbin鉴权，与JWT鉴权配合使用
+			selector.Server(
+				casbinmw.Middleware(e, casbinmw.RoleFromJWT()),
+			).Match(NewAuthMatcher()).Build(),
+
 			// 统一的权限中间件 - 自动判断用户/管理员权限
 			selector.Server(
 				auth.AuthMiddleware(),
