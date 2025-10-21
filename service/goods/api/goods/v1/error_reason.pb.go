@@ -71,11 +71,12 @@ var File_goods_v1_error_reason_proto protoreflect.FileDescriptor
 
 const file_goods_v1_error_reason_proto_rawDesc = "" +
 	"\n" +
-	"\x1bgoods/v1/error_reason.proto\x12\rhelloworld.v1*:\n" +
+	"\x1bgoods/v1/error_reason.proto\x12\bgoods.v1*:\n" +
 	"\vErrorReason\x12\x17\n" +
 	"\x13GREETER_UNSPECIFIED\x10\x00\x12\x12\n" +
-	"\x0eUSER_NOT_FOUND\x10\x01B?\n" +
-	"\rhelloworld.v1P\x01Z\x1agoods/api/helloworld/v1;v1\xa2\x02\x0fAPIHelloworldV1b\x06proto3"
+	"\x0eUSER_NOT_FOUND\x10\x01B0\n" +
+	"\bgoods.v1P\x01Z\x15goods/api/goods/v1;v1\xa2\x02\n" +
+	"APIGoodsV1b\x06proto3"
 
 var (
 	file_goods_v1_error_reason_proto_rawDescOnce sync.Once
@@ -91,7 +92,7 @@ func file_goods_v1_error_reason_proto_rawDescGZIP() []byte {
 
 var file_goods_v1_error_reason_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_goods_v1_error_reason_proto_goTypes = []any{
-	(ErrorReason)(0), // 0: helloworld.v1.ErrorReason
+	(ErrorReason)(0), // 0: goods.v1.ErrorReason
 }
 var file_goods_v1_error_reason_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type

@@ -4,24 +4,23 @@ type Goods struct {
 	ID              int64
 	CategoryID      int32
 	BrandsID        int32
-	TypeID          int64
-	Name            string
-	NameAlias       string
-	GoodsSn         string
-	GoodsTags       string
-	MarketPrice     int64
-	GoodsBrief      string
-	GoodsFrontImage string
-	GoodsImages     []string
+	Category        Category
+	Brand           Brand
 	OnSale          bool
-	ShipFree        bool
-	ShipID          int32
-	IsNew           bool
-	IsHot           bool
+	GoodsSn         string
+	Name            string
 	ClickNum        int64
 	SoldNum         int64
 	FavNum          int64
-	Sku             []*GoodsSku
+	MarketPrice     float32
+	ShopPrice       float32
+	GoodsBrief      string
+	ShipFree        bool
+	GoodsFrontImage string
+	DescImages      []string
+	GoodsImages     []string
+	IsNew           bool
+	IsHot           bool
 }
 
 type GoodsInfoResponse struct {

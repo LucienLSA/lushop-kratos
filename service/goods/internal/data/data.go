@@ -23,13 +23,10 @@ import (
 var ProviderSet = wire.NewSet(NewData, NewDB, NewTransaction, NewRedis, NewElasticsearch,
 	NewBrandRepo,
 	NewCategoryRepo,
-	NewGoodsTypeRepo,
-	NewSpecificationRepo,
-	NewGoodsAttrRepo,
 	NewGoodsRepo,
 	NewEsGoodsRepo,
-	NewGoodsSkuRepoRepo,
-	NewInventoryRepo,
+	NewBannerRepo,
+	NewCategoryBrandRepo,
 )
 
 // Data .

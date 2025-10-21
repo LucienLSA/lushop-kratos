@@ -1,0 +1,7 @@
+idempotent.token.invalid: 'idempotent token is invalid'
+
+too.many.requests: 'too many requests, please try again later'
+data.not.change: 'data has not changed'
+duplicate.field: 'duplicate field'
+record.not.found: 'record not found'
+illegal.parameter: 'illegal parameter'

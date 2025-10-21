@@ -6,7 +6,6 @@ type Brand struct {
 	Logo  string
 	Desc  string
 	IsTab bool
-	Sort  int32
 }
 
 func (b *Brand) IsNotExist(id int32) bool {

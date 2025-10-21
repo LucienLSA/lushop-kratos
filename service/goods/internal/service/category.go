@@ -26,7 +26,6 @@ func (g *GoodsService) UpdateCategory(ctx context.Context, r *v1.CategoryInfoReq
 		ParentCategory: r.ParentCategory,
 		Level:          r.Level,
 		IsTab:          r.IsTab,
-		Sort:           r.Sort,
 	})
 	return &emptypb.Empty{}, err
 }
@@ -37,7 +36,6 @@ func (g *GoodsService) CreateCategory(ctx context.Context, r *v1.CategoryInfoReq
 		ParentCategory: r.ParentCategory,
 		Level:          r.Level,
 		IsTab:          r.IsTab,
-		Sort:           r.Sort,
 	})
 	if err != nil {
 		return nil, err
@@ -45,10 +43,9 @@ func (g *GoodsService) CreateCategory(ctx context.Context, r *v1.CategoryInfoReq
 	return &v1.CategoryInfoResponse{
 		Id:             result.ID,
 		Name:           result.Name,
-		ParentCategory: result.ParentCategory,
+		ParentCategory: result.ParentCategoryID,
 		Level:          result.Level,
 		IsTab:          result.IsTab,
-		Sort:           result.Sort,
 	}, nil
 }
 
@@ -57,8 +54,24 @@ func (g *GoodsService) GetAllCategoryList(ctx context.Context, r *emptypb.Empty)
 	if err != nil {
 		return nil, err
 	}
+	// 构造 proto 响应 Data 与 Total
+	var data []*v1.CategoryInfoResponse
+	for _, c := range cate {
+		if c == nil {
+			continue
+		}
+		data = append(data, &v1.CategoryInfoResponse{
+			Id:             c.ID,
+			Name:           c.Name,
+			ParentCategory: c.ParentCategoryID,
+			Level:          c.Level,
+			IsTab:          c.IsTab,
+		})
+	}
 	jsonData, _ := json.Marshal(cate)
 	res := &v1.CategoryListResponse{
+		Total:   int32(len(data)),
+		Data:    data,
 		JsonData: string(jsonData),
 	}
 	return res, nil
@@ -75,22 +88,25 @@ func (g *GoodsService) GetSubCategory(ctx context.Context, r *v1.CategoryListReq
 	categoryListRes.Info = &v1.CategoryInfoResponse{
 		Id:             list.Category.ID,
 		Name:           list.Category.Name,
-		ParentCategory: list.Category.ParentCategory,
+		ParentCategory: list.Category.ParentCategoryID,
 		Level:          list.Category.Level,
 		IsTab:          list.Category.IsTab,
 	}
 
 	var subCategoryResponse []*v1.CategoryInfoResponse
 	for _, subC := range list.SubCategory {
-		subCategoryResponse = append(subCategoryResponse, &v1.CategoryInfoResponse{
-			Id:             subC.ID,
-			Name:           subC.Name,
-			ParentCategory: subC.ParentCategory,
-			Level:          subC.Level,
-			IsTab:          subC.IsTab,
-		})
+		// list.SubCategory is []*domain.CategoryList, take the Category inside each node
+		if subC != nil && subC.Category != nil {
+			subCategoryResponse = append(subCategoryResponse, &v1.CategoryInfoResponse{
+				Id:             subC.Category.ID,
+				Name:           subC.Category.Name,
+				ParentCategory: subC.Category.ParentCategoryID,
+				Level:          subC.Category.Level,
+				IsTab:          subC.Category.IsTab,
+			})
+		}
 	}
 
-	categoryListRes.SubCategory = subCategoryResponse
+	categoryListRes.SubCategorys = subCategoryResponse
 	return &categoryListRes, nil
 }

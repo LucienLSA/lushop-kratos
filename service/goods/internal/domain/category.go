@@ -7,12 +7,11 @@ type Category struct {
 	SubCategory      []*Category
 	Level            int32
 	IsTab            bool
-	Sort             int32
 }
 
 type CategoryList struct {
-	Category    *CategoryInfo
-	SubCategory []*CategoryInfo
+	Category    *Category
+	SubCategory []*CategoryList
 }
 
 type CategoryInfo struct {
@@ -21,5 +20,4 @@ type CategoryInfo struct {
 	ParentCategory int32
 	Level          int32
 	IsTab          bool
-	Sort           int32
 }

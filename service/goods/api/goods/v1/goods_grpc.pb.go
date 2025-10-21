@@ -20,54 +20,70 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Goods_GetAllCategoryList_FullMethodName       = "/goods.v1.Goods/GetAllCategoryList"
-	Goods_CreateCategory_FullMethodName           = "/goods.v1.Goods/CreateCategory"
-	Goods_GetSubCategory_FullMethodName           = "/goods.v1.Goods/GetSubCategory"
-	Goods_DeleteCategory_FullMethodName           = "/goods.v1.Goods/DeleteCategory"
-	Goods_UpdateCategory_FullMethodName           = "/goods.v1.Goods/UpdateCategory"
-	Goods_BrandList_FullMethodName                = "/goods.v1.Goods/BrandList"
-	Goods_CreateBrand_FullMethodName              = "/goods.v1.Goods/CreateBrand"
-	Goods_DeleteBrand_FullMethodName              = "/goods.v1.Goods/DeleteBrand"
-	Goods_UpdateBrand_FullMethodName              = "/goods.v1.Goods/UpdateBrand"
-	Goods_CreateGoodsSpecification_FullMethodName = "/goods.v1.Goods/CreateGoodsSpecification"
-	Goods_CreateGoodsType_FullMethodName          = "/goods.v1.Goods/CreateGoodsType"
-	Goods_CreateAttrGroup_FullMethodName          = "/goods.v1.Goods/CreateAttrGroup"
-	Goods_CreateAttrValue_FullMethodName          = "/goods.v1.Goods/CreateAttrValue"
-	Goods_CreateGoods_FullMethodName              = "/goods.v1.Goods/CreateGoods"
-	Goods_UpdateGoods_FullMethodName              = "/goods.v1.Goods/UpdateGoods"
-	Goods_GoodsList_FullMethodName                = "/goods.v1.Goods/GoodsList"
-	Goods_SkuList_FullMethodName                  = "/goods.v1.Goods/SkuList"
+	Goods_GoodsList_FullMethodName            = "/goods.v1.Goods/GoodsList"
+	Goods_GoodsListES_FullMethodName          = "/goods.v1.Goods/GoodsListES"
+	Goods_BatchGetGoods_FullMethodName        = "/goods.v1.Goods/BatchGetGoods"
+	Goods_CreateGoods_FullMethodName          = "/goods.v1.Goods/CreateGoods"
+	Goods_DeleteGoods_FullMethodName          = "/goods.v1.Goods/DeleteGoods"
+	Goods_UpdateGoods_FullMethodName          = "/goods.v1.Goods/UpdateGoods"
+	Goods_GetGoodsDetail_FullMethodName       = "/goods.v1.Goods/GetGoodsDetail"
+	Goods_GetAllCategorysList_FullMethodName  = "/goods.v1.Goods/GetAllCategorysList"
+	Goods_GetSubCategory_FullMethodName       = "/goods.v1.Goods/GetSubCategory"
+	Goods_CreateCategory_FullMethodName       = "/goods.v1.Goods/CreateCategory"
+	Goods_DeleteCategory_FullMethodName       = "/goods.v1.Goods/DeleteCategory"
+	Goods_UpdateCategory_FullMethodName       = "/goods.v1.Goods/UpdateCategory"
+	Goods_BrandList_FullMethodName            = "/goods.v1.Goods/BrandList"
+	Goods_CreateBrand_FullMethodName          = "/goods.v1.Goods/CreateBrand"
+	Goods_DeleteBrand_FullMethodName          = "/goods.v1.Goods/DeleteBrand"
+	Goods_UpdateBrand_FullMethodName          = "/goods.v1.Goods/UpdateBrand"
+	Goods_BannerList_FullMethodName           = "/goods.v1.Goods/BannerList"
+	Goods_CreateBanner_FullMethodName         = "/goods.v1.Goods/CreateBanner"
+	Goods_DeleteBanner_FullMethodName         = "/goods.v1.Goods/DeleteBanner"
+	Goods_UpdateBanner_FullMethodName         = "/goods.v1.Goods/UpdateBanner"
+	Goods_CategoryBrandList_FullMethodName    = "/goods.v1.Goods/CategoryBrandList"
+	Goods_GetCategoryBrandList_FullMethodName = "/goods.v1.Goods/GetCategoryBrandList"
+	Goods_CreateCategoryBrand_FullMethodName  = "/goods.v1.Goods/CreateCategoryBrand"
+	Goods_DeleteCategoryBrand_FullMethodName  = "/goods.v1.Goods/DeleteCategoryBrand"
+	Goods_UpdateCategoryBrand_FullMethodName  = "/goods.v1.Goods/UpdateCategoryBrand"
 )
 
 // GoodsClient is the client API for Goods service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type GoodsClient interface {
+	// 商品接口
+	GoodsList(ctx context.Context, in *GoodsFilterRequest, opts ...grpc.CallOption) (*GoodsListResponse, error)
+	GoodsListES(ctx context.Context, in *GoodsFilterRequest, opts ...grpc.CallOption) (*GoodsListResponse, error)
+	// 现在用户提交订单有多个商品，批量查询商品的信息
+	BatchGetGoods(ctx context.Context, in *BatchGoodsIdInfo, opts ...grpc.CallOption) (*GoodsListResponse, error)
+	CreateGoods(ctx context.Context, in *CreateGoodsInfo, opts ...grpc.CallOption) (*GoodsInfoResponse, error)
+	DeleteGoods(ctx context.Context, in *DeleteGoodsInfo, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	UpdateGoods(ctx context.Context, in *CreateGoodsInfo, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	GetGoodsDetail(ctx context.Context, in *GoodInfoRequest, opts ...grpc.CallOption) (*GoodsInfoResponse, error)
 	// 商品分类
-	GetAllCategoryList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*CategoryListResponse, error)
-	CreateCategory(ctx context.Context, in *CategoryInfoRequest, opts ...grpc.CallOption) (*CategoryInfoResponse, error)
+	GetAllCategorysList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*CategoryListResponse, error)
+	// 获取子分类
 	GetSubCategory(ctx context.Context, in *CategoryListRequest, opts ...grpc.CallOption) (*SubCategoryListResponse, error)
+	CreateCategory(ctx context.Context, in *CategoryInfoRequest, opts ...grpc.CallOption) (*CategoryInfoResponse, error)
 	DeleteCategory(ctx context.Context, in *DeleteCategoryRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	UpdateCategory(ctx context.Context, in *CategoryInfoRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// 商品品牌
-	BrandList(ctx context.Context, in *BrandListRequest, opts ...grpc.CallOption) (*BrandListResponse, error)
+	// 品牌
+	BrandList(ctx context.Context, in *BrandFilterRequest, opts ...grpc.CallOption) (*BrandListResponse, error)
 	CreateBrand(ctx context.Context, in *BrandRequest, opts ...grpc.CallOption) (*BrandInfoResponse, error)
 	DeleteBrand(ctx context.Context, in *BrandRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	UpdateBrand(ctx context.Context, in *BrandRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// 商品规格或属性信息
-	CreateGoodsSpecification(ctx context.Context, in *SpecificationRequest, opts ...grpc.CallOption) (*SpecificationResponse, error)
-	// 商品类型 goods_property_names
-	// 商品类型不同于商品分类，指的是依据某一类商品的相同属性归纳成的属性集合 // 手机类型都有屏幕尺寸、网络制式等共同的属性
-	CreateGoodsType(ctx context.Context, in *GoodsTypeRequest, opts ...grpc.CallOption) (*GoodsTypeResponse, error)
-	// 商品参数
-	CreateAttrGroup(ctx context.Context, in *AttrGroupRequest, opts ...grpc.CallOption) (*AttrGroupResponse, error)
-	CreateAttrValue(ctx context.Context, in *AttrRequest, opts ...grpc.CallOption) (*AttrResponse, error)
-	// 商品
-	CreateGoods(ctx context.Context, in *CreateGoodsRequest, opts ...grpc.CallOption) (*CreateGoodsResponse, error)
-	UpdateGoods(ctx context.Context, in *CreateGoodsRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	GoodsList(ctx context.Context, in *GoodsFilterRequest, opts ...grpc.CallOption) (*GoodsListResponse, error)
-	// Sku
-	SkuList(ctx context.Context, in *SkuListRequest, opts ...grpc.CallOption) (*SkuListResponse, error)
+	// 轮播图
+	BannerList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*BannerListResponse, error)
+	CreateBanner(ctx context.Context, in *BannerRequest, opts ...grpc.CallOption) (*BannerResponse, error)
+	DeleteBanner(ctx context.Context, in *BannerRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	UpdateBanner(ctx context.Context, in *BannerRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// 品牌分类
+	CategoryBrandList(ctx context.Context, in *CategoryBrandFilterRequest, opts ...grpc.CallOption) (*CategoryBrandListResponse, error)
+	// 通过category获取brands
+	GetCategoryBrandList(ctx context.Context, in *CategoryInfoRequest, opts ...grpc.CallOption) (*BrandListResponse, error)
+	CreateCategoryBrand(ctx context.Context, in *CategoryBrandRequest, opts ...grpc.CallOption) (*CategoryBrandResponse, error)
+	DeleteCategoryBrand(ctx context.Context, in *CategoryBrandRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	UpdateCategoryBrand(ctx context.Context, in *CategoryBrandRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type goodsClient struct {
@@ -78,20 +94,80 @@ func NewGoodsClient(cc grpc.ClientConnInterface) GoodsClient {
 	return &goodsClient{cc}
 }
 
-func (c *goodsClient) GetAllCategoryList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*CategoryListResponse, error) {
+func (c *goodsClient) GoodsList(ctx context.Context, in *GoodsFilterRequest, opts ...grpc.CallOption) (*GoodsListResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CategoryListResponse)
-	err := c.cc.Invoke(ctx, Goods_GetAllCategoryList_FullMethodName, in, out, cOpts...)
+	out := new(GoodsListResponse)
+	err := c.cc.Invoke(ctx, Goods_GoodsList_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *goodsClient) CreateCategory(ctx context.Context, in *CategoryInfoRequest, opts ...grpc.CallOption) (*CategoryInfoResponse, error) {
+func (c *goodsClient) GoodsListES(ctx context.Context, in *GoodsFilterRequest, opts ...grpc.CallOption) (*GoodsListResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CategoryInfoResponse)
-	err := c.cc.Invoke(ctx, Goods_CreateCategory_FullMethodName, in, out, cOpts...)
+	out := new(GoodsListResponse)
+	err := c.cc.Invoke(ctx, Goods_GoodsListES_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *goodsClient) BatchGetGoods(ctx context.Context, in *BatchGoodsIdInfo, opts ...grpc.CallOption) (*GoodsListResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GoodsListResponse)
+	err := c.cc.Invoke(ctx, Goods_BatchGetGoods_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *goodsClient) CreateGoods(ctx context.Context, in *CreateGoodsInfo, opts ...grpc.CallOption) (*GoodsInfoResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GoodsInfoResponse)
+	err := c.cc.Invoke(ctx, Goods_CreateGoods_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *goodsClient) DeleteGoods(ctx context.Context, in *DeleteGoodsInfo, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, Goods_DeleteGoods_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *goodsClient) UpdateGoods(ctx context.Context, in *CreateGoodsInfo, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, Goods_UpdateGoods_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *goodsClient) GetGoodsDetail(ctx context.Context, in *GoodInfoRequest, opts ...grpc.CallOption) (*GoodsInfoResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GoodsInfoResponse)
+	err := c.cc.Invoke(ctx, Goods_GetGoodsDetail_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *goodsClient) GetAllCategorysList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*CategoryListResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CategoryListResponse)
+	err := c.cc.Invoke(ctx, Goods_GetAllCategorysList_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -102,6 +178,16 @@ func (c *goodsClient) GetSubCategory(ctx context.Context, in *CategoryListReques
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(SubCategoryListResponse)
 	err := c.cc.Invoke(ctx, Goods_GetSubCategory_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *goodsClient) CreateCategory(ctx context.Context, in *CategoryInfoRequest, opts ...grpc.CallOption) (*CategoryInfoResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CategoryInfoResponse)
+	err := c.cc.Invoke(ctx, Goods_CreateCategory_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -128,7 +214,7 @@ func (c *goodsClient) UpdateCategory(ctx context.Context, in *CategoryInfoReques
 	return out, nil
 }
 
-func (c *goodsClient) BrandList(ctx context.Context, in *BrandListRequest, opts ...grpc.CallOption) (*BrandListResponse, error) {
+func (c *goodsClient) BrandList(ctx context.Context, in *BrandFilterRequest, opts ...grpc.CallOption) (*BrandListResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(BrandListResponse)
 	err := c.cc.Invoke(ctx, Goods_BrandList_FullMethodName, in, out, cOpts...)
@@ -168,80 +254,90 @@ func (c *goodsClient) UpdateBrand(ctx context.Context, in *BrandRequest, opts ..
 	return out, nil
 }
 
-func (c *goodsClient) CreateGoodsSpecification(ctx context.Context, in *SpecificationRequest, opts ...grpc.CallOption) (*SpecificationResponse, error) {
+func (c *goodsClient) BannerList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*BannerListResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(SpecificationResponse)
-	err := c.cc.Invoke(ctx, Goods_CreateGoodsSpecification_FullMethodName, in, out, cOpts...)
+	out := new(BannerListResponse)
+	err := c.cc.Invoke(ctx, Goods_BannerList_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *goodsClient) CreateGoodsType(ctx context.Context, in *GoodsTypeRequest, opts ...grpc.CallOption) (*GoodsTypeResponse, error) {
+func (c *goodsClient) CreateBanner(ctx context.Context, in *BannerRequest, opts ...grpc.CallOption) (*BannerResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GoodsTypeResponse)
-	err := c.cc.Invoke(ctx, Goods_CreateGoodsType_FullMethodName, in, out, cOpts...)
+	out := new(BannerResponse)
+	err := c.cc.Invoke(ctx, Goods_CreateBanner_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *goodsClient) CreateAttrGroup(ctx context.Context, in *AttrGroupRequest, opts ...grpc.CallOption) (*AttrGroupResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(AttrGroupResponse)
-	err := c.cc.Invoke(ctx, Goods_CreateAttrGroup_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *goodsClient) CreateAttrValue(ctx context.Context, in *AttrRequest, opts ...grpc.CallOption) (*AttrResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(AttrResponse)
-	err := c.cc.Invoke(ctx, Goods_CreateAttrValue_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *goodsClient) CreateGoods(ctx context.Context, in *CreateGoodsRequest, opts ...grpc.CallOption) (*CreateGoodsResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreateGoodsResponse)
-	err := c.cc.Invoke(ctx, Goods_CreateGoods_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *goodsClient) UpdateGoods(ctx context.Context, in *CreateGoodsRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *goodsClient) DeleteBanner(ctx context.Context, in *BannerRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, Goods_UpdateGoods_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, Goods_DeleteBanner_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *goodsClient) GoodsList(ctx context.Context, in *GoodsFilterRequest, opts ...grpc.CallOption) (*GoodsListResponse, error) {
+func (c *goodsClient) UpdateBanner(ctx context.Context, in *BannerRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GoodsListResponse)
-	err := c.cc.Invoke(ctx, Goods_GoodsList_FullMethodName, in, out, cOpts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, Goods_UpdateBanner_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *goodsClient) SkuList(ctx context.Context, in *SkuListRequest, opts ...grpc.CallOption) (*SkuListResponse, error) {
+func (c *goodsClient) CategoryBrandList(ctx context.Context, in *CategoryBrandFilterRequest, opts ...grpc.CallOption) (*CategoryBrandListResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(SkuListResponse)
-	err := c.cc.Invoke(ctx, Goods_SkuList_FullMethodName, in, out, cOpts...)
+	out := new(CategoryBrandListResponse)
+	err := c.cc.Invoke(ctx, Goods_CategoryBrandList_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *goodsClient) GetCategoryBrandList(ctx context.Context, in *CategoryInfoRequest, opts ...grpc.CallOption) (*BrandListResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BrandListResponse)
+	err := c.cc.Invoke(ctx, Goods_GetCategoryBrandList_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *goodsClient) CreateCategoryBrand(ctx context.Context, in *CategoryBrandRequest, opts ...grpc.CallOption) (*CategoryBrandResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CategoryBrandResponse)
+	err := c.cc.Invoke(ctx, Goods_CreateCategoryBrand_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *goodsClient) DeleteCategoryBrand(ctx context.Context, in *CategoryBrandRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, Goods_DeleteCategoryBrand_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *goodsClient) UpdateCategoryBrand(ctx context.Context, in *CategoryBrandRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, Goods_UpdateCategoryBrand_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -252,31 +348,39 @@ func (c *goodsClient) SkuList(ctx context.Context, in *SkuListRequest, opts ...g
 // All implementations must embed UnimplementedGoodsServer
 // for forward compatibility.
 type GoodsServer interface {
+	// 商品接口
+	GoodsList(context.Context, *GoodsFilterRequest) (*GoodsListResponse, error)
+	GoodsListES(context.Context, *GoodsFilterRequest) (*GoodsListResponse, error)
+	// 现在用户提交订单有多个商品，批量查询商品的信息
+	BatchGetGoods(context.Context, *BatchGoodsIdInfo) (*GoodsListResponse, error)
+	CreateGoods(context.Context, *CreateGoodsInfo) (*GoodsInfoResponse, error)
+	DeleteGoods(context.Context, *DeleteGoodsInfo) (*emptypb.Empty, error)
+	UpdateGoods(context.Context, *CreateGoodsInfo) (*emptypb.Empty, error)
+	GetGoodsDetail(context.Context, *GoodInfoRequest) (*GoodsInfoResponse, error)
 	// 商品分类
-	GetAllCategoryList(context.Context, *emptypb.Empty) (*CategoryListResponse, error)
-	CreateCategory(context.Context, *CategoryInfoRequest) (*CategoryInfoResponse, error)
+	GetAllCategorysList(context.Context, *emptypb.Empty) (*CategoryListResponse, error)
+	// 获取子分类
 	GetSubCategory(context.Context, *CategoryListRequest) (*SubCategoryListResponse, error)
+	CreateCategory(context.Context, *CategoryInfoRequest) (*CategoryInfoResponse, error)
 	DeleteCategory(context.Context, *DeleteCategoryRequest) (*emptypb.Empty, error)
 	UpdateCategory(context.Context, *CategoryInfoRequest) (*emptypb.Empty, error)
-	// 商品品牌
-	BrandList(context.Context, *BrandListRequest) (*BrandListResponse, error)
+	// 品牌
+	BrandList(context.Context, *BrandFilterRequest) (*BrandListResponse, error)
 	CreateBrand(context.Context, *BrandRequest) (*BrandInfoResponse, error)
 	DeleteBrand(context.Context, *BrandRequest) (*emptypb.Empty, error)
 	UpdateBrand(context.Context, *BrandRequest) (*emptypb.Empty, error)
-	// 商品规格或属性信息
-	CreateGoodsSpecification(context.Context, *SpecificationRequest) (*SpecificationResponse, error)
-	// 商品类型 goods_property_names
-	// 商品类型不同于商品分类，指的是依据某一类商品的相同属性归纳成的属性集合 // 手机类型都有屏幕尺寸、网络制式等共同的属性
-	CreateGoodsType(context.Context, *GoodsTypeRequest) (*GoodsTypeResponse, error)
-	// 商品参数
-	CreateAttrGroup(context.Context, *AttrGroupRequest) (*AttrGroupResponse, error)
-	CreateAttrValue(context.Context, *AttrRequest) (*AttrResponse, error)
-	// 商品
-	CreateGoods(context.Context, *CreateGoodsRequest) (*CreateGoodsResponse, error)
-	UpdateGoods(context.Context, *CreateGoodsRequest) (*emptypb.Empty, error)
-	GoodsList(context.Context, *GoodsFilterRequest) (*GoodsListResponse, error)
-	// Sku
-	SkuList(context.Context, *SkuListRequest) (*SkuListResponse, error)
+	// 轮播图
+	BannerList(context.Context, *emptypb.Empty) (*BannerListResponse, error)
+	CreateBanner(context.Context, *BannerRequest) (*BannerResponse, error)
+	DeleteBanner(context.Context, *BannerRequest) (*emptypb.Empty, error)
+	UpdateBanner(context.Context, *BannerRequest) (*emptypb.Empty, error)
+	// 品牌分类
+	CategoryBrandList(context.Context, *CategoryBrandFilterRequest) (*CategoryBrandListResponse, error)
+	// 通过category获取brands
+	GetCategoryBrandList(context.Context, *CategoryInfoRequest) (*BrandListResponse, error)
+	CreateCategoryBrand(context.Context, *CategoryBrandRequest) (*CategoryBrandResponse, error)
+	DeleteCategoryBrand(context.Context, *CategoryBrandRequest) (*emptypb.Empty, error)
+	UpdateCategoryBrand(context.Context, *CategoryBrandRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedGoodsServer()
 }
 
@@ -287,14 +391,35 @@ type GoodsServer interface {
 // pointer dereference when methods are called.
 type UnimplementedGoodsServer struct{}
 
-func (UnimplementedGoodsServer) GetAllCategoryList(context.Context, *emptypb.Empty) (*CategoryListResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllCategoryList not implemented")
+func (UnimplementedGoodsServer) GoodsList(context.Context, *GoodsFilterRequest) (*GoodsListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GoodsList not implemented")
 }
-func (UnimplementedGoodsServer) CreateCategory(context.Context, *CategoryInfoRequest) (*CategoryInfoResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateCategory not implemented")
+func (UnimplementedGoodsServer) GoodsListES(context.Context, *GoodsFilterRequest) (*GoodsListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GoodsListES not implemented")
+}
+func (UnimplementedGoodsServer) BatchGetGoods(context.Context, *BatchGoodsIdInfo) (*GoodsListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BatchGetGoods not implemented")
+}
+func (UnimplementedGoodsServer) CreateGoods(context.Context, *CreateGoodsInfo) (*GoodsInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateGoods not implemented")
+}
+func (UnimplementedGoodsServer) DeleteGoods(context.Context, *DeleteGoodsInfo) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteGoods not implemented")
+}
+func (UnimplementedGoodsServer) UpdateGoods(context.Context, *CreateGoodsInfo) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateGoods not implemented")
+}
+func (UnimplementedGoodsServer) GetGoodsDetail(context.Context, *GoodInfoRequest) (*GoodsInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetGoodsDetail not implemented")
+}
+func (UnimplementedGoodsServer) GetAllCategorysList(context.Context, *emptypb.Empty) (*CategoryListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllCategorysList not implemented")
 }
 func (UnimplementedGoodsServer) GetSubCategory(context.Context, *CategoryListRequest) (*SubCategoryListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSubCategory not implemented")
+}
+func (UnimplementedGoodsServer) CreateCategory(context.Context, *CategoryInfoRequest) (*CategoryInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateCategory not implemented")
 }
 func (UnimplementedGoodsServer) DeleteCategory(context.Context, *DeleteCategoryRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteCategory not implemented")
@@ -302,7 +427,7 @@ func (UnimplementedGoodsServer) DeleteCategory(context.Context, *DeleteCategoryR
 func (UnimplementedGoodsServer) UpdateCategory(context.Context, *CategoryInfoRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateCategory not implemented")
 }
-func (UnimplementedGoodsServer) BrandList(context.Context, *BrandListRequest) (*BrandListResponse, error) {
+func (UnimplementedGoodsServer) BrandList(context.Context, *BrandFilterRequest) (*BrandListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BrandList not implemented")
 }
 func (UnimplementedGoodsServer) CreateBrand(context.Context, *BrandRequest) (*BrandInfoResponse, error) {
@@ -314,29 +439,32 @@ func (UnimplementedGoodsServer) DeleteBrand(context.Context, *BrandRequest) (*em
 func (UnimplementedGoodsServer) UpdateBrand(context.Context, *BrandRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateBrand not implemented")
 }
-func (UnimplementedGoodsServer) CreateGoodsSpecification(context.Context, *SpecificationRequest) (*SpecificationResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateGoodsSpecification not implemented")
+func (UnimplementedGoodsServer) BannerList(context.Context, *emptypb.Empty) (*BannerListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BannerList not implemented")
 }
-func (UnimplementedGoodsServer) CreateGoodsType(context.Context, *GoodsTypeRequest) (*GoodsTypeResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateGoodsType not implemented")
+func (UnimplementedGoodsServer) CreateBanner(context.Context, *BannerRequest) (*BannerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateBanner not implemented")
 }
-func (UnimplementedGoodsServer) CreateAttrGroup(context.Context, *AttrGroupRequest) (*AttrGroupResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateAttrGroup not implemented")
+func (UnimplementedGoodsServer) DeleteBanner(context.Context, *BannerRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteBanner not implemented")
 }
-func (UnimplementedGoodsServer) CreateAttrValue(context.Context, *AttrRequest) (*AttrResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateAttrValue not implemented")
+func (UnimplementedGoodsServer) UpdateBanner(context.Context, *BannerRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateBanner not implemented")
 }
-func (UnimplementedGoodsServer) CreateGoods(context.Context, *CreateGoodsRequest) (*CreateGoodsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateGoods not implemented")
+func (UnimplementedGoodsServer) CategoryBrandList(context.Context, *CategoryBrandFilterRequest) (*CategoryBrandListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CategoryBrandList not implemented")
 }
-func (UnimplementedGoodsServer) UpdateGoods(context.Context, *CreateGoodsRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateGoods not implemented")
+func (UnimplementedGoodsServer) GetCategoryBrandList(context.Context, *CategoryInfoRequest) (*BrandListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCategoryBrandList not implemented")
 }
-func (UnimplementedGoodsServer) GoodsList(context.Context, *GoodsFilterRequest) (*GoodsListResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GoodsList not implemented")
+func (UnimplementedGoodsServer) CreateCategoryBrand(context.Context, *CategoryBrandRequest) (*CategoryBrandResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateCategoryBrand not implemented")
 }
-func (UnimplementedGoodsServer) SkuList(context.Context, *SkuListRequest) (*SkuListResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SkuList not implemented")
+func (UnimplementedGoodsServer) DeleteCategoryBrand(context.Context, *CategoryBrandRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteCategoryBrand not implemented")
+}
+func (UnimplementedGoodsServer) UpdateCategoryBrand(context.Context, *CategoryBrandRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateCategoryBrand not implemented")
 }
 func (UnimplementedGoodsServer) mustEmbedUnimplementedGoodsServer() {}
 func (UnimplementedGoodsServer) testEmbeddedByValue()               {}
@@ -359,38 +487,146 @@ func RegisterGoodsServer(s grpc.ServiceRegistrar, srv GoodsServer) {
 	s.RegisterService(&Goods_ServiceDesc, srv)
 }
 
-func _Goods_GetAllCategoryList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Goods_GoodsList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GoodsFilterRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GoodsServer).GoodsList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Goods_GoodsList_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GoodsServer).GoodsList(ctx, req.(*GoodsFilterRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Goods_GoodsListES_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GoodsFilterRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GoodsServer).GoodsListES(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Goods_GoodsListES_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GoodsServer).GoodsListES(ctx, req.(*GoodsFilterRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Goods_BatchGetGoods_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BatchGoodsIdInfo)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GoodsServer).BatchGetGoods(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Goods_BatchGetGoods_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GoodsServer).BatchGetGoods(ctx, req.(*BatchGoodsIdInfo))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Goods_CreateGoods_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateGoodsInfo)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GoodsServer).CreateGoods(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Goods_CreateGoods_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GoodsServer).CreateGoods(ctx, req.(*CreateGoodsInfo))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Goods_DeleteGoods_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteGoodsInfo)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GoodsServer).DeleteGoods(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Goods_DeleteGoods_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GoodsServer).DeleteGoods(ctx, req.(*DeleteGoodsInfo))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Goods_UpdateGoods_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateGoodsInfo)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GoodsServer).UpdateGoods(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Goods_UpdateGoods_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GoodsServer).UpdateGoods(ctx, req.(*CreateGoodsInfo))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Goods_GetGoodsDetail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GoodInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GoodsServer).GetGoodsDetail(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Goods_GetGoodsDetail_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GoodsServer).GetGoodsDetail(ctx, req.(*GoodInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Goods_GetAllCategorysList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GoodsServer).GetAllCategoryList(ctx, in)
+		return srv.(GoodsServer).GetAllCategorysList(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Goods_GetAllCategoryList_FullMethodName,
+		FullMethod: Goods_GetAllCategorysList_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GoodsServer).GetAllCategoryList(ctx, req.(*emptypb.Empty))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Goods_CreateCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CategoryInfoRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(GoodsServer).CreateCategory(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Goods_CreateCategory_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GoodsServer).CreateCategory(ctx, req.(*CategoryInfoRequest))
+		return srv.(GoodsServer).GetAllCategorysList(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -409,6 +645,24 @@ func _Goods_GetSubCategory_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(GoodsServer).GetSubCategory(ctx, req.(*CategoryListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Goods_CreateCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CategoryInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GoodsServer).CreateCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Goods_CreateCategory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GoodsServer).CreateCategory(ctx, req.(*CategoryInfoRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -450,7 +704,7 @@ func _Goods_UpdateCategory_Handler(srv interface{}, ctx context.Context, dec fun
 }
 
 func _Goods_BrandList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(BrandListRequest)
+	in := new(BrandFilterRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -462,7 +716,7 @@ func _Goods_BrandList_Handler(srv interface{}, ctx context.Context, dec func(int
 		FullMethod: Goods_BrandList_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GoodsServer).BrandList(ctx, req.(*BrandListRequest))
+		return srv.(GoodsServer).BrandList(ctx, req.(*BrandFilterRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -521,146 +775,164 @@ func _Goods_UpdateBrand_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Goods_CreateGoodsSpecification_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SpecificationRequest)
+func _Goods_BannerList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GoodsServer).CreateGoodsSpecification(ctx, in)
+		return srv.(GoodsServer).BannerList(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Goods_CreateGoodsSpecification_FullMethodName,
+		FullMethod: Goods_BannerList_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GoodsServer).CreateGoodsSpecification(ctx, req.(*SpecificationRequest))
+		return srv.(GoodsServer).BannerList(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Goods_CreateGoodsType_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GoodsTypeRequest)
+func _Goods_CreateBanner_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BannerRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GoodsServer).CreateGoodsType(ctx, in)
+		return srv.(GoodsServer).CreateBanner(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Goods_CreateGoodsType_FullMethodName,
+		FullMethod: Goods_CreateBanner_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GoodsServer).CreateGoodsType(ctx, req.(*GoodsTypeRequest))
+		return srv.(GoodsServer).CreateBanner(ctx, req.(*BannerRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Goods_CreateAttrGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AttrGroupRequest)
+func _Goods_DeleteBanner_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BannerRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GoodsServer).CreateAttrGroup(ctx, in)
+		return srv.(GoodsServer).DeleteBanner(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Goods_CreateAttrGroup_FullMethodName,
+		FullMethod: Goods_DeleteBanner_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GoodsServer).CreateAttrGroup(ctx, req.(*AttrGroupRequest))
+		return srv.(GoodsServer).DeleteBanner(ctx, req.(*BannerRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Goods_CreateAttrValue_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AttrRequest)
+func _Goods_UpdateBanner_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BannerRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GoodsServer).CreateAttrValue(ctx, in)
+		return srv.(GoodsServer).UpdateBanner(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Goods_CreateAttrValue_FullMethodName,
+		FullMethod: Goods_UpdateBanner_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GoodsServer).CreateAttrValue(ctx, req.(*AttrRequest))
+		return srv.(GoodsServer).UpdateBanner(ctx, req.(*BannerRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Goods_CreateGoods_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateGoodsRequest)
+func _Goods_CategoryBrandList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CategoryBrandFilterRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GoodsServer).CreateGoods(ctx, in)
+		return srv.(GoodsServer).CategoryBrandList(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Goods_CreateGoods_FullMethodName,
+		FullMethod: Goods_CategoryBrandList_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GoodsServer).CreateGoods(ctx, req.(*CreateGoodsRequest))
+		return srv.(GoodsServer).CategoryBrandList(ctx, req.(*CategoryBrandFilterRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Goods_UpdateGoods_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateGoodsRequest)
+func _Goods_GetCategoryBrandList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CategoryInfoRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GoodsServer).UpdateGoods(ctx, in)
+		return srv.(GoodsServer).GetCategoryBrandList(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Goods_UpdateGoods_FullMethodName,
+		FullMethod: Goods_GetCategoryBrandList_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GoodsServer).UpdateGoods(ctx, req.(*CreateGoodsRequest))
+		return srv.(GoodsServer).GetCategoryBrandList(ctx, req.(*CategoryInfoRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Goods_GoodsList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GoodsFilterRequest)
+func _Goods_CreateCategoryBrand_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CategoryBrandRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GoodsServer).GoodsList(ctx, in)
+		return srv.(GoodsServer).CreateCategoryBrand(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Goods_GoodsList_FullMethodName,
+		FullMethod: Goods_CreateCategoryBrand_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GoodsServer).GoodsList(ctx, req.(*GoodsFilterRequest))
+		return srv.(GoodsServer).CreateCategoryBrand(ctx, req.(*CategoryBrandRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Goods_SkuList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SkuListRequest)
+func _Goods_DeleteCategoryBrand_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CategoryBrandRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GoodsServer).SkuList(ctx, in)
+		return srv.(GoodsServer).DeleteCategoryBrand(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Goods_SkuList_FullMethodName,
+		FullMethod: Goods_DeleteCategoryBrand_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GoodsServer).SkuList(ctx, req.(*SkuListRequest))
+		return srv.(GoodsServer).DeleteCategoryBrand(ctx, req.(*CategoryBrandRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Goods_UpdateCategoryBrand_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CategoryBrandRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GoodsServer).UpdateCategoryBrand(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Goods_UpdateCategoryBrand_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GoodsServer).UpdateCategoryBrand(ctx, req.(*CategoryBrandRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -673,16 +945,44 @@ var Goods_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*GoodsServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetAllCategoryList",
-			Handler:    _Goods_GetAllCategoryList_Handler,
+			MethodName: "GoodsList",
+			Handler:    _Goods_GoodsList_Handler,
 		},
 		{
-			MethodName: "CreateCategory",
-			Handler:    _Goods_CreateCategory_Handler,
+			MethodName: "GoodsListES",
+			Handler:    _Goods_GoodsListES_Handler,
+		},
+		{
+			MethodName: "BatchGetGoods",
+			Handler:    _Goods_BatchGetGoods_Handler,
+		},
+		{
+			MethodName: "CreateGoods",
+			Handler:    _Goods_CreateGoods_Handler,
+		},
+		{
+			MethodName: "DeleteGoods",
+			Handler:    _Goods_DeleteGoods_Handler,
+		},
+		{
+			MethodName: "UpdateGoods",
+			Handler:    _Goods_UpdateGoods_Handler,
+		},
+		{
+			MethodName: "GetGoodsDetail",
+			Handler:    _Goods_GetGoodsDetail_Handler,
+		},
+		{
+			MethodName: "GetAllCategorysList",
+			Handler:    _Goods_GetAllCategorysList_Handler,
 		},
 		{
 			MethodName: "GetSubCategory",
 			Handler:    _Goods_GetSubCategory_Handler,
+		},
+		{
+			MethodName: "CreateCategory",
+			Handler:    _Goods_CreateCategory_Handler,
 		},
 		{
 			MethodName: "DeleteCategory",
@@ -709,36 +1009,40 @@ var Goods_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Goods_UpdateBrand_Handler,
 		},
 		{
-			MethodName: "CreateGoodsSpecification",
-			Handler:    _Goods_CreateGoodsSpecification_Handler,
+			MethodName: "BannerList",
+			Handler:    _Goods_BannerList_Handler,
 		},
 		{
-			MethodName: "CreateGoodsType",
-			Handler:    _Goods_CreateGoodsType_Handler,
+			MethodName: "CreateBanner",
+			Handler:    _Goods_CreateBanner_Handler,
 		},
 		{
-			MethodName: "CreateAttrGroup",
-			Handler:    _Goods_CreateAttrGroup_Handler,
+			MethodName: "DeleteBanner",
+			Handler:    _Goods_DeleteBanner_Handler,
 		},
 		{
-			MethodName: "CreateAttrValue",
-			Handler:    _Goods_CreateAttrValue_Handler,
+			MethodName: "UpdateBanner",
+			Handler:    _Goods_UpdateBanner_Handler,
 		},
 		{
-			MethodName: "CreateGoods",
-			Handler:    _Goods_CreateGoods_Handler,
+			MethodName: "CategoryBrandList",
+			Handler:    _Goods_CategoryBrandList_Handler,
 		},
 		{
-			MethodName: "UpdateGoods",
-			Handler:    _Goods_UpdateGoods_Handler,
+			MethodName: "GetCategoryBrandList",
+			Handler:    _Goods_GetCategoryBrandList_Handler,
 		},
 		{
-			MethodName: "GoodsList",
-			Handler:    _Goods_GoodsList_Handler,
+			MethodName: "CreateCategoryBrand",
+			Handler:    _Goods_CreateCategoryBrand_Handler,
 		},
 		{
-			MethodName: "SkuList",
-			Handler:    _Goods_SkuList_Handler,
+			MethodName: "DeleteCategoryBrand",
+			Handler:    _Goods_DeleteCategoryBrand_Handler,
+		},
+		{
+			MethodName: "UpdateCategoryBrand",
+			Handler:    _Goods_UpdateCategoryBrand_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

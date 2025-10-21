@@ -9,7 +9,6 @@ import (
 	"lushop/internal/conf/metrix"
 	"lushop/internal/pkg/middleware/auth"
 	casbinmw "lushop/internal/pkg/middleware/casbin"
-	"lushop/internal/pkg/middleware/i18n"
 	"lushop/internal/service"
 	httpNet "net/http"
 
@@ -44,7 +43,7 @@ func NewHTTPServer(c *conf.Server, ac *conf.Auth,
 		}),
 		http.Middleware(
 			recovery.Recovery(),
-			i18n.Translator(),
+			// i18n.Translator(),
 			validate.Validator(), // 接口访问的参数校验
 			tracing.Server(),     // 链路追踪
 			// JWT 验证 - 对所有需要认证的接口生效

@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+package userop.v1;
+
+import "google/protobuf/empty.proto";
+
+option go_package = "userop/api/userop/v1;v1";
+
+
+service UserOp{
+  rpc GetAddressList(AddressRequest) returns(AddressListResponse); //查看地址
+  rpc CreateAddress(AddressRequest) returns(AddressResponse); //新增地址
+  rpc DeleteAddress(AddressRequest) returns(google.protobuf.Empty); //删除地址
+  rpc UpdateAddress(AddressRequest) returns(google.protobuf.Empty); //修改地址
+  rpc MessageList(MessageRequest) returns(MessageListResponse); //批量获取留言信息
+  rpc CreateMessage(MessageRequest) returns(MessageResponse); //添加留言
+
+  rpc GetFavList(UserFavRequest) returns(UserFavListResponse); //过滤收藏信息
+  rpc AddUserFav(UserFavRequest) returns(google.protobuf.Empty); //添加收藏
+  rpc DeleteUserFav(UserFavRequest) returns(google.protobuf.Empty); //删除收藏
+  rpc GetUserFavDetail(UserFavRequest) returns(UserFavResponse); //查看用户是否已经收藏某件商品
+}
+// message Empty{}
+message AddressRequest{
+  int32 id = 1;
+  int32 userId = 2;
+  string province = 3;
+  string city = 4;
+  string district = 5;
+  string address = 6;
+  string signerName = 7;
+  string signerMobile = 8;
+}
+
+message  AddressResponse{
+  int32 id = 1;
+  int32 userId = 2;
+  string province = 3;
+  string city = 4;
+  string district = 5;
+  string address = 6;
+  string signerName = 7;
+  string signerMobile = 8;
+}
+
+
+message AddressListResponse {
+  int32 total = 1;
+  repeated AddressResponse data = 2;
+}
+message MessageRequest{
+  int32 id = 1;
+  int32 userId = 2;
+  int32 messageType = 3;
+  string subject = 4;
+  string message = 5;
+  string file = 6;
+}
+
+message  MessageResponse{
+  int32 id = 1;
+  int32 userId = 2;
+  int32 messageType = 3;
+  string subject = 4;
+  string message = 5;
+  string file = 6;
+}
+
+message MessageListResponse {
+  int32 total = 1;
+  repeated MessageResponse data = 2;
+}
+
+message UserFavRequest{
+  int32 userId = 1;
+  int32 goodsId = 2;
+}
+message UserFavResponse{
+  int32 userId = 1;
+  int32 goodsId = 2;
+}
+
+message UserFavListResponse {
+  int32 total = 1;
+  repeated UserFavResponse data = 2;
+}

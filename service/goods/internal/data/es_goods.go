@@ -96,20 +96,7 @@ func (esGoodsRepo) GetMapping() string {
             },
             "sold_num": {
                 "type": "integer"
-            },
-			"sku": {
-				"type": "nested",
-				"sku_id": {
-					"type": "integer",
-            	},
-				"sku_name": {
-					"type": "text",
-					"analyzer": "ik_max_word"
-            	},
-				"sku_price": {
-					"type": "integer",
-				},
-			}
+            }
         }
     }
 }`

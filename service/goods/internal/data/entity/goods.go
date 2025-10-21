@@ -38,17 +38,6 @@ func main() {
 		&data.Brand{},
 		&data.Category{},
 		&data.GoodsCategoryBrand{},
-		&data.GoodsType{},
-		// &data.GoodsTypeBrand{},
-		&data.SpecificationsAttr{},
-		&data.SpecificationsAttrValue{},
-		&data.GoodsAttrGroup{},
-		&data.GoodsAttr{},
-		&data.GoodsAttrValue{},
 		&data.Goods{},
-		&data.GoodsSku{},
-		// &data.GoodsImages{},
-		&data.GoodsSpecificationSku{},
-		&data.GoodsInventory{},
 	)
 }

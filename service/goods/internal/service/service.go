@@ -16,25 +16,24 @@ type GoodsService struct {
 	v1.UnimplementedGoodsServer
 	cac     *biz.CategoryUsecase
 	bc      *biz.BrandUsecase
-	gt      *biz.GoodsTypeUsecase
-	s       *biz.SpecificationUsecase
-	ga      *biz.GoodsAttrUsecase
 	g       *biz.GoodsUsecase
 	esGoods *biz.EsGoodsUsecase
+	cacb    *biz.CategoryBrandUsecase
+	ban     *biz.BannerUsecase
 	log     *log.Helper
 }
 
 // NewGoodsService new a goods service.
-func NewGoodsService(bc *biz.BrandUsecase, cac *biz.CategoryUsecase, gt *biz.GoodsTypeUsecase, s *biz.SpecificationUsecase,
-	ga *biz.GoodsAttrUsecase, gc *biz.GoodsUsecase, esGoods *biz.EsGoodsUsecase, logger log.Logger) *GoodsService {
+func NewGoodsService(bc *biz.BrandUsecase, cac *biz.CategoryUsecase, gc *biz.GoodsUsecase,
+	esGoods *biz.EsGoodsUsecase, cacb *biz.CategoryBrandUsecase,
+	ban *biz.BannerUsecase, logger log.Logger) *GoodsService {
 	return &GoodsService{
-		bc:  bc,
-		cac: cac,
-		gt:  gt,
-		s:   s,
-		ga:  ga,
-		g:   gc,
-		// esGoods: esGoods,
-		log: log.NewHelper(logger),
+		bc:      bc,
+		cac:     cac,
+		g:       gc,
+		esGoods: esGoods,
+		cacb:    cacb,
+		ban:     ban,
+		log:     log.NewHelper(logger),
 	}
 }

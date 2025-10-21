@@ -3,230 +3,135 @@ syntax = "proto3";
 package goods.v1;
 
 // import "google/api/annotations.proto";
-import "validate/validate.proto";
+// import "validate/validate.proto";
 import "google/protobuf/empty.proto";
 
 option go_package = "goods/api/goods/v1;v1";
 
-service Goods {
-  // 商品分类
-  rpc GetAllCategoryList(google.protobuf.Empty) returns(CategoryListResponse); // 获取所有商品分类
-  rpc CreateCategory(CategoryInfoRequest) returns (CategoryInfoResponse); // 新增商品分类 
-  rpc GetSubCategory(CategoryListRequest) returns(SubCategoryListResponse);// 获取子分类
-  rpc DeleteCategory(DeleteCategoryRequest) returns(google.protobuf.Empty); // 删除分类
-  rpc UpdateCategory(CategoryInfoRequest) returns(google.protobuf.Empty); // 修改分类信息
-
-  // 商品品牌
-  rpc BrandList(BrandListRequest) returns(BrandListResponse);
-  rpc CreateBrand(BrandRequest) returns(BrandInfoResponse);
-  rpc DeleteBrand(BrandRequest) returns(google.protobuf.Empty);
-  rpc UpdateBrand(BrandRequest) returns(google.protobuf.Empty);
-
-
-  // 商品规格或属性信息
-  rpc CreateGoodsSpecification(SpecificationRequest) returns (SpecificationResponse); // 新增商品规格的信息
-
-  // 商品类型 goods_property_names
-  // 商品类型不同于商品分类，指的是依据某一类商品的相同属性归纳成的属性集合 // 手机类型都有屏幕尺寸、网络制式等共同的属性
-  rpc CreateGoodsType(GoodsTypeRequest) returns(GoodsTypeResponse); // 商品类型基本信息创建
-
-  // 商品参数
-  rpc CreateAttrGroup(AttrGroupRequest) returns (AttrGroupResponse); // 新增商品属性分组名
-  rpc CreateAttrValue(AttrRequest) returns(AttrResponse); // 新增商品属性名称和值
-
-  // 商品
-  rpc CreateGoods(CreateGoodsRequest) returns (CreateGoodsResponse); // 新增商品
-  rpc UpdateGoods(CreateGoodsRequest) returns (google.protobuf.Empty);
+service Goods{
+  //商品接口
   rpc GoodsList(GoodsFilterRequest) returns(GoodsListResponse);
-  // rpc GetGoodsDetail(GoodInfoRequest) returns(GoodsInfoResponse);
-  // rpc BatchGetGoods(BatchGoodsIdInfo) returns(GoodsListResponse); // 现在用户提交订单有多个商品，你得批量查询商品的信息吧
-  // rpc DeleteGoods(DeleteGoodsInfo) returns (google.protobuf.Empty);
+  rpc GoodsListES(GoodsFilterRequest) returns(GoodsListResponse);
+  //现在用户提交订单有多个商品，批量查询商品的信息
+  rpc BatchGetGoods(BatchGoodsIdInfo) returns(GoodsListResponse); //批量获取商品信息
+  rpc CreateGoods(CreateGoodsInfo) returns (GoodsInfoResponse);
+  rpc DeleteGoods(DeleteGoodsInfo) returns (google.protobuf.Empty);
+  rpc UpdateGoods(CreateGoodsInfo) returns (google.protobuf.Empty);
+  rpc GetGoodsDetail(GoodInfoRequest) returns(GoodsInfoResponse);
 
-  // Sku
-  rpc SkuList(SkuListRequest) returns(SkuListResponse);
+  //商品分类
+  rpc GetAllCategorysList(google.protobuf.Empty) returns(CategoryListResponse); //获取所有的分类
+  //获取子分类
+  rpc GetSubCategory(CategoryListRequest) returns(SubCategoryListResponse);
+  rpc CreateCategory(CategoryInfoRequest) returns(CategoryInfoResponse); //新建分类信息
+  rpc DeleteCategory(DeleteCategoryRequest) returns(google.protobuf.Empty); //删除分类
+  rpc UpdateCategory(CategoryInfoRequest) returns(google.protobuf.Empty); //修改分类信息
+
+  //品牌
+  rpc BrandList(BrandFilterRequest) returns(BrandListResponse); //批量获取品牌信息
+  rpc CreateBrand(BrandRequest) returns(BrandInfoResponse); //新建品牌信息
+  rpc DeleteBrand(BrandRequest) returns(google.protobuf.Empty); //删除品牌
+  rpc UpdateBrand(BrandRequest) returns(google.protobuf.Empty); //修改品牌信息
+
+  //轮播图
+  rpc BannerList(google.protobuf.Empty) returns(BannerListResponse); //获取轮播列表信息
+  rpc CreateBanner(BannerRequest) returns(BannerResponse); //添加banner图
+  rpc DeleteBanner(BannerRequest) returns(google.protobuf.Empty); //删除轮播图
+  rpc UpdateBanner(BannerRequest) returns(google.protobuf.Empty); //修改轮播图
+
+  //品牌分类
+  rpc CategoryBrandList(CategoryBrandFilterRequest) returns(CategoryBrandListResponse); //获取轮播列表信息
+  //通过category获取brands
+  rpc GetCategoryBrandList(CategoryInfoRequest) returns(BrandListResponse);
+  rpc CreateCategoryBrand(CategoryBrandRequest) returns(CategoryBrandResponse); //添加banner图
+  rpc DeleteCategoryBrand(CategoryBrandRequest) returns(google.protobuf.Empty); //删除轮播图
+  rpc UpdateCategoryBrand(CategoryBrandRequest) returns(google.protobuf.Empty); //修改轮播图
 }
 
-message CategoryInfoRequest{
-  int32 id = 1;
-  string name = 2;
-  int32 parentCategory = 3;
-  int32 level = 4;
-  bool isTab = 5;
-  int32 sort = 6;
-}
+// message Empty {}
 
-message CategoryInfoResponse{
-  int32 id = 1;
-  string name = 2;
-  int32 parentCategory = 3;
-  int32 level = 4;
-  bool isTab = 5;
-  int32 sort = 6;
-}
-
-message SubCategoryListResponse {
-  CategoryInfoResponse info = 1;
-  repeated CategoryInfoResponse subCategory = 2;
-}
-
-message DeleteCategoryRequest {
-  int32 id = 1;
-}
-
-message CategoryListResponse {
-  string jsonData = 1;
-}
 message CategoryListRequest {
   int32 id = 1;
   int32 level = 2;
 }
 
-message SpecificationValue {
-  int64 id = 1;
-  int64 attrId = 2;
-  string value = 3 [(validate.rules).string.min_len = 3];
-  int32 sort = 4 [(validate.rules).int32.gte = 1];
-}
 
-message SpecificationValueResponse {
-  int64 id = 1;
-  int64 attrId = 2;
-  string value = 3 ;
-  int32 sort = 4;
-}
-
-message SpecificationRequest {
-  int64 id = 1;
-  int64 typeId = 2 [(validate.rules).int64.gte = 1];
-  string name = 3 [(validate.rules).string.min_len = 2];
-  int32 sort = 4 [(validate.rules).int32.gte = 1];
-  bool status = 5;
-  bool isSku = 6;
-  bool isSelect = 7;
-  repeated SpecificationValue specificationValue = 8;
-}
-
-message SpecificationResponse {
-  int64 id = 1;
+message CategoryInfoRequest {
+  int32 id = 1;
+  string name = 2;
+  int32 parentCategory = 3;
+  int32 level = 4;
+  bool isTab = 5;
 }
 
 
-message AttrGroupRequest {
-  int64 id = 1;
-  int64 typeId = 2 [(validate.rules).int64.gte = 1];
-  string title = 3 [(validate.rules).string.min_len = 3];
-  string  desc = 4;
-  bool status = 5;
-  int32 sort = 6 [(validate.rules).int32.gte = 1];
+message DeleteCategoryRequest {
+  int32 id = 1;
 }
 
-message AttrGroupResponse {
-  int64 id = 1;
-  int64 typeId = 2;
-  string title = 3;
-  string  desc = 4;
-  bool status = 5;
-  int32 sort = 6;
+message QueryCategoryRequest {
+  int32 id = 1;
+  string name = 2;
+}
+
+message CategoryInfoResponse {
+  int32 id = 1;
+  string name = 2;
+  int32 parentCategory = 3;
+  int32 level = 4;
+  bool isTab = 5;
+}
+
+message CategoryListResponse {
+  int32 total = 1;
+  repeated CategoryInfoResponse data = 2;
+  string jsonData = 3;
+}
+
+message SubCategoryListResponse {
+  int32 total = 1;
+  CategoryInfoResponse info = 2;
+  repeated CategoryInfoResponse subCategorys = 3;
 }
 
 
-message AttrValueRequest {
-  int64 id = 1;
-  int64 attrId = 2;
-  int64 groupId = 3 [(validate.rules).int64.gte = 1];
-  string value = 4 [(validate.rules).string.min_len = 3];
+
+message CategoryBrandFilterRequest  {
+  int32 pages = 1;
+  int32 pagePerNums = 2;
 }
 
-message AttrRequest {
-  int64 id = 1;
-  int64 typeId = 2 [(validate.rules).int64.gte = 1];
-  int64 groupId = 3 [(validate.rules).int64.gte = 1];
-  string title = 4 [(validate.rules).string = {min_len: 1}];
-  string  desc = 5;
-  bool status = 6;
-  int32 sort = 7 [(validate.rules).int32.gte = 1];
-  repeated AttrValueRequest attrValue = 8;
+message FilterRequest  {
+  int32 pages = 1;
+  int32 pagePerNums = 2;
 }
 
-message AttrValueResponse {
-  int64 id = 1;
-  int64 attrId = 2;
-  int64 groupId = 3;
-  string value = 4;
+message CategoryBrandRequest{
+  int32 id = 1;
+  int32 categoryId = 2;
+  int32 brandId = 3;
+}
+message CategoryBrandResponse{
+  int32 id = 1;
+  BrandInfoResponse brand = 2;
+  CategoryInfoResponse category = 3;
 }
 
-message AttrResponse {
-  int64 id = 1;
-  int64 typeId = 2;
-  int64 groupId = 3;
-  string title = 4;
-  string  desc = 5;
-  bool status = 6;
-  int32 sort = 7;
-  repeated AttrValueResponse attrValue = 8;
+message BannerRequest {
+  int32 id = 1;
+  int32 index = 2;
+  string image = 3;
+  string url = 4;
 }
 
-message CreateGoodsRequest {
-  int64 id = 1;
-  int32 categoryId = 2 [(validate.rules).int32.gte = 1];
-  int32 brandId = 3 [(validate.rules).int32.gte = 1];
-  int64 typeId = 4 [(validate.rules).int64.gte = 1];
-  string name = 5;
-  string nameAlias = 6;
-  string goodsTags = 7;
-  string goodsSn = 8;
-  int64 shopPrice = 9;
-  int64 marketPrice = 10;
-  int64 inventory = 11;
-  string goodsBrief = 12;
-  string goodsFrontImage = 13;
-  repeated string goodsImages = 14;
-  bool shipFree = 15;
-  int32 shipId = 16;
-  bool isNew = 17;
-  bool isHot = 18;
-  bool onSale = 19;
-  // 根据商品类型 选择商品规格信息并选择
-  // 商品 sku 属性值 里面有规格的ID和属性的ID，分别是几组信息
-  message goodsSku {
-    int64 id = 1;
-    int64 goodsId = 2;
-    string skuName = 3 [(validate.rules).string.min_len = 1];
-    string code = 4 [(validate.rules).string.min_len = 1];
-    string barCode = 5 [(validate.rules).string.min_len = 1];
-    int64 price = 6;
-    int64 promotionPrice = 7;
-    int64 points = 8;
-    string image = 9;
-    int32 sort = 10;
-    int64 inventory = 11; // sku 库存
-    // 规格
-    message specification {
-      int64 sId = 1 [(validate.rules).int64.gte = 1];
-      int64 vId = 2 [(validate.rules).int64.gte = 1];
-    }
-    repeated specification specificationInfo = 12;
-    // 属性组
-    message groupAttr {
-      int64 groupId = 1;
-      string groupName = 2;
-      message attr {
-        int64 attrId = 1 [(validate.rules).int64.gte = 1];
-        string attrName = 2 [(validate.rules).string.min_len = 1];
-        int64 attrValueId = 3 [(validate.rules).int64.gte = 1];
-        string attrValueName = 4 [(validate.rules).string.min_len = 1];
-      }
-      repeated attr attrInfo = 3;
-    }
-    repeated groupAttr groupAttrInfo = 13;
-  }
-  repeated goodsSku sku = 20;
-}
-message CreateGoodsResponse {
-  int64 ID = 1;
+message BannerResponse {
+  int32 id = 1;
+  int32 index = 2;
+  string image = 3;
+  string url = 4;
 }
 
-message BrandListRequest {
+message BrandFilterRequest {
   int32 pages = 1;
   int32 pagePerNums = 2;
 }
@@ -235,18 +140,12 @@ message BrandRequest {
   int32 id = 1;
   string name = 2;
   string logo = 3;
-  string desc = 4;
-  bool isTab = 5;
-  int32 sort = 6;
 }
 
 message BrandInfoResponse {
   int32 id = 1;
   string name = 2;
   string logo = 3;
-  string desc = 4;
-  bool isTab = 5;
-  int32 sort = 6;
 }
 
 message BrandListResponse {
@@ -254,68 +153,111 @@ message BrandListResponse {
   repeated BrandInfoResponse data = 2;
 }
 
-
-message SkuListRequest{
-  repeated int64 id = 1;
+message BannerListResponse {
+  int32 total = 1;
+  repeated BannerResponse data = 2;
 }
 
-message SkuListResponse {
-
+message CategoryBrandListResponse {
+  int32 total = 1;
+  repeated CategoryBrandResponse data = 2;
 }
 
-message GoodsTypeRequest {
-  int64 id = 1;
-  string name = 2  [(validate.rules).string.min_len = 3];
-  string typeCode = 3 [(validate.rules).string.min_len = 3];
-  string nameAlias = 4;
-  bool isVirtual = 5;
-  string desc = 6;
-  int32 sort = 7;
-  string brandIds = 8 [(validate.rules).string.min_len = 1];
-}
-message GoodsTypeResponse {
-  int64 id = 1;
+
+
+message BatchGoodsIdInfo {
+  repeated int32 id = 1;
 }
 
-// 根据设计的 mapping 结构，来构建查询的时候所需的字段
-message GoodsFilterRequest  {
-  string keywords = 1;
-  int32 categoryId = 2;
-  int32 brandId = 3;
-  int64 minPrice = 4;
-  int64 maxPrice = 5;
-  bool  isHot = 6;
-  bool  isNew = 7;
-  bool  isTab = 8;
-  int64 clickNum = 9;
-  int64 soldNum = 10;
-  int64 favNum = 11;
-  int64 pages = 12;
-  int64 pagePerNums = 13;
-  int64 id = 14;
+
+message DeleteGoodsInfo {
+  int32 id = 1;
 }
 
-message GoodsInfoResponse {
-  int64 id = 1;
-  int32 categoryId = 2;
-  int32 brandId = 3;
-  string name = 4;
-  string goodsSn = 5;
-  int64 clickNum = 6;
-  int64 soldNum = 7;
-  int64 favNum = 8;
-  int64 marketPrice = 9;
+message CategoryBriefInfoResponse {
+  int32 id = 1;
+  string name = 2;
+}
+
+message CategoryFilterRequest {
+  int32 id = 1;
+  bool  isTab = 2;
+}
+
+message GoodInfoRequest {
+  int32 id = 1;
+}
+
+message CreateGoodsInfo {
+  int32 id = 1;
+  string name = 2;
+  string goodsSn = 3;
+  int32 stocks = 7; //库存，
+  float marketPrice = 8;
+  float shopPrice = 9;
   string goodsBrief = 10;
   string goodsDesc = 11;
   bool shipFree = 12;
-  string images = 13;
-  repeated string goodsImages = 14;
-  bool isNew = 15;
-  bool isHot = 16;
-  bool onSale = 17;
+  repeated string images = 13;
+  repeated string descImages = 14;
+  string goodsFrontImage = 15;
+  bool isNew = 16;
+  bool isHot = 17;
+  bool onSale = 18;
+  int32 categoryId = 19;
+  int32 brandId = 20;
+}
+
+message GoodsReduceRequest {
+  int32 GoodsId = 1;
+  int32 nums = 2;
+}
+
+message BatchCategoryInfoRequest {
+  repeated int32 id = 1;
+  int32 goodsNums = 2;
+  int32 brandNums = 3;
+}
+
+message GoodsFilterRequest  {
+  int32 priceMin = 1; // 价格最小值
+  int32 priceMax = 2; // 价格最大值
+  bool  isHot = 3;
+  bool  isNew = 4;
+  bool  isTab = 5;
+  int32 topCategory = 6; // 顶级分类
+  int32 pages = 7;
+  int32 pagePerNums = 8;
+  string keyWords = 9; // 关键字搜索，后续使用es
+  int32 brand = 10;
+}
+
+
+message GoodsInfoResponse {
+  int32 id = 1;
+  int32 categoryId = 2;
+  string name = 3;
+  string goodsSn = 4;
+  int32 clickNum = 5;
+  int32 soldNum = 6;
+  int32 favNum = 7;
+  float marketPrice = 9;
+  float shopPrice = 10;
+  string goodsBrief = 11;
+  string goodsDesc = 12;
+  bool shipFree = 13;
+  repeated string images = 14;
+  repeated string descImages = 15;
+  string goodsFrontImage = 16;
+  bool isNew = 17;
+  bool isHot = 18;
+  bool onSale = 19;
+  int64 addTime = 20;
+  CategoryBriefInfoResponse category = 21;
+  BrandInfoResponse brand = 22;
 }
 
 message GoodsListResponse {
-  int64 total = 1;
-  repeated GoodsInfoResponse list = 2;
+  int32 total = 1;
+  repeated GoodsInfoResponse data = 2;
 }

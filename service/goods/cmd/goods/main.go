@@ -4,11 +4,9 @@ import (
 	"flag"
 	"os"
 
-	"goods/internal/conf"
+	nacosconfig "goods/internal/conf/nacos"
 
 	"github.com/go-kratos/kratos/v2"
-	"github.com/go-kratos/kratos/v2/config"
-	"github.com/go-kratos/kratos/v2/config/file"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/registry"
@@ -86,36 +84,55 @@ func main() {
 		"trace.id", tracing.TraceID(),
 		"span.id", tracing.SpanID(),
 	)
-	c := config.New(
-		config.WithSource(
-			file.NewSource(flagconf),
-		),
-	)
-	defer c.Close()
 
-	if err := c.Load(); err != nil {
-		panic(err)
-	}
-
-	var bc conf.Bootstrap
-	if err := c.Scan(&bc); err != nil {
-		panic(err)
-	}
-	// consul 的引入
-	var rc conf.Registry
-	if err := c.Scan(&rc); err != nil {
-		panic(err)
-	}
-	err := setTracerProvider(bc.Trace.Endpoint)
+	// 创建配置加载器
+	configLoader := nacosconfig.NewNacosConfigLoader(logger)
+	// 首先加载本地配置获取 Nacos 连接信息
+	localConfig, err := configLoader.CreateLocalConfig(flagconf)
 	if err != nil {
 		panic(err)
 	}
-	app, cleanup, err := wireApp(bc.Server, bc.Data, &rc, logger)
+	defer localConfig.Close()
+	// 获取初始配置
+	bc, err := configLoader.LoadBootstrapConfig(localConfig)
+	if err != nil {
+		panic(err)
+	}
+	// 使用 Nacos 优先的配置加载策略
+	c, err := configLoader.LoadConfigWithNacosPriority(bc, flagconf)
+	if err != nil {
+		panic(err)
+	}
+	defer c.Close()
+	// 重新加载配置（可能来自 Nacos）
+	bc, err = configLoader.LoadBootstrapConfig(c)
+	if err != nil {
+		panic(err)
+	}
+	// 加载注册中心配置
+	rc, err := configLoader.LoadRegistryConfig(c)
+	if err != nil {
+		panic(err)
+	}
+	// 设置链路追踪
+	if bc.Trace != nil {
+		err = setTracerProvider(bc.Trace.Endpoint)
+		if err != nil {
+			panic(err)
+		}
+	} else {
+		logger.Log(log.LevelWarn, "msg", "Trace configuration not found, skipping tracer setup")
+	}
+	app, cleanup, err := wireApp(bc.Server, bc.Data, rc, logger)
 	if err != nil {
 		panic(err)
 	}
 	defer cleanup()
-
+	// servicename, err := nacos.GetConfig().Value("service.name").String()
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// log.Debugf("servicename:%s", servicename)
 	// start and wait for stop signal
 	if err := app.Run(); err != nil {
 		panic(err)

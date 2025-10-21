@@ -29,7 +29,7 @@ func NewEsGoodsUsecase(repo GoodsRepo, es EsGoodsRepo, cRepo CategoryRepo, logge
 	}
 }
 
-func (g EsGoodsUsecase) GoodsList(ctx context.Context, req *domain.ESGoodsFilter) (*domain.GoodsListResponse, error) {
+func (g EsGoodsUsecase) GoodsListES(ctx context.Context, req *domain.ESGoodsFilter) (*domain.GoodsListResponse, error) {
 	// 组织 es 查询条件
 	var es domain.EsSearch
 	if req.Keywords != "" {
@@ -91,4 +91,7 @@ func (g EsGoodsUsecase) GoodsList(ctx context.Context, req *domain.ESGoodsFilter
 	res.List = goodsList
 	// TODO 根据返回的商品信息，查询所有分类、查询所有品牌、查询所有sku 的信息进行组合
 	return res, nil
+}
+func (g EsGoodsUsecase) InsertEsGoods(ctx context.Context, esGoods *domain.ESGoods) error {
+	return g.esRepo.InsertEsGoods(ctx, esGoods)
 }
