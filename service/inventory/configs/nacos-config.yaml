@@ -1,0 +1,23 @@
+server:
+  grpc:
+    addr: 0.0.0.0:50054
+    timeout: 1s
+service:
+  name: "inventory.service"
+data:
+  database:
+    driver: mysql
+    source: root:123456@tcp(127.0.0.1:3306)/lushop_inventory?charset=utf8mb4&parseTime=True&loc=Local
+  redis:
+    addr: 127.0.0.1:6379
+    dial_timeout: 1s
+    read_timeout: 0.2s
+    write_timeout: 0.2s
+  elastic:  
+    addr: http://127.0.0.1:9200
+trace:
+  endpoint: http://127.0.0.1:14268/api/traces
+registry:
+  consul:
+    address: 127.0.0.1:8500
+    scheme: http

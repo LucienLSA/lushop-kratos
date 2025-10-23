@@ -1,5 +1,9 @@
 package data
 
+// ⚠️ 已废弃：此文件为旧的 Redis 版本实现，已被 user_auth_repo_grpc.go 替代
+// 保留此文件仅用于回滚方案，如需回滚请在 data.go 的 ProviderSet 中切换回 NewUserRepo
+// 当前使用：NewUserAuthRepoGRPC（统一治理方案）
+
 import (
 	"context"
 	"fmt"

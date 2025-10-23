@@ -1,0 +1,135 @@
+syntax = "proto3";
+
+package lushop.userauth.v1;
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+
+option go_package = "lushop/api/userauth/v1;v1";
+
+// 用户认证服务 - 统一治理 Token/验证码/SMS/黑名单
+service UserAuth {
+    // ========== 验证码相关 ==========
+    // 获取图形验证码
+    rpc GetCaptcha(google.protobuf.Empty) returns (CaptchaReply) {
+        option (google.api.http) = {
+            get: "/userauth/v1/captcha"
+        };
+    }
+    
+    // 校验图形验证码（内部使用，不对外暴露 HTTP）
+    rpc VerifyCaptcha(VerifyCaptchaReq) returns (VerifyCaptchaReply);
+
+    // ========== 短信相关 ==========
+    // 发送短信验证码
+    rpc SendSms(SendSmsReq) returns (SendSmsReply) {
+        option (google.api.http) = {
+            post: "/userauth/v1/sms/send"
+            body: "*"
+        };
+    }
+    
+    // 校验短信验证码（内部使用）
+    rpc VerifySms(VerifySmsReq) returns (VerifySmsReply);
+
+    // ========== Token 管理 ==========
+    // 签发 Token（用于登录成功后）
+    rpc IssueToken(IssueTokenReq) returns (TokenReply) {
+        option (google.api.http) = {
+            post: "/userauth/v1/token/issue"
+            body: "*"
+        };
+    }
+    
+    // 刷新 Token
+    rpc RefreshToken(RefreshTokenReq) returns (TokenReply) {
+        option (google.api.http) = {
+            post: "/userauth/v1/token/refresh"
+            body: "*"
+        };
+    }
+    
+    // 撤销 Token（登出）
+    rpc RevokeToken(RevokeTokenReq) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/userauth/v1/token/revoke"
+            body: "*"
+        };
+    }
+
+    // ========== 黑名单管理 ==========
+    // 添加到黑名单（内部使用）
+    rpc AddToBlacklist(AddToBlacklistReq) returns (google.protobuf.Empty);
+    
+    // 检查是否在黑名单（内部使用）
+    rpc CheckBlacklist(CheckBlacklistReq) returns (CheckBlacklistReply);
+}
+
+// ========== 验证码消息 ==========
+message CaptchaReply {
+    string captcha_id = 1;
+    string pic_path = 2;
+}
+
+message VerifyCaptchaReq {
+    string captcha_id = 1 [(validate.rules).string = {min_len: 1}];
+    string captcha = 2 [(validate.rules).string = {min_len: 1}];
+}
+
+message VerifyCaptchaReply {
+    bool success = 1;
+}
+
+// ========== 短信消息 ==========
+message SendSmsReq {
+    string mobile = 1 [(validate.rules).string.len = 11];
+}
+
+message SendSmsReply {
+    bool success = 1;
+}
+
+message VerifySmsReq {
+    string mobile = 1 [(validate.rules).string.len = 11];
+    string sms_code = 2 [(validate.rules).string = {min_len: 6, max_len: 6}];
+}
+
+message VerifySmsReply {
+    bool success = 1;
+}
+
+// ========== Token 消息 ==========
+message IssueTokenReq {
+    int64 user_id = 1 [(validate.rules).int64.gt = 0];
+    string nick_name = 2;
+    int32 role = 3;
+}
+
+message TokenReply {
+    string access_token = 1;
+    string refresh_token = 2;
+    int64 expired_at = 3; // Access Token 过期时间戳
+}
+
+message RefreshTokenReq {
+    string refresh_token = 1 [(validate.rules).string = {min_len: 1}];
+}
+
+message RevokeTokenReq {
+    int64 user_id = 1 [(validate.rules).int64.gt = 0];
+}
+
+// ========== 黑名单消息 ==========
+message AddToBlacklistReq {
+    int64 user_id = 1 [(validate.rules).int64.gt = 0];
+    int64 ttl_seconds = 2; // 黑名单 TTL（秒），0 表示使用默认值
+}
+
+message CheckBlacklistReq {
+    int64 user_id = 1 [(validate.rules).int64.gt = 0];
+}
+
+message CheckBlacklistReply {
+    bool is_blacklisted = 1;
+}

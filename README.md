@@ -1,6 +1,43 @@
-# lushop-kratos
+# Lushop 微服务平台
 
-基于 https://github.com/LucienLSA/lushop.git 使用kratos框架进行重构
+基于 Kratos 框架的电商微服务平台，采用 gRPC 进行服务间通信，实现用户服务统一治理。
+
+原项目：https://github.com/LucienLSA/lushop.git
+
+## 🏗️ 服务架构
+
+- **lushop** - API 网关：HTTP 8001, gRPC 9001
+- **service/userauth-service** - 用户认证服务：gRPC 50055 ✨ **新增**
+- **user-service** - 用户服务：gRPC 50051
+- **goods-service** - 商品服务：gRPC 50052
+- **order-service** - 订单服务：gRPC 50053
+- **inventory-service** - 库存服务：gRPC 50054
+
+## 🚀 快速启动
+
+```bash
+# 1. 启动基础设施
+sudo systemctl start redis
+consul agent -dev &
+
+# 2. 一键启动所有服务
+chmod +x quick-start.sh
+./quick-start.sh
+
+# 3. 测试
+curl http://127.0.0.1:8001/api/user/captcha
+
+# 4. 停止服务
+./stop.sh
+```
+
+## 📚 文档
+
+- **[PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md)** - 📊 项目全景概览
+- **[PROJECT_COMPLETENESS.md](PROJECT_COMPLETENESS.md)** - ✅ 项目完整性检查
+- **[PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)** - 🏗️ 项目结构详解
+- **[MIGRATION_SUMMARY.md](MIGRATION_SUMMARY.md)** - 🔄 架构迁移总结
+- **[service/userauth-service/README.md](service/userauth-service/README.md)** - 🔐 UserAuth 服务文档
 
 TODO:
 

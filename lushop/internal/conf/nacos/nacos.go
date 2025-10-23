@@ -119,7 +119,7 @@ func (loader *NacosConfigLoader) LoadBootstrapConfig(c config.Config) (*conf.Boo
 // 这里引入consul
 func (loader *NacosConfigLoader) LoadRegistryConfig(c config.Config) (*conf.Registry, error) {
 	var rc conf.Registry
-	if err := c.Scan(&rc); err != nil {
+	if err := c.Value("registry").Scan(&rc); err != nil {
 		return nil, err
 	}
 	return &rc, nil

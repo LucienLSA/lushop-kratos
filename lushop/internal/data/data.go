@@ -6,6 +6,7 @@ import (
 	"time"
 
 	userV1 "lushop/api/service/user/v1"
+	userauthV1 "lushop/api/userauth/v1"
 
 	consul "github.com/go-kratos/kratos/contrib/registry/consul/v2"
 	"github.com/go-kratos/kratos/v2/log"
@@ -21,12 +22,22 @@ import (
 )
 
 // ProviderSet is data providers.
-var ProviderSet = wire.NewSet(NewData, NewUserRepo, NewUserServiceClient, NewRegister, NewDiscovery, NewRedis)
+var ProviderSet = wire.NewSet(
+	NewData,
+	NewUserAuthRepoGRPC, // 使用 gRPC 版本的用户仓库（统一治理方案）
+	// NewUserRepo,       // 旧的 Redis 版本（如需回滚可切换）
+	NewUserServiceClient,
+	NewUserAuthClient,
+	NewRegister,
+	NewDiscovery,
+	NewRedis,
+)
 
 // Data .
 type Data struct {
 	log *log.Helper
-	uc  userV1.UserClient // 用户服务的客户端
+	uc  userV1.UserClient         // 用户服务的客户端
+	uac userauthV1.UserAuthClient // 用户认证服务的客户端
 	rdb *redis.Client
 }
 
@@ -36,9 +47,9 @@ func (d *Data) Rdb() *redis.Client {
 }
 
 // NewData .
-func NewData(c *conf.Data, uc userV1.UserClient, logger log.Logger, rdb *redis.Client) (*Data, error) {
+func NewData(c *conf.Data, uc userV1.UserClient, uac userauthV1.UserAuthClient, logger log.Logger, rdb *redis.Client) (*Data, error) {
 	l := log.NewHelper(log.With(logger, "module", "data"))
-	return &Data{log: l, uc: uc, rdb: rdb}, nil
+	return &Data{log: l, uc: uc, uac: uac, rdb: rdb}, nil
 }
 
 // NewUserServiceClient 链接用户grpc服务
@@ -58,6 +69,26 @@ func NewUserServiceClient(ac *conf.Auth, sr *conf.Service, rr registry.Discovery
 		panic(err)
 	}
 	c := userV1.NewUserClient(conn)
+	return c
+}
+
+// NewUserAuthClient 链接用户认证grpc服务
+func NewUserAuthClient(ac *conf.Auth, sr *conf.Service, rr registry.Discovery) userauthV1.UserAuthClient {
+	conn, err := grpc.DialInsecure(
+		context.Background(),
+		grpc.WithEndpoint(sr.UserAuth.Endpoint), // consul
+		grpc.WithDiscovery(rr),                  // consul
+		grpc.WithMiddleware(
+			tracing.Client(), // 链路追踪
+			recovery.Recovery(),
+		),
+		grpc.WithTimeout(2*time.Second),
+		grpc.WithOptions(grpcx.WithStatsHandler(&tracing.ClientHandler{})),
+	)
+	if err != nil {
+		panic(err)
+	}
+	c := userauthV1.NewUserAuthClient(conn)
 	return c
 }
 

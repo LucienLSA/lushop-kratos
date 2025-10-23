@@ -28,13 +28,15 @@ func wireApp(confServer *conf.Server, confData *conf.Data, auth *conf.Auth, conf
 	}
 	discovery := data.NewDiscovery(registry)
 	userClient := data.NewUserServiceClient(auth, confService, discovery)
+	userAuthClient := data.NewUserAuthClient(auth, confService, discovery)
 	client := data.NewRedis(confData)
-	dataData, err := data.NewData(confData, userClient, logger, client)
+	dataData, err := data.NewData(confData, userClient, userAuthClient, logger, client)
 	if err != nil {
 		return nil, nil, err
 	}
-	userRepo := data.NewUserRepo(dataData, logger)
-	userUsecase := biz.NewUserUsecase(userRepo, logger, auth, sms)
+	userRepo := data.NewUserAuthRepoGRPC(dataData, logger)
+	userAuthAdapter := biz.NewUserAuthAdapter(userAuthClient, logger)
+	userUsecase := biz.NewUserUsecase(userRepo, userAuthAdapter, logger, auth, sms)
 	lushopService := service.NewLushopService(userUsecase, logger)
 	httpServer := server.NewHTTPServer(confServer, auth, enforcer, lushopService, logger)
 	grpcServer := server.NewGRPCServer(confServer, lushopService, logger)

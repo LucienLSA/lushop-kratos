@@ -1,7 +1,7 @@
 package config
 
 import (
-	"userop/internal/conf"
+	"order/internal/conf"
 
 	nacosconfig "github.com/go-kratos/kratos/contrib/config/nacos/v2"
 	"github.com/go-kratos/kratos/v2/config"

@@ -66,8 +66,12 @@ message Service {
   message Goods { // 商品服务
     string endpoint = 1;
   }
+  message UserAuth { // 用户认证服务
+    string endpoint = 1;
+  }
   User user = 1;
   Goods goods = 2;
+  UserAuth user_auth = 3;
 }
 
 message Trace {

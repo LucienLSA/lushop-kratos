@@ -5,6 +5,7 @@ import (
 	slog "log"
 	"os"
 	"time"
+	"userop/internal/biz"
 	"userop/internal/conf"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -31,15 +32,35 @@ func NewData(c *conf.Data, logger log.Logger, db *gorm.DB, rdb *redis.Client) (*
 	cleanup := func() {
 		log.NewHelper(logger).Info("closing the data resources")
 	}
-	return &Data{db: db, rdb: rdb}, cleanup, nil
+	return &Data{
+		db:  db,
+		rdb: rdb,
+	}, cleanup, nil
 }
 
-// CleanTestData 清理测试数据
-func (d *Data) CleanTestData() error {
-	if d.db != nil {
-		return d.db.Exec("DELETE FROM user WHERE mobile LIKE '1380388%'").Error
+// 用来承载事务的上下文
+type contextTxKey struct{}
+
+// NewTransaction .
+func NewTransaction(d *Data) biz.Transaction {
+	return d
+}
+
+// ExecTx gorm Transaction
+func (d *Data) ExecTx(ctx context.Context, fn func(ctx context.Context) error) error {
+	return d.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		ctx = context.WithValue(ctx, contextTxKey{}, tx)
+		return fn(ctx)
+	})
+}
+
+// DB 根据此方法来判断当前的 db 是不是使用 事务的 DB
+func (d *Data) DB(ctx context.Context) *gorm.DB {
+	tx, ok := ctx.Value(contextTxKey{}).(*gorm.DB)
+	if ok {
+		return tx
 	}
-	return nil
+	return d.db
 }
 
 // NewDB .
@@ -67,7 +88,6 @@ func NewDB(c *conf.Data) *gorm.DB {
 		log.Errorf("failed opening connection to sqlite: %v", err)
 		panic("failed to connect database")
 	}
-
 	return db
 }
 
@@ -81,11 +101,5 @@ func NewRedis(c *conf.Data) *redis.Client {
 		ReadTimeout:  c.Redis.ReadTimeout.AsDuration(),
 	})
 	rdb.AddHook(redisotel.TracingHook{})
-	// 测试连接是否正常
-	ctx := context.Background()
-	if err := rdb.Ping(ctx).Err(); err != nil {
-		log.Errorf("Failed to connect to Redis: %v", err)
-		// 不要关闭连接，让调用者处理错误
-	}
 	return rdb
 }

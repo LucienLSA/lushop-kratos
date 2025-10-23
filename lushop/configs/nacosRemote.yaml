@@ -23,12 +23,14 @@ data:
 trace:
   endpoint: http://127.0.0.1:14268/api/traces
 auth:
-  jwt_key: lushop-api-jwt
+  jwt_key: "lushop-secret-key-2024"
 service:
   user:
     endpoint: discovery:///lushop.user.service
   goods:
     endpoint: discovery:///lushop.goods.service
+  user_auth:
+    endpoint: "discovery:///user-auth-service"  # 新增认证服务
 sms:
   api_key: 'Ali_ApiKey'
   api_secret: 'Ali_ApiSecret'
@@ -36,3 +38,7 @@ sms:
   template_code: 'SMS_154950909'
   phone_number: '19821216806'
   region_id: 'cn-hangzhou'
+registry:
+  consul:
+    address: 127.0.0.1:8500
+    scheme: http

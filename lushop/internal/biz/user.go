@@ -3,20 +3,12 @@ package biz
 import (
 	"context"
 	"errors"
-	"fmt"
 	v1 "lushop/api/lushop/v1"
 	"lushop/internal/conf"
-	"lushop/internal/pkg/captcha"
 	"lushop/internal/pkg/middleware/auth"
-	"lushop/internal/pkg/sms"
-	"os"
 	"time"
 
-	openapi "github.com/alibabacloud-go/darabonba-openapi/v2/client"
-	dysmsapi "github.com/alibabacloud-go/dysmsapi-20170525/v4/client"
-	"github.com/alibabacloud-go/tea/tea"
 	"github.com/go-kratos/kratos/v2/log"
-	jwt5 "github.com/golang-jwt/jwt/v5"
 )
 
 // 定义错误
@@ -45,64 +37,50 @@ type User struct {
 }
 
 type UserRepo interface {
-	// mysql
+	// 用户资料相关（通过 User 服务）
 	CreateUser(c context.Context, u *User) (*User, error)
 	UserByMobile(ctx context.Context, mobile string) (*User, error)
 	UserById(ctx context.Context, Id int64) (*User, error)
 	UpdateUser(ctx context.Context, u *User) (*User, error)
 	CheckPassword(ctx context.Context, password, encryptedPassword string) (bool, error)
-	// 管理员可查看用户列表
 	ListUsers(ctx context.Context, req *v1.ListUsersReq) ([]*User, int, error)
 
-	// redis
-	StoreCaptcha(ctx context.Context, CaptchaId, Ans string) error
-	StoreToken(ctx context.Context, key, token string, expiration time.Duration) error
-	GetToken(ctx context.Context, key string) (string, error)
-	DeleteToken(ctx context.Context, key string) error
-	StoreRefreshToken(ctx context.Context, userId int64, token string, expiration time.Duration) error
-	GetRefreshToken(ctx context.Context, userId int64) (string, error)
-	DeleteRefreshToken(ctx context.Context, userId int64) error
+	// 黑名单相关（通过 UserAuth 服务）
 	StoreLogoutBlacklist(ctx context.Context, userId int64) error
 	CheckLogoutBlacklist(ctx context.Context, userId int64) (bool, error)
-	GetTokenTTL(ctx context.Context, key string) (time.Duration, error)
 	StoreLogoutBlacklistWithTTL(ctx context.Context, userId int64, ttl time.Duration) error
-
-	// sms
-	StoreSmsCode(ctx context.Context, mobile, code string, expiration time.Duration) error
-	GetSmsCode(ctx context.Context, mobile string) (string, error)
-	SetSmsCooldown(ctx context.Context, mobile string, expiration time.Duration) error
-	CheckSmsCooldown(ctx context.Context, mobile string) (bool, error)
 }
 
 type UserUsecase struct {
-	uRepo      UserRepo
-	log        *log.Helper
-	signingKey string // 这里是为了生存 token 的时候可以直接取配置文件里面的配置
-	smsConf    *conf.Sms
+	uRepo       UserRepo
+	authAdapter *UserAuthAdapter // 用户认证服务适配器
+	log         *log.Helper
+	signingKey  string // 保留用于向后兼容，实际 Token 签发由 UserAuth 服务处理
+	smsConf     *conf.Sms
 }
 
-func NewUserUsecase(repo UserRepo, logger log.Logger, conf *conf.Auth, smsConf *conf.Sms) *UserUsecase {
+func NewUserUsecase(repo UserRepo, authAdapter *UserAuthAdapter, logger log.Logger, conf *conf.Auth, smsConf *conf.Sms) *UserUsecase {
 	helper := log.NewHelper(log.With(logger, "module", "usecase/lushop"))
-	return &UserUsecase{uRepo: repo, log: helper, signingKey: conf.JwtKey, smsConf: smsConf}
+	return &UserUsecase{
+		uRepo:       repo,
+		authAdapter: authAdapter,
+		log:         helper,
+		signingKey:  conf.JwtKey,
+		smsConf:     smsConf,
+	}
 }
 
-// 获取验证码
+// 获取验证码 - 通过 UserAuth 服务
 func (uc *UserUsecase) GetCaptcha(ctx context.Context) (*v1.CaptchaReply, error) {
-	captchaInfo, err := captcha.GetCaptcha(ctx)
-	if err != nil {
-		return nil, err
-	}
-	// 将验证码存入Redis（5分钟过期）这里存入captcha_id作为key，ans作为value
-	err = uc.uRepo.StoreCaptcha(ctx, captchaInfo.CaptchaId, captchaInfo.Ans)
+	reply, err := uc.authAdapter.GetCaptcha(ctx)
 	if err != nil {
 		return nil, err
 	}
 	return &v1.CaptchaReply{
-		CaptchaId: captchaInfo.CaptchaId,
-		PicPath:   captchaInfo.PicPath,
-		Ans:       captchaInfo.Ans,
+		CaptchaId: reply.CaptchaId,
+		PicPath:   reply.PicPath,
+		// 注意：不返回 ans，安全考虑
 	}, nil
-
 }
 
 // 用户ID获取详情
@@ -113,7 +91,7 @@ func (uc *UserUsecase) UserDetailByID(ctx context.Context) (*v1.UserDetailRespon
 		return nil, ErrAuthFailed
 	}
 	// 检查用户是否在黑名单中
-	isBlacklisted, err := uc.uRepo.CheckLogoutBlacklist(ctx, uid)
+	isBlacklisted, err := uc.authAdapter.CheckBlacklist(ctx, uid)
 	if err != nil {
 		return nil, err
 	}
@@ -131,7 +109,7 @@ func (uc *UserUsecase) UserDetailByID(ctx context.Context) (*v1.UserDetailRespon
 	}, nil
 }
 
-// 用户密码登录
+// 用户密码登录 - 通过 UserAuth 服务签发 Token
 func (uc *UserUsecase) PasswordLogin(ctx context.Context, req *v1.LoginReq) (*v1.RegisterReply, error) {
 	// 表单验证
 	if len(req.Mobile) <= 0 {
@@ -140,76 +118,43 @@ func (uc *UserUsecase) PasswordLogin(ctx context.Context, req *v1.LoginReq) (*v1
 	if len(req.Password) <= 0 {
 		return nil, ErrUsernameInvalid
 	}
-	// 验证验证码是否正确
-	if !captcha.Store.Verify(req.CaptchaId, req.Captcha, true) {
+	
+	// 验证验证码是否正确 - 通过 UserAuth 服务
+	success, err := uc.authAdapter.VerifyCaptcha(ctx, req.CaptchaId, req.Captcha)
+	if err != nil || !success {
 		return nil, ErrCaptchaInvalid
 	}
+	
 	// 手机号验证
-	if user, err := uc.uRepo.UserByMobile(ctx, req.Mobile); err != nil {
+	user, err := uc.uRepo.UserByMobile(ctx, req.Mobile)
+	if err != nil {
 		return nil, ErrUserNotFound
-	} else {
-		// 检查密码
-		if passRsp, pasErr := uc.uRepo.CheckPassword(ctx, req.Password, user.Password); pasErr != nil {
-			return nil, ErrPasswordInvalid
-		} else {
-			if passRsp {
-				now := time.Now()
-				aexpiresAt := now.Add(30 * time.Minute)
-				aclaims := auth.CustomClaims{
-					ID:          user.ID,
-					NickName:    user.NickName,
-					AuthorityId: user.Role,
-					RegisteredClaims: jwt5.RegisteredClaims{
-						NotBefore: jwt5.NewNumericDate(now),
-						ExpiresAt: jwt5.NewNumericDate(aexpiresAt),
-						Issuer:    "lucien",
-					},
-				}
-				accessToken, err := auth.CreateToken(aclaims, uc.signingKey)
-				if err != nil {
-					return nil, ErrGenerateTokenFailed
-				}
-				// 将access token存入redis
-				accessTokenKey := fmt.Sprintf("user_access_token:%d", user.ID)
-				err = uc.uRepo.StoreToken(ctx, accessTokenKey, accessToken, 30*time.Minute)
-				if err != nil {
-					uc.log.Errorf("存储access token失败: %v", err)
-					return nil, ErrGenerateTokenFailed
-				}
-				// 生成refresh token
-				rexpiresAt := now.Add(24 * 7 * time.Hour)
-				rclaims := auth.CustomClaims{
-					ID: user.ID,
-					RegisteredClaims: jwt5.RegisteredClaims{
-						NotBefore: jwt5.NewNumericDate(now),
-						ExpiresAt: jwt5.NewNumericDate(rexpiresAt),
-						Issuer:    "lucien",
-					},
-				}
-				refreshToken, err := auth.CreateToken(rclaims, uc.signingKey)
-				if err != nil {
-					return nil, ErrGenerateTokenFailed
-				}
-				// 将refresh token存入redis
-				err = uc.uRepo.StoreRefreshToken(ctx, user.ID, refreshToken, 7*24*time.Hour)
-				if err != nil {
-					uc.log.Errorf("存储refresh token失败: %v", err)
-					return nil, ErrGenerateTokenFailed
-				}
-				// 删除redis的验证码
-				return &v1.RegisterReply{
-					Id:           user.ID,
-					Mobile:       user.Mobile,
-					Username:     user.NickName,
-					AccessToken:  accessToken,
-					RefreshToken: refreshToken,
-					ExpiredAt:    aexpiresAt.Unix(),
-				}, nil
-			} else {
-				return nil, ErrLoginFailed
-			}
-		}
 	}
+	
+	// 检查密码
+	passRsp, pasErr := uc.uRepo.CheckPassword(ctx, req.Password, user.Password)
+	if pasErr != nil {
+		return nil, ErrPasswordInvalid
+	}
+	if !passRsp {
+		return nil, ErrLoginFailed
+	}
+	
+	// 通过 UserAuth 服务签发 Token
+	tokenReply, err := uc.authAdapter.IssueToken(ctx, user.ID, user.NickName, user.Role)
+	if err != nil {
+		uc.log.Errorf("签发Token失败: %v", err)
+		return nil, ErrGenerateTokenFailed
+	}
+	
+	return &v1.RegisterReply{
+		Id:           user.ID,
+		Mobile:       user.Mobile,
+		Username:     user.NickName,
+		AccessToken:  tokenReply.AccessToken,
+		RefreshToken: tokenReply.RefreshToken,
+		ExpiredAt:    tokenReply.ExpiredAt,
+	}, nil
 }
 
 // 用户结构体生成
@@ -230,142 +175,59 @@ func newUser(mobile, username, password string) (User, error) {
 	}, nil
 }
 
-// 创建用户，用户注册创建后也提供登录状态
+// 创建用户，用户注册创建后也提供登录状态 - 通过 UserAuth 服务签发 Token
 func (uc *UserUsecase) CreateUser(ctx context.Context, req *v1.RegisterReq) (*v1.RegisterReply, error) {
-	// 验证验证码是否正确
-	if !captcha.Store.Verify(req.CaptchaId, req.Captcha, true) {
+	// 验证验证码是否正确 - 通过 UserAuth 服务
+	success, err := uc.authAdapter.VerifyCaptcha(ctx, req.CaptchaId, req.Captcha)
+	if err != nil || !success {
 		return nil, ErrCaptchaInvalid
 	}
+	
 	newUser, err := newUser(req.Mobile, req.Username, req.Password)
 	if err != nil {
 		return nil, err
 	}
+	
 	creatuser, err := uc.uRepo.CreateUser(ctx, &newUser)
 	if err != nil {
 		return nil, err
 	}
-	now := time.Now()
-	aexpiresAt := now.Add(30 * time.Minute)
-	aclaims := auth.CustomClaims{
-		ID:          creatuser.ID,
-		NickName:    creatuser.NickName,
-		AuthorityId: creatuser.Role,
-		RegisteredClaims: jwt5.RegisteredClaims{
-			NotBefore: jwt5.NewNumericDate(now),
-			ExpiresAt: jwt5.NewNumericDate(aexpiresAt),
-			Issuer:    "lucien",
-		},
-	}
-	// 生成accesstoken
-	accessToken, err := auth.CreateToken(aclaims, uc.signingKey)
+	
+	// 通过 UserAuth 服务签发 Token
+	tokenReply, err := uc.authAdapter.IssueToken(ctx, creatuser.ID, creatuser.NickName, creatuser.Role)
 	if err != nil {
+		uc.log.Errorf("签发Token失败: %v", err)
 		return nil, ErrGenerateTokenFailed
 	}
-
-	// 将access token存入redis
-	accessTokenKey := fmt.Sprintf("user_access_token:%d", creatuser.ID)
-	err = uc.uRepo.StoreToken(ctx, accessTokenKey, accessToken, 30*time.Minute)
-	if err != nil {
-		uc.log.Errorf("存储access token失败: %v", err)
-		return nil, ErrGenerateTokenFailed
-	}
-
-	// 生成refresh token
-	rexpiresAt := now.Add(24 * 7 * time.Hour)
-	rclaims := auth.CustomClaims{
-		ID: creatuser.ID,
-		RegisteredClaims: jwt5.RegisteredClaims{
-			NotBefore: jwt5.NewNumericDate(now),
-			ExpiresAt: jwt5.NewNumericDate(rexpiresAt),
-			Issuer:    "lucien",
-		},
-	}
-	refreshToken, err := auth.CreateToken(rclaims, uc.signingKey)
-	if err != nil {
-		return nil, ErrGenerateTokenFailed
-	}
-
-	// 将refresh token存入redis
-	err = uc.uRepo.StoreRefreshToken(ctx, creatuser.ID, refreshToken, 7*24*time.Hour)
-	if err != nil {
-		uc.log.Errorf("存储refresh token失败: %v", err)
-		return nil, ErrGenerateTokenFailed
-	}
-	// 删除redis验证码
+	
 	return &v1.RegisterReply{
 		Id:           creatuser.ID,
 		Mobile:       creatuser.Mobile,
 		Username:     creatuser.NickName,
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
-		ExpiredAt:    aexpiresAt.Unix(),
+		AccessToken:  tokenReply.AccessToken,
+		RefreshToken: tokenReply.RefreshToken,
+		ExpiredAt:    tokenReply.ExpiredAt,
 	}, nil
-
 }
 
-// 发送手机验证码
+// 发送手机验证码 - 通过 UserAuth 服务
 func (uc *UserUsecase) SendSms(ctx context.Context, req *v1.SendSmsReq) (*v1.SendSmsReply, error) {
 	// 检验手机号是否合法
 	if len(req.Mobile) != 11 {
 		return nil, ErrMobileInvalid
 	}
-	// 检验手机冷却时间（例如 60s 内不可重复发送）
-	cooling, err := uc.uRepo.CheckSmsCooldown(ctx, req.Mobile)
+	
+	// 通过 UserAuth 服务发送短信（包含验证码生成、冷却控制、短信发送）
+	success, err := uc.authAdapter.SendSms(ctx, req.Mobile)
 	if err != nil {
+		uc.log.Errorf("发送短信失败: %v", err)
 		return nil, err
 	}
-	if cooling {
-		return &v1.SendSmsReply{Success: true}, nil
-	}
-
-	// 生成验证码
-	code := sms.GenerateSmsCode(6)
-
-	// TODO: 集成实际短信发送通道
-	// 从环境变量读取，优先于配置
-	var apiKey, apiSecret string
-	if uc.smsConf != nil {
-		apiKey = uc.smsConf.ApiKey
-		apiSecret = uc.smsConf.ApiSecret
-	}
-	if v := os.Getenv("SMS_API_KEY"); v != "" {
-		apiKey = v
-	}
-	if v := os.Getenv("SMS_API_SECRET"); v != "" {
-		apiSecret = v
-	}
-
-	if apiKey != "" && apiSecret != "" {
-		config := &openapi.Config{
-			AccessKeyId:     tea.String(apiKey),
-			AccessKeySecret: tea.String(apiSecret),
-			RegionId:        tea.String(uc.smsConf.RegionId),
-		}
-		config.Endpoint = tea.String("dysmsapi.aliyuncs.com")
-		client, _ := dysmsapi.NewClient(config)
-		request := &dysmsapi.SendSmsRequest{}
-		request.SetTemplateCode(uc.smsConf.TemplateCode)
-		request.SetTemplateParam("{\"code\":" + code + "}")
-		request.SetPhoneNumbers(req.Mobile)
-		request.SetSignName(uc.smsConf.SignName)
-		response, err := client.SendSms(request)
-		if err != nil {
-			return nil, err
-		}
-		uc.log.Infof("发送短信响应: %v", response)
-		// 保存验证码到Redis，过期时间5分钟
-		if err := uc.uRepo.StoreSmsCode(ctx, req.Mobile, code, 5*time.Minute); err != nil {
-			return nil, err
-		}
-		// 设置发送冷却60秒
-		if err := uc.uRepo.SetSmsCooldown(ctx, req.Mobile, 60*time.Second); err != nil {
-			return nil, err
-		}
-	}
-	return &v1.SendSmsReply{Success: true}, nil
+	
+	return &v1.SendSmsReply{Success: success}, nil
 }
 
-// 验证手机验证码
+// 验证手机验证码 - 通过 UserAuth 服务
 func (uc *UserUsecase) VerifySms(ctx context.Context, req *v1.VerifySmsReq) (*v1.RegisterReply, error) {
 	// 校验参数
 	if len(req.Mobile) != 11 {
@@ -375,12 +237,9 @@ func (uc *UserUsecase) VerifySms(ctx context.Context, req *v1.VerifySmsReq) (*v1
 		return nil, ErrCaptchaInvalid
 	}
 
-	// 获取并校验验证码
-	code, err := uc.uRepo.GetSmsCode(ctx, req.Mobile)
-	if err != nil || code == "" {
-		return nil, ErrCaptchaInvalid
-	}
-	if code != req.SmsCode {
+	// 通过 UserAuth 服务校验短信验证码
+	success, err := uc.authAdapter.VerifySms(ctx, req.Mobile, req.SmsCode)
+	if err != nil || !success {
 		return nil, ErrCaptchaInvalid
 	}
 
@@ -390,55 +249,20 @@ func (uc *UserUsecase) VerifySms(ctx context.Context, req *v1.VerifySmsReq) (*v1
 		return nil, ErrUserNotFound
 	}
 
-	// 生成token，与密码登录一致
-	now := time.Now()
-	aexpiresAt := now.Add(30 * time.Minute)
-	aclaims := auth.CustomClaims{
-		ID:          user.ID,
-		NickName:    user.NickName,
-		AuthorityId: user.Role,
-		RegisteredClaims: jwt5.RegisteredClaims{
-			NotBefore: jwt5.NewNumericDate(now),
-			ExpiresAt: jwt5.NewNumericDate(aexpiresAt),
-			Issuer:    "lucien",
-		},
-	}
-	accessToken, err := auth.CreateToken(aclaims, uc.signingKey)
+	// 通过 UserAuth 服务签发 Token
+	tokenReply, err := uc.authAdapter.IssueToken(ctx, user.ID, user.NickName, user.Role)
 	if err != nil {
-		return nil, ErrGenerateTokenFailed
-	}
-	accessTokenKey := fmt.Sprintf("user_access_token:%d", user.ID)
-	if err := uc.uRepo.StoreToken(ctx, accessTokenKey, accessToken, 30*time.Minute); err != nil {
-		uc.log.Errorf("存储access token失败: %v", err)
+		uc.log.Errorf("签发Token失败: %v", err)
 		return nil, ErrGenerateTokenFailed
 	}
 
-	// 生成refresh token
-	rexpiresAt := now.Add(24 * 7 * time.Hour)
-	rclaims := auth.CustomClaims{
-		ID: user.ID,
-		RegisteredClaims: jwt5.RegisteredClaims{
-			NotBefore: jwt5.NewNumericDate(now),
-			ExpiresAt: jwt5.NewNumericDate(rexpiresAt),
-			Issuer:    "lucien",
-		},
-	}
-	refreshToken, err := auth.CreateToken(rclaims, uc.signingKey)
-	if err != nil {
-		return nil, ErrGenerateTokenFailed
-	}
-	if err := uc.uRepo.StoreRefreshToken(ctx, user.ID, refreshToken, 7*24*time.Hour); err != nil {
-		uc.log.Errorf("存储refresh token失败: %v", err)
-		return nil, ErrGenerateTokenFailed
-	}
-	// 验证码使用后删除验证码
 	return &v1.RegisterReply{
 		Id:           user.ID,
 		Mobile:       user.Mobile,
 		Username:     user.NickName,
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
-		ExpiredAt:    aexpiresAt.Unix(),
+		AccessToken:  tokenReply.AccessToken,
+		RefreshToken: tokenReply.RefreshToken,
+		ExpiredAt:    tokenReply.ExpiredAt,
 	}, nil
 }
 
@@ -449,7 +273,7 @@ func (uc *UserUsecase) UpdateUser(ctx context.Context, req *v1.UpdateReq) (*v1.U
 		return nil, ErrAuthFailed
 	}
 	// 检查用户是否在黑名单中
-	isBlacklisted, err := uc.uRepo.CheckLogoutBlacklist(ctx, uid)
+	isBlacklisted, err := uc.authAdapter.CheckBlacklist(ctx, uid)
 	if err != nil {
 		return nil, err
 	}
@@ -511,7 +335,7 @@ func (uc *UserUsecase) UpdatePassword(ctx context.Context, req *v1.UpdatePwdReq)
 		return nil, ErrAuthFailed
 	}
 	// 检查用户是否在黑名单中
-	isBlacklisted, err := uc.uRepo.CheckLogoutBlacklist(ctx, uid)
+	isBlacklisted, err := uc.authAdapter.CheckBlacklist(ctx, uid)
 	if err != nil {
 		return nil, err
 	}
@@ -567,30 +391,10 @@ func (uc *UserUsecase) Logout(ctx context.Context) (*v1.LogoutReply, error) {
 		return nil, ErrAuthFailed
 	}
 
-	// 删除Redis中的access token
-	accessTokenKey := fmt.Sprintf("user_access_token:%d", uid)
-	err := uc.uRepo.DeleteToken(ctx, accessTokenKey)
+	// 通过 UserAuth 服务撤销 Token（包含删除 Token 和加入黑名单）
+	err := uc.authAdapter.RevokeToken(ctx, uid)
 	if err != nil {
-		uc.log.Errorf("删除access token失败: %v", err)
-	}
-
-	// 删除Redis中的refresh token
-	err = uc.uRepo.DeleteRefreshToken(ctx, uid)
-	if err != nil {
-		uc.log.Errorf("删除refresh token失败: %v", err)
-	}
-
-	// 将用户登出信息存入redis黑名单
-	ttl, err := uc.uRepo.GetTokenTTL(ctx, accessTokenKey)
-	if err != nil {
-		uc.log.Errorf("获取用户%d token TTL失败: %v", uid, err)
-	}
-	if ttl <= 0 {
-		// 若获取失败或无效，使用一个安全的最小TTL（例如30分钟）
-		ttl = 30 * time.Minute
-	}
-	if err := uc.uRepo.StoreLogoutBlacklistWithTTL(ctx, uid, ttl); err != nil {
-		uc.log.Errorf("加入用户%d到登出黑名单失败: %v", uid, err)
+		uc.log.Errorf("撤销Token失败: %v", err)
 		return nil, ErrAuthFailed
 	}
 
@@ -599,77 +403,33 @@ func (uc *UserUsecase) Logout(ctx context.Context) (*v1.LogoutReply, error) {
 	}, nil
 }
 
-// RefreshToken 刷新token
+// RefreshToken 刷新token - 通过 UserAuth 服务
 func (uc *UserUsecase) RefreshToken(ctx context.Context, req *v1.RefreshTokenReq) (*v1.RefreshTokenReply, error) {
 	// 从上下文获取当前登录用户的ID
 	uid, ok := auth.GetUserID(ctx)
 	if !ok {
 		return nil, ErrAuthFailed
 	}
+	
 	// 检查用户是否在黑名单中
-	isBlacklisted, err := uc.uRepo.CheckLogoutBlacklist(ctx, uid)
+	isBlacklisted, err := uc.authAdapter.CheckBlacklist(ctx, uid)
 	if err != nil {
 		return nil, err
 	}
 	if isBlacklisted {
 		return nil, ErrAuthFailed
 	}
-	// 解析refresh token
-	token, err := jwt5.ParseWithClaims(req.RefreshToken, &auth.CustomClaims{}, func(token *jwt5.Token) (interface{}, error) {
-		return []byte(uc.signingKey), nil
-	})
-
-	if err != nil || !token.Valid {
-		return nil, ErrAuthFailed
-	}
-
-	claims, ok := token.Claims.(*auth.CustomClaims)
-	if !ok {
-		return nil, ErrAuthFailed
-	}
-
-	// 验证refresh token是否存在于Redis中
-	storedToken, err := uc.uRepo.GetRefreshToken(ctx, claims.ID)
-	if err != nil || storedToken != req.RefreshToken {
-		return nil, ErrAuthFailed
-	}
-
-	// 获取用户信息
-	user, err := uc.uRepo.UserById(ctx, claims.ID)
+	
+	// 通过 UserAuth 服务刷新 Token
+	tokenReply, err := uc.authAdapter.RefreshToken(ctx, req.RefreshToken)
 	if err != nil {
-		return nil, ErrUserNotFound
-	}
-
-	// 生成新的access token
-	now := time.Now()
-	expiresAt := now.Add(30 * time.Minute)
-	newAccessClaims := auth.CustomClaims{
-		ID:          user.ID,
-		NickName:    user.NickName,
-		AuthorityId: user.Role,
-		RegisteredClaims: jwt5.RegisteredClaims{
-			NotBefore: jwt5.NewNumericDate(now),
-			ExpiresAt: jwt5.NewNumericDate(expiresAt),
-			Issuer:    "lucien",
-		},
-	}
-	// 生成新的access token
-	newAccessToken, err := auth.CreateToken(newAccessClaims, uc.signingKey)
-	if err != nil {
-		return nil, ErrGenerateTokenFailed
-	}
-
-	// 存储新的access token
-	accessTokenKey := fmt.Sprintf("user_access_token:%d", user.ID)
-	err = uc.uRepo.StoreToken(ctx, accessTokenKey, newAccessToken, 30*time.Minute)
-	if err != nil {
-		uc.log.Errorf("存储新access token失败: %v", err)
-		return nil, ErrGenerateTokenFailed
+		uc.log.Errorf("刷新Token失败: %v", err)
+		return nil, ErrAuthFailed
 	}
 
 	return &v1.RefreshTokenReply{
-		AccessToken:  newAccessToken,
-		RefreshToken: storedToken,
+		AccessToken:  tokenReply.AccessToken,
+		RefreshToken: tokenReply.RefreshToken,
 	}, nil
 }
 
@@ -680,7 +440,7 @@ func (uc *UserUsecase) ListUsers(ctx context.Context, req *v1.ListUsersReq) (*v1
 		return nil, ErrAuthFailed
 	}
 	// 检查用户是否在黑名单中
-	isBlacklisted, err := uc.uRepo.CheckLogoutBlacklist(ctx, uid)
+	isBlacklisted, err := uc.authAdapter.CheckBlacklist(ctx, uid)
 	if err != nil {
 		return nil, err
 	}
@@ -721,7 +481,7 @@ func (uc *UserUsecase) DeleteUser(ctx context.Context, req *v1.KickUserReq) (*v1
 		return nil, ErrAuthFailed
 	}
 	// 检查用户是否在黑名单中
-	isBlacklisted, err := uc.uRepo.CheckLogoutBlacklist(ctx, uid)
+	isBlacklisted, err := uc.authAdapter.CheckBlacklist(ctx, uid)
 	if err != nil {
 		return nil, err
 	}
@@ -733,29 +493,10 @@ func (uc *UserUsecase) DeleteUser(ctx context.Context, req *v1.KickUserReq) (*v1
 		return nil, errors.New("forbidden: admin access required")
 	}
 
-	// 踢出目标用户：清理其令牌并加入黑名单
-	// 1) 删除access token
-	accessTokenKey := fmt.Sprintf("user_access_token:%d", req.GetId())
-	if err := uc.uRepo.DeleteToken(ctx, accessTokenKey); err != nil {
-		uc.log.Errorf("删除用户%d access token失败: %v", req.GetId(), err)
-	}
-
-	// 2) 删除refresh token
-	if err := uc.uRepo.DeleteRefreshToken(ctx, req.GetId()); err != nil {
-		uc.log.Errorf("删除用户%d refresh token失败: %v", req.GetId(), err)
-	}
-
-	// 3) 将用户加入登出黑名单，过期时间为 access token 剩余时间
-	ttl, err := uc.uRepo.GetTokenTTL(ctx, accessTokenKey)
+	// 踢出目标用户：撤销其令牌并加入黑名单（通过 UserAuth 服务）
+	err = uc.authAdapter.RevokeToken(ctx, req.GetId())
 	if err != nil {
-		uc.log.Errorf("获取用户%d token TTL失败: %v", req.GetId(), err)
-	}
-	if ttl <= 0 {
-		// 若获取失败或无效，使用一个安全的最小TTL（例如30分钟）
-		ttl = 30 * time.Minute
-	}
-	if err := uc.uRepo.StoreLogoutBlacklistWithTTL(ctx, req.GetId(), ttl); err != nil {
-		uc.log.Errorf("加入用户%d到登出黑名单失败: %v", req.GetId(), err)
+		uc.log.Errorf("撤销用户%d Token失败: %v", req.GetId(), err)
 		return nil, ErrAuthFailed
 	}
 
