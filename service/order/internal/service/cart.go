@@ -23,20 +23,13 @@ func (s *OrderService) CartItemList(ctx context.Context, in *v1.UserInfo) (*v1.C
 }
 
 func (s *OrderService) CreateCartItem(ctx context.Context, in *v1.CartItemRequest) (*v1.ShopCartInfoResponse, error) {
-	// TODO: 实现添加购物车逻辑
-	return &v1.ShopCartInfoResponse{
-		Id:      in.Id,
-		UserId:  in.UserId,
-		GoodsId: in.GoodsId,
-		Nums:    in.Nums,
-		Checked: in.Checked,
-	}, nil
+	return s.uc.CreateCartItem(ctx, in)
 }
 
 func (s *OrderService) UpdateCartItem(ctx context.Context, in *v1.CartItemRequest) (*emptypb.Empty, error) {
-	return &emptypb.Empty{}, nil
+	return s.uc.UpdateCartItem(ctx, in)
 }
 
 func (s *OrderService) DeleteCartItem(ctx context.Context, in *v1.CartItemRequest) (*emptypb.Empty, error) {
-	return &emptypb.Empty{}, nil
+	return s.uc.DeleteCartItem(ctx, in)
 }

@@ -146,3 +146,48 @@ func (r *inventoryRepo) Sell(ctx context.Context, sell *domain.SellInfo) error {
 		return nil
 	})
 }
+
+// Reback 库存归还
+// 通过订单号归还库存，确保幂等性
+// 1. 查询扣减明细表，只处理 Status=1（已扣减未归还）的订单
+// 2. 逐个归还库存
+// 3. 更新扣减明细状态为 2（已归还）
+// 4. 所有操作在事务中执行，保证原子性
+func (r *inventoryRepo) Reback(ctx context.Context, orderSn string) error {
+	return r.data.ExecTx(ctx, func(ctx context.Context) error {
+		db := r.data.DB(ctx)
+		
+		// 查询扣减明细，只处理 Status=1 的订单
+		var sellDetail StockSellDetail
+		result := db.Where("order_sn = ? AND status = 1", orderSn).First(&sellDetail)
+		if result.Error != nil {
+			if result.Error == gorm.ErrRecordNotFound {
+				// 订单不存在或已归还，幂等处理
+				r.log.Infof("订单 %s 无需归还库存（不存在或已归还）", orderSn)
+				return nil
+			}
+			return errors.InternalServer("QUERY_SELL_DETAIL_ERROR", result.Error.Error())
+		}
+		
+		// 批量归还库存
+		for _, item := range sellDetail.Detail {
+			res := db.Model(&Inventory{}).
+				Where("goods = ?", item.Goods).
+				Update("stocks", gorm.Expr("stocks + ?", item.Num))
+			if res.Error != nil {
+				return errors.InternalServer("REBACK_INV_ERROR", res.Error.Error())
+			}
+			if res.RowsAffected == 0 {
+				return errors.NotFound("GOODS_NOT_FOUND", fmt.Sprintf("商品 %d 不存在", item.Goods))
+			}
+		}
+		
+		// 更新扣减明细状态为 2（已归还）
+		if err := db.Model(&sellDetail).Update("status", 2).Error; err != nil {
+			return errors.InternalServer("UPDATE_SELL_DETAIL_ERROR", err.Error())
+		}
+		
+		r.log.Infof("订单 %s 库存归还成功", orderSn)
+		return nil
+	})
+}

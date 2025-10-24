@@ -12,6 +12,7 @@ type InventoryRepo interface {
 	AddInv(ctx context.Context, inv *domain.Inventory) error
 	GetInvById(ctx context.Context, goodsId int32) (*domain.Inventory, error)
 	Sell(ctx context.Context, sell *domain.SellInfo) error
+	Reback(ctx context.Context, orderSn string) error
 }
 
 // InventoryUsecase is a Inventory usecase.
@@ -37,6 +38,8 @@ func (uc *InventoryUsecase) Sell(ctx context.Context, sell *domain.SellInfo) err
 	return uc.repo.Sell(ctx, sell)
 }
 
-// func (uc *InventoryUsecase) Reback(ctx context.Context, sell *domain.SellInfo) error {
-// 	return uc.repo.Reback(ctx, sell)
-// }
+// Reback 库存归还
+// 通过订单号归还库存，确保幂等性
+func (uc *InventoryUsecase) Reback(ctx context.Context, orderSn string) error {
+	return uc.repo.Reback(ctx, orderSn)
+}

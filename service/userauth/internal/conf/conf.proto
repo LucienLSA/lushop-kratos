@@ -1,0 +1,92 @@
+syntax = "proto3";
+package kratos.api;
+
+option go_package = "userauth-service/internal/conf;conf";
+
+import "google/protobuf/duration.proto";
+
+message Bootstrap {
+  Server server = 1;
+  Data data = 2;
+  Trace trace = 3;
+  Auth auth = 4;
+  Service service = 5;
+  Sms sms = 6;
+  Nacos nacos = 7;
+}
+
+message Server {
+  message HTTP {
+    string network = 1;
+    string addr = 2;
+    google.protobuf.Duration timeout = 3;
+  }
+  message GRPC {
+    string network = 1;
+    string addr = 2;
+    google.protobuf.Duration timeout = 3;
+  }
+  HTTP http = 1;
+  GRPC grpc = 2;
+}
+
+message Data {
+  message Database {
+    string driver = 1;
+    string source = 2;
+  }
+  message Redis {
+    string network = 1;
+    string addr = 2;
+    string password = 3;
+    int32 db = 4;
+    google.protobuf.Duration dial_timeout = 5;
+    google.protobuf.Duration read_timeout = 6;
+    google.protobuf.Duration write_timeout = 7;
+  }
+  Database database = 1;
+  Redis redis = 2;
+}
+
+message Service {
+  message User {
+    string endpoint = 1;
+  }
+  message Goods {
+    string endpoint = 1;
+  }
+  User user = 1;
+  Goods goods = 2;
+}
+
+message Trace {
+  string endpoint = 1;
+}
+
+message Registry {
+  message Consul {
+    string address = 1;
+    string scheme = 2;
+  }
+  Consul consul = 1;
+}
+
+message Auth {
+  string jwt_key = 1;
+}
+
+message Sms {
+  string api_key = 1;
+  string api_secret = 2;
+  string sign_name = 3;
+  string template_code = 4;
+  string region_id = 5;
+}
+
+message Nacos {
+  string addr = 1;
+  int32 port = 2;
+  string namespace_id = 3;
+  string data_id = 4;
+  string group_id = 5;
+}

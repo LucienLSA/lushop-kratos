@@ -5,6 +5,7 @@ import (
 	slog "log"
 	"order/internal/biz"
 	"order/internal/conf"
+	"order/internal/pkg/rocketmq"
 	"os"
 	"time"
 
@@ -19,22 +20,37 @@ import (
 )
 
 // ProviderSet is data providers.
-var ProviderSet = wire.NewSet(NewData, NewDB, NewRedis, NewOrderRepo)
+var ProviderSet = wire.NewSet(
+	NewData,
+	NewDB,
+	NewRedis,
+	NewRocketMQProducer,
+	NewOrderRepo,
+)
 
 // Data .
 type Data struct {
-	db  *gorm.DB
-	rdb *redis.Client
+	db          *gorm.DB
+	rdb         *redis.Client
+	producer    *rocketmq.Producer
+	txProducer  *rocketmq.TransactionProducer
+	goodsClient biz.GoodsService
 }
 
 // NewData .
-func NewData(c *conf.Data, logger log.Logger, db *gorm.DB, rdb *redis.Client) (*Data, func(), error) {
+func NewData(c *conf.Data, logger log.Logger, db *gorm.DB, rdb *redis.Client, producer *rocketmq.Producer, goodsClient biz.GoodsService) (*Data, func(), error) {
 	cleanup := func() {
 		log.NewHelper(logger).Info("closing the data resources")
+		if producer != nil {
+			producer.Close()
+		}
 	}
 	return &Data{
-		db:  db,
-		rdb: rdb,
+		db:          db,
+		rdb:         rdb,
+		producer:    producer,
+		txProducer:  nil, // 将在 NewOrderRepo 中设置
+		goodsClient: goodsClient,
 	}, cleanup, nil
 }
 
@@ -103,3 +119,27 @@ func NewRedis(c *conf.Data) *redis.Client {
 	rdb.AddHook(redisotel.TracingHook{})
 	return rdb
 }
+
+// NewRocketMQProducer 创建 RocketMQ 生产者
+func NewRocketMQProducer(c *conf.Bootstrap, logger log.Logger) *rocketmq.Producer {
+	// 如果未启用 RocketMQ，返回 nil
+	if c.Rocketmq == nil || !c.Rocketmq.Enable {
+		log.NewHelper(logger).Info("RocketMQ is disabled")
+		return nil
+	}
+
+	producer, err := rocketmq.NewProducer(
+		c.Rocketmq.NameServer,
+		c.Rocketmq.GroupName,
+		c.Rocketmq.Topic,
+		logger,
+	)
+	if err != nil {
+		log.NewHelper(logger).Errorf("failed to create RocketMQ producer: %v", err)
+		return nil
+	}
+
+	log.NewHelper(logger).Info("RocketMQ producer created successfully")
+	return producer
+}
+

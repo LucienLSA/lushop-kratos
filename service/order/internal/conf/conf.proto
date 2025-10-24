@@ -12,6 +12,7 @@ message Bootstrap {
   Auth auth = 4;
   Service service = 5;
   Nacos nacos = 6;
+  RocketMQ rocketmq = 7;
 }
 
 message Server {
@@ -80,4 +81,12 @@ message Nacos {
   string namespace_id = 3;
   string data_id = 4;
   string group_id = 5;
+}
+
+message RocketMQ {
+  repeated string name_server = 1;  // NameServer 地址列表
+  string group_name = 2;             // 生产者组名
+  string topic = 3;                  // Topic 名称
+  int32 retry_times = 4;             // 重试次数
+  bool enable = 5;                   // 是否启用
 }

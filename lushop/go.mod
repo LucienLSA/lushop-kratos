@@ -3,6 +3,7 @@ module lushop
 go 1.23.0
 
 require (
+	github.com/bwmarrin/snowflake v0.3.0
 	github.com/casbin/casbin/v2 v2.128.0
 	github.com/envoyproxy/protoc-gen-validate v1.2.1
 	github.com/go-kratos/kratos/contrib/config/nacos/v2 v2.0.0-20250912104010-25b6c0fb9f38

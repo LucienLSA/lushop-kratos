@@ -3,7 +3,7 @@ server:
     addr: 0.0.0.0:50054
     timeout: 1s
 service:
-  name: "inventory.service"
+  name: "lushop.inventory.service"
 data:
   database:
     driver: mysql
@@ -21,3 +21,9 @@ registry:
   consul:
     address: 127.0.0.1:8500
     scheme: http
+rocketmq:
+  name_server:
+    - "127.0.0.1:9876"
+  group_name: "inventory_consumer_group"
+  topic: "order_inventory_topic"
+  enable: true

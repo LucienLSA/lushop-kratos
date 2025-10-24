@@ -120,15 +120,32 @@ func NewHTTPServer(c *conf.Server, ac *conf.Auth,
 	handler := openapiv2.NewHandler()
 	srv.HandlePrefix("/q/", handler)
 	srv.Handle("/metrics", promhttp.Handler())
-	v1.RegisterLushopHTTPServer(srv, s)
+	
+	// 注册所有 HTTP 服务
+	v1.RegisterUserHTTPServer(srv, s)       // 用户服务
+	v1.RegisterUserAuthHTTPServer(srv, s)   // 用户认证服务
+	v1.RegisterUserAdminHTTPServer(srv, s)  // 用户管理服务
+	v1.RegisterCartHTTPServer(srv, s)       // 购物车服务
+	v1.RegisterGoodsHTTPServer(srv, s)      // 商品服务
+	v1.RegisterOrderHTTPServer(srv, s)      // 订单服务
+	v1.RegisterInventoryHTTPServer(srv, s)  // 库存服务
+	v1.RegisterUserOpHTTPServer(srv, s)     // 用户操作服务
+	
 	return srv
 }
 
 // 公开接口 - 无需认证
 var publicEndpoints = map[string]struct{}{
-	"/lushop.lushop.v1.Lushop/Captcha":  {},
-	"/lushop.lushop.v1.Lushop/Login":    {},
-	"/lushop.lushop.v1.Lushop/Register": {},
+	// 用户服务公开接口
+	"/lushop.lushop.v1.User/Captcha":             {},
+	"/lushop.lushop.v1.User/Login":               {},
+	"/lushop.lushop.v1.User/Register":            {},
+	// 商品服务公开接口
+	"/lushop.lushop.v1.Goods/GetGoodsList":       {},
+	"/lushop.lushop.v1.Goods/GetGoodsDetail":     {},
+	"/lushop.lushop.v1.Goods/SearchGoods":        {},
+	// 库存服务公开接口
+	"/lushop.lushop.v1.Inventory/GetInventory":   {},
 }
 
 // NewAuthMatcher 需要JWT认证的接口匹配器

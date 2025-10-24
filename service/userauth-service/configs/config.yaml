@@ -1,6 +1,0 @@
-nacos:
-  addr: 127.0.0.1
-  port: 8848
-  namespaceId: de9c6a0e-1fbc-425d-8d3b-09066fea6889
-  dataId: userauth.yaml
-  groupId: lushop_grpc  # 统一使用 gRPC 服务组

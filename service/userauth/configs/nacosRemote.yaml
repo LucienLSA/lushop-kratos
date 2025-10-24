@@ -1,0 +1,31 @@
+server:
+  grpc:
+    addr: 0.0.0.0:50056
+    timeout: 1s
+    
+service:
+  name: "lushop.userauth.service"
+
+data:
+  redis:
+    addr: 127.0.0.1:6379
+    password: "123456"  # 与网关保持一致
+    db: 0
+    dial_timeout: 1s
+    read_timeout: 0.2s
+    write_timeout: 0.2s
+
+auth:
+  jwt_key: "lushop-secret-key-2024"
+
+sms:
+  api_key: "Ali_ApiKey"
+  api_secret: "Ali_ApiSecret"
+  sign_name: "阿里云短信测试"
+  template_code: "SMS_154950909"
+  region_id: "cn-hangzhou"
+
+registry:
+  consul:
+    address: 127.0.0.1:8500
+    scheme: http

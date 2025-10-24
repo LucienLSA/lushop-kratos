@@ -20,525 +20,1929 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Lushop_Register_FullMethodName     = "/lushop.lushop.v1.Lushop/Register"
-	Lushop_Login_FullMethodName        = "/lushop.lushop.v1.Lushop/Login"
-	Lushop_Captcha_FullMethodName      = "/lushop.lushop.v1.Lushop/Captcha"
-	Lushop_Detail_FullMethodName       = "/lushop.lushop.v1.Lushop/Detail"
-	Lushop_Update_FullMethodName       = "/lushop.lushop.v1.Lushop/Update"
-	Lushop_UpdatePwd_FullMethodName    = "/lushop.lushop.v1.Lushop/UpdatePwd"
-	Lushop_RefreshToken_FullMethodName = "/lushop.lushop.v1.Lushop/RefreshToken"
-	Lushop_Logout_FullMethodName       = "/lushop.lushop.v1.Lushop/Logout"
-	Lushop_SendSms_FullMethodName      = "/lushop.lushop.v1.Lushop/SendSms"
-	Lushop_VerifySms_FullMethodName    = "/lushop.lushop.v1.Lushop/VerifySms"
-	Lushop_ListUsers_FullMethodName    = "/lushop.lushop.v1.Lushop/ListUsers"
-	Lushop_KickUser_FullMethodName     = "/lushop.lushop.v1.Lushop/KickUser"
+	User_Register_FullMethodName  = "/lushop.lushop.v1.User/Register"
+	User_Login_FullMethodName     = "/lushop.lushop.v1.User/Login"
+	User_Captcha_FullMethodName   = "/lushop.lushop.v1.User/Captcha"
+	User_Detail_FullMethodName    = "/lushop.lushop.v1.User/Detail"
+	User_Update_FullMethodName    = "/lushop.lushop.v1.User/Update"
+	User_UpdatePwd_FullMethodName = "/lushop.lushop.v1.User/UpdatePwd"
+	User_Logout_FullMethodName    = "/lushop.lushop.v1.User/Logout"
 )
 
-// LushopClient is the client API for Lushop service.
+// UserClient is the client API for User service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// The Shop service definition.
-type LushopClient interface {
+// ==================== 用户服务 ====================
+type UserClient interface {
+	// 用户注册
 	Register(ctx context.Context, in *RegisterReq, opts ...grpc.CallOption) (*RegisterReply, error)
+	// 用户登录
 	Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*RegisterReply, error)
+	// 获取图形验证码
 	Captcha(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*CaptchaReply, error)
+	// 获取用户详情
 	Detail(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*UserDetailResponse, error)
+	// 更新用户信息
 	Update(ctx context.Context, in *UpdateReq, opts ...grpc.CallOption) (*UserDetailResponse, error)
+	// 修改密码
 	UpdatePwd(ctx context.Context, in *UpdatePwdReq, opts ...grpc.CallOption) (*UpdatePwdReply, error)
-	RefreshToken(ctx context.Context, in *RefreshTokenReq, opts ...grpc.CallOption) (*RefreshTokenReply, error)
+	// 退出登录
 	Logout(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*LogoutReply, error)
-	SendSms(ctx context.Context, in *SendSmsReq, opts ...grpc.CallOption) (*SendSmsReply, error)
-	VerifySms(ctx context.Context, in *VerifySmsReq, opts ...grpc.CallOption) (*RegisterReply, error)
-	// 添加管理员接口
-	ListUsers(ctx context.Context, in *ListUsersReq, opts ...grpc.CallOption) (*ListUsersReply, error)
-	KickUser(ctx context.Context, in *KickUserReq, opts ...grpc.CallOption) (*KickUserReply, error)
 }
 
-type lushopClient struct {
+type userClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewLushopClient(cc grpc.ClientConnInterface) LushopClient {
-	return &lushopClient{cc}
+func NewUserClient(cc grpc.ClientConnInterface) UserClient {
+	return &userClient{cc}
 }
 
-func (c *lushopClient) Register(ctx context.Context, in *RegisterReq, opts ...grpc.CallOption) (*RegisterReply, error) {
+func (c *userClient) Register(ctx context.Context, in *RegisterReq, opts ...grpc.CallOption) (*RegisterReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(RegisterReply)
-	err := c.cc.Invoke(ctx, Lushop_Register_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, User_Register_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *lushopClient) Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*RegisterReply, error) {
+func (c *userClient) Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*RegisterReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(RegisterReply)
-	err := c.cc.Invoke(ctx, Lushop_Login_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, User_Login_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *lushopClient) Captcha(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*CaptchaReply, error) {
+func (c *userClient) Captcha(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*CaptchaReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CaptchaReply)
-	err := c.cc.Invoke(ctx, Lushop_Captcha_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, User_Captcha_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *lushopClient) Detail(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*UserDetailResponse, error) {
+func (c *userClient) Detail(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*UserDetailResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UserDetailResponse)
-	err := c.cc.Invoke(ctx, Lushop_Detail_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, User_Detail_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *lushopClient) Update(ctx context.Context, in *UpdateReq, opts ...grpc.CallOption) (*UserDetailResponse, error) {
+func (c *userClient) Update(ctx context.Context, in *UpdateReq, opts ...grpc.CallOption) (*UserDetailResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UserDetailResponse)
-	err := c.cc.Invoke(ctx, Lushop_Update_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, User_Update_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *lushopClient) UpdatePwd(ctx context.Context, in *UpdatePwdReq, opts ...grpc.CallOption) (*UpdatePwdReply, error) {
+func (c *userClient) UpdatePwd(ctx context.Context, in *UpdatePwdReq, opts ...grpc.CallOption) (*UpdatePwdReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UpdatePwdReply)
-	err := c.cc.Invoke(ctx, Lushop_UpdatePwd_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, User_UpdatePwd_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *lushopClient) RefreshToken(ctx context.Context, in *RefreshTokenReq, opts ...grpc.CallOption) (*RefreshTokenReply, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(RefreshTokenReply)
-	err := c.cc.Invoke(ctx, Lushop_RefreshToken_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *lushopClient) Logout(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*LogoutReply, error) {
+func (c *userClient) Logout(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*LogoutReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(LogoutReply)
-	err := c.cc.Invoke(ctx, Lushop_Logout_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, User_Logout_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *lushopClient) SendSms(ctx context.Context, in *SendSmsReq, opts ...grpc.CallOption) (*SendSmsReply, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(SendSmsReply)
-	err := c.cc.Invoke(ctx, Lushop_SendSms_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *lushopClient) VerifySms(ctx context.Context, in *VerifySmsReq, opts ...grpc.CallOption) (*RegisterReply, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(RegisterReply)
-	err := c.cc.Invoke(ctx, Lushop_VerifySms_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *lushopClient) ListUsers(ctx context.Context, in *ListUsersReq, opts ...grpc.CallOption) (*ListUsersReply, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListUsersReply)
-	err := c.cc.Invoke(ctx, Lushop_ListUsers_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *lushopClient) KickUser(ctx context.Context, in *KickUserReq, opts ...grpc.CallOption) (*KickUserReply, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(KickUserReply)
-	err := c.cc.Invoke(ctx, Lushop_KickUser_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// LushopServer is the server API for Lushop service.
-// All implementations must embed UnimplementedLushopServer
+// UserServer is the server API for User service.
+// All implementations must embed UnimplementedUserServer
 // for forward compatibility.
 //
-// The Shop service definition.
-type LushopServer interface {
+// ==================== 用户服务 ====================
+type UserServer interface {
+	// 用户注册
 	Register(context.Context, *RegisterReq) (*RegisterReply, error)
+	// 用户登录
 	Login(context.Context, *LoginReq) (*RegisterReply, error)
+	// 获取图形验证码
 	Captcha(context.Context, *emptypb.Empty) (*CaptchaReply, error)
+	// 获取用户详情
 	Detail(context.Context, *emptypb.Empty) (*UserDetailResponse, error)
+	// 更新用户信息
 	Update(context.Context, *UpdateReq) (*UserDetailResponse, error)
+	// 修改密码
 	UpdatePwd(context.Context, *UpdatePwdReq) (*UpdatePwdReply, error)
-	RefreshToken(context.Context, *RefreshTokenReq) (*RefreshTokenReply, error)
+	// 退出登录
 	Logout(context.Context, *emptypb.Empty) (*LogoutReply, error)
-	SendSms(context.Context, *SendSmsReq) (*SendSmsReply, error)
-	VerifySms(context.Context, *VerifySmsReq) (*RegisterReply, error)
-	// 添加管理员接口
-	ListUsers(context.Context, *ListUsersReq) (*ListUsersReply, error)
-	KickUser(context.Context, *KickUserReq) (*KickUserReply, error)
-	mustEmbedUnimplementedLushopServer()
+	mustEmbedUnimplementedUserServer()
 }
 
-// UnimplementedLushopServer must be embedded to have
+// UnimplementedUserServer must be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedLushopServer struct{}
+type UnimplementedUserServer struct{}
 
-func (UnimplementedLushopServer) Register(context.Context, *RegisterReq) (*RegisterReply, error) {
+func (UnimplementedUserServer) Register(context.Context, *RegisterReq) (*RegisterReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
 }
-func (UnimplementedLushopServer) Login(context.Context, *LoginReq) (*RegisterReply, error) {
+func (UnimplementedUserServer) Login(context.Context, *LoginReq) (*RegisterReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
-func (UnimplementedLushopServer) Captcha(context.Context, *emptypb.Empty) (*CaptchaReply, error) {
+func (UnimplementedUserServer) Captcha(context.Context, *emptypb.Empty) (*CaptchaReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Captcha not implemented")
 }
-func (UnimplementedLushopServer) Detail(context.Context, *emptypb.Empty) (*UserDetailResponse, error) {
+func (UnimplementedUserServer) Detail(context.Context, *emptypb.Empty) (*UserDetailResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Detail not implemented")
 }
-func (UnimplementedLushopServer) Update(context.Context, *UpdateReq) (*UserDetailResponse, error) {
+func (UnimplementedUserServer) Update(context.Context, *UpdateReq) (*UserDetailResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
-func (UnimplementedLushopServer) UpdatePwd(context.Context, *UpdatePwdReq) (*UpdatePwdReply, error) {
+func (UnimplementedUserServer) UpdatePwd(context.Context, *UpdatePwdReq) (*UpdatePwdReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatePwd not implemented")
 }
-func (UnimplementedLushopServer) RefreshToken(context.Context, *RefreshTokenReq) (*RefreshTokenReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RefreshToken not implemented")
-}
-func (UnimplementedLushopServer) Logout(context.Context, *emptypb.Empty) (*LogoutReply, error) {
+func (UnimplementedUserServer) Logout(context.Context, *emptypb.Empty) (*LogoutReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Logout not implemented")
 }
-func (UnimplementedLushopServer) SendSms(context.Context, *SendSmsReq) (*SendSmsReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SendSms not implemented")
-}
-func (UnimplementedLushopServer) VerifySms(context.Context, *VerifySmsReq) (*RegisterReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method VerifySms not implemented")
-}
-func (UnimplementedLushopServer) ListUsers(context.Context, *ListUsersReq) (*ListUsersReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListUsers not implemented")
-}
-func (UnimplementedLushopServer) KickUser(context.Context, *KickUserReq) (*KickUserReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method KickUser not implemented")
-}
-func (UnimplementedLushopServer) mustEmbedUnimplementedLushopServer() {}
-func (UnimplementedLushopServer) testEmbeddedByValue()                {}
+func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
+func (UnimplementedUserServer) testEmbeddedByValue()              {}
 
-// UnsafeLushopServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to LushopServer will
+// UnsafeUserServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to UserServer will
 // result in compilation errors.
-type UnsafeLushopServer interface {
-	mustEmbedUnimplementedLushopServer()
+type UnsafeUserServer interface {
+	mustEmbedUnimplementedUserServer()
 }
 
-func RegisterLushopServer(s grpc.ServiceRegistrar, srv LushopServer) {
-	// If the following call pancis, it indicates UnimplementedLushopServer was
+func RegisterUserServer(s grpc.ServiceRegistrar, srv UserServer) {
+	// If the following call pancis, it indicates UnimplementedUserServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&Lushop_ServiceDesc, srv)
+	s.RegisterService(&User_ServiceDesc, srv)
 }
 
-func _Lushop_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _User_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RegisterReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(LushopServer).Register(ctx, in)
+		return srv.(UserServer).Register(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Lushop_Register_FullMethodName,
+		FullMethod: User_Register_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LushopServer).Register(ctx, req.(*RegisterReq))
+		return srv.(UserServer).Register(ctx, req.(*RegisterReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Lushop_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _User_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(LoginReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(LushopServer).Login(ctx, in)
+		return srv.(UserServer).Login(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Lushop_Login_FullMethodName,
+		FullMethod: User_Login_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LushopServer).Login(ctx, req.(*LoginReq))
+		return srv.(UserServer).Login(ctx, req.(*LoginReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Lushop_Captcha_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _User_Captcha_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(LushopServer).Captcha(ctx, in)
+		return srv.(UserServer).Captcha(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Lushop_Captcha_FullMethodName,
+		FullMethod: User_Captcha_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LushopServer).Captcha(ctx, req.(*emptypb.Empty))
+		return srv.(UserServer).Captcha(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Lushop_Detail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _User_Detail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(LushopServer).Detail(ctx, in)
+		return srv.(UserServer).Detail(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Lushop_Detail_FullMethodName,
+		FullMethod: User_Detail_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LushopServer).Detail(ctx, req.(*emptypb.Empty))
+		return srv.(UserServer).Detail(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Lushop_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _User_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(LushopServer).Update(ctx, in)
+		return srv.(UserServer).Update(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Lushop_Update_FullMethodName,
+		FullMethod: User_Update_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LushopServer).Update(ctx, req.(*UpdateReq))
+		return srv.(UserServer).Update(ctx, req.(*UpdateReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Lushop_UpdatePwd_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _User_UpdatePwd_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdatePwdReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(LushopServer).UpdatePwd(ctx, in)
+		return srv.(UserServer).UpdatePwd(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Lushop_UpdatePwd_FullMethodName,
+		FullMethod: User_UpdatePwd_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LushopServer).UpdatePwd(ctx, req.(*UpdatePwdReq))
+		return srv.(UserServer).UpdatePwd(ctx, req.(*UpdatePwdReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Lushop_RefreshToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RefreshTokenReq)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(LushopServer).RefreshToken(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Lushop_RefreshToken_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LushopServer).RefreshToken(ctx, req.(*RefreshTokenReq))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Lushop_Logout_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _User_Logout_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(LushopServer).Logout(ctx, in)
+		return srv.(UserServer).Logout(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Lushop_Logout_FullMethodName,
+		FullMethod: User_Logout_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LushopServer).Logout(ctx, req.(*emptypb.Empty))
+		return srv.(UserServer).Logout(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Lushop_SendSms_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+// User_ServiceDesc is the grpc.ServiceDesc for User service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var User_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "lushop.lushop.v1.User",
+	HandlerType: (*UserServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Register",
+			Handler:    _User_Register_Handler,
+		},
+		{
+			MethodName: "Login",
+			Handler:    _User_Login_Handler,
+		},
+		{
+			MethodName: "Captcha",
+			Handler:    _User_Captcha_Handler,
+		},
+		{
+			MethodName: "Detail",
+			Handler:    _User_Detail_Handler,
+		},
+		{
+			MethodName: "Update",
+			Handler:    _User_Update_Handler,
+		},
+		{
+			MethodName: "UpdatePwd",
+			Handler:    _User_UpdatePwd_Handler,
+		},
+		{
+			MethodName: "Logout",
+			Handler:    _User_Logout_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "lushop/v1/lushop.proto",
+}
+
+const (
+	UserAuth_SendSms_FullMethodName      = "/lushop.lushop.v1.UserAuth/SendSms"
+	UserAuth_VerifySms_FullMethodName    = "/lushop.lushop.v1.UserAuth/VerifySms"
+	UserAuth_RefreshToken_FullMethodName = "/lushop.lushop.v1.UserAuth/RefreshToken"
+)
+
+// UserAuthClient is the client API for UserAuth service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// ==================== 用户认证服务 ====================
+type UserAuthClient interface {
+	// 发送短信验证码
+	SendSms(ctx context.Context, in *SendSmsReq, opts ...grpc.CallOption) (*SendSmsReply, error)
+	// 验证短信验证码
+	VerifySms(ctx context.Context, in *VerifySmsReq, opts ...grpc.CallOption) (*RegisterReply, error)
+	// 刷新 Token
+	RefreshToken(ctx context.Context, in *RefreshTokenReq, opts ...grpc.CallOption) (*RefreshTokenReply, error)
+}
+
+type userAuthClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewUserAuthClient(cc grpc.ClientConnInterface) UserAuthClient {
+	return &userAuthClient{cc}
+}
+
+func (c *userAuthClient) SendSms(ctx context.Context, in *SendSmsReq, opts ...grpc.CallOption) (*SendSmsReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SendSmsReply)
+	err := c.cc.Invoke(ctx, UserAuth_SendSms_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userAuthClient) VerifySms(ctx context.Context, in *VerifySmsReq, opts ...grpc.CallOption) (*RegisterReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RegisterReply)
+	err := c.cc.Invoke(ctx, UserAuth_VerifySms_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userAuthClient) RefreshToken(ctx context.Context, in *RefreshTokenReq, opts ...grpc.CallOption) (*RefreshTokenReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RefreshTokenReply)
+	err := c.cc.Invoke(ctx, UserAuth_RefreshToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// UserAuthServer is the server API for UserAuth service.
+// All implementations must embed UnimplementedUserAuthServer
+// for forward compatibility.
+//
+// ==================== 用户认证服务 ====================
+type UserAuthServer interface {
+	// 发送短信验证码
+	SendSms(context.Context, *SendSmsReq) (*SendSmsReply, error)
+	// 验证短信验证码
+	VerifySms(context.Context, *VerifySmsReq) (*RegisterReply, error)
+	// 刷新 Token
+	RefreshToken(context.Context, *RefreshTokenReq) (*RefreshTokenReply, error)
+	mustEmbedUnimplementedUserAuthServer()
+}
+
+// UnimplementedUserAuthServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedUserAuthServer struct{}
+
+func (UnimplementedUserAuthServer) SendSms(context.Context, *SendSmsReq) (*SendSmsReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendSms not implemented")
+}
+func (UnimplementedUserAuthServer) VerifySms(context.Context, *VerifySmsReq) (*RegisterReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifySms not implemented")
+}
+func (UnimplementedUserAuthServer) RefreshToken(context.Context, *RefreshTokenReq) (*RefreshTokenReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RefreshToken not implemented")
+}
+func (UnimplementedUserAuthServer) mustEmbedUnimplementedUserAuthServer() {}
+func (UnimplementedUserAuthServer) testEmbeddedByValue()                  {}
+
+// UnsafeUserAuthServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to UserAuthServer will
+// result in compilation errors.
+type UnsafeUserAuthServer interface {
+	mustEmbedUnimplementedUserAuthServer()
+}
+
+func RegisterUserAuthServer(s grpc.ServiceRegistrar, srv UserAuthServer) {
+	// If the following call pancis, it indicates UnimplementedUserAuthServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&UserAuth_ServiceDesc, srv)
+}
+
+func _UserAuth_SendSms_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SendSmsReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(LushopServer).SendSms(ctx, in)
+		return srv.(UserAuthServer).SendSms(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Lushop_SendSms_FullMethodName,
+		FullMethod: UserAuth_SendSms_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LushopServer).SendSms(ctx, req.(*SendSmsReq))
+		return srv.(UserAuthServer).SendSms(ctx, req.(*SendSmsReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Lushop_VerifySms_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _UserAuth_VerifySms_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(VerifySmsReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(LushopServer).VerifySms(ctx, in)
+		return srv.(UserAuthServer).VerifySms(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Lushop_VerifySms_FullMethodName,
+		FullMethod: UserAuth_VerifySms_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LushopServer).VerifySms(ctx, req.(*VerifySmsReq))
+		return srv.(UserAuthServer).VerifySms(ctx, req.(*VerifySmsReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Lushop_ListUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _UserAuth_RefreshToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RefreshTokenReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserAuthServer).RefreshToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserAuth_RefreshToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserAuthServer).RefreshToken(ctx, req.(*RefreshTokenReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// UserAuth_ServiceDesc is the grpc.ServiceDesc for UserAuth service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var UserAuth_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "lushop.lushop.v1.UserAuth",
+	HandlerType: (*UserAuthServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "SendSms",
+			Handler:    _UserAuth_SendSms_Handler,
+		},
+		{
+			MethodName: "VerifySms",
+			Handler:    _UserAuth_VerifySms_Handler,
+		},
+		{
+			MethodName: "RefreshToken",
+			Handler:    _UserAuth_RefreshToken_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "lushop/v1/lushop.proto",
+}
+
+const (
+	UserAdmin_ListUsers_FullMethodName = "/lushop.lushop.v1.UserAdmin/ListUsers"
+	UserAdmin_KickUser_FullMethodName  = "/lushop.lushop.v1.UserAdmin/KickUser"
+)
+
+// UserAdminClient is the client API for UserAdmin service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// ==================== 用户操作服务（管理员）====================
+type UserAdminClient interface {
+	// 管理员查看用户列表
+	ListUsers(ctx context.Context, in *ListUsersReq, opts ...grpc.CallOption) (*ListUsersReply, error)
+	// 管理员踢出用户
+	KickUser(ctx context.Context, in *KickUserReq, opts ...grpc.CallOption) (*KickUserReply, error)
+}
+
+type userAdminClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewUserAdminClient(cc grpc.ClientConnInterface) UserAdminClient {
+	return &userAdminClient{cc}
+}
+
+func (c *userAdminClient) ListUsers(ctx context.Context, in *ListUsersReq, opts ...grpc.CallOption) (*ListUsersReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListUsersReply)
+	err := c.cc.Invoke(ctx, UserAdmin_ListUsers_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userAdminClient) KickUser(ctx context.Context, in *KickUserReq, opts ...grpc.CallOption) (*KickUserReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(KickUserReply)
+	err := c.cc.Invoke(ctx, UserAdmin_KickUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// UserAdminServer is the server API for UserAdmin service.
+// All implementations must embed UnimplementedUserAdminServer
+// for forward compatibility.
+//
+// ==================== 用户操作服务（管理员）====================
+type UserAdminServer interface {
+	// 管理员查看用户列表
+	ListUsers(context.Context, *ListUsersReq) (*ListUsersReply, error)
+	// 管理员踢出用户
+	KickUser(context.Context, *KickUserReq) (*KickUserReply, error)
+	mustEmbedUnimplementedUserAdminServer()
+}
+
+// UnimplementedUserAdminServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedUserAdminServer struct{}
+
+func (UnimplementedUserAdminServer) ListUsers(context.Context, *ListUsersReq) (*ListUsersReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListUsers not implemented")
+}
+func (UnimplementedUserAdminServer) KickUser(context.Context, *KickUserReq) (*KickUserReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method KickUser not implemented")
+}
+func (UnimplementedUserAdminServer) mustEmbedUnimplementedUserAdminServer() {}
+func (UnimplementedUserAdminServer) testEmbeddedByValue()                   {}
+
+// UnsafeUserAdminServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to UserAdminServer will
+// result in compilation errors.
+type UnsafeUserAdminServer interface {
+	mustEmbedUnimplementedUserAdminServer()
+}
+
+func RegisterUserAdminServer(s grpc.ServiceRegistrar, srv UserAdminServer) {
+	// If the following call pancis, it indicates UnimplementedUserAdminServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&UserAdmin_ServiceDesc, srv)
+}
+
+func _UserAdmin_ListUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListUsersReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(LushopServer).ListUsers(ctx, in)
+		return srv.(UserAdminServer).ListUsers(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Lushop_ListUsers_FullMethodName,
+		FullMethod: UserAdmin_ListUsers_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LushopServer).ListUsers(ctx, req.(*ListUsersReq))
+		return srv.(UserAdminServer).ListUsers(ctx, req.(*ListUsersReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Lushop_KickUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _UserAdmin_KickUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(KickUserReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(LushopServer).KickUser(ctx, in)
+		return srv.(UserAdminServer).KickUser(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Lushop_KickUser_FullMethodName,
+		FullMethod: UserAdmin_KickUser_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LushopServer).KickUser(ctx, req.(*KickUserReq))
+		return srv.(UserAdminServer).KickUser(ctx, req.(*KickUserReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// Lushop_ServiceDesc is the grpc.ServiceDesc for Lushop service.
+// UserAdmin_ServiceDesc is the grpc.ServiceDesc for UserAdmin service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var Lushop_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "lushop.lushop.v1.Lushop",
-	HandlerType: (*LushopServer)(nil),
+var UserAdmin_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "lushop.lushop.v1.UserAdmin",
+	HandlerType: (*UserAdminServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Register",
-			Handler:    _Lushop_Register_Handler,
-		},
-		{
-			MethodName: "Login",
-			Handler:    _Lushop_Login_Handler,
-		},
-		{
-			MethodName: "Captcha",
-			Handler:    _Lushop_Captcha_Handler,
-		},
-		{
-			MethodName: "Detail",
-			Handler:    _Lushop_Detail_Handler,
-		},
-		{
-			MethodName: "Update",
-			Handler:    _Lushop_Update_Handler,
-		},
-		{
-			MethodName: "UpdatePwd",
-			Handler:    _Lushop_UpdatePwd_Handler,
-		},
-		{
-			MethodName: "RefreshToken",
-			Handler:    _Lushop_RefreshToken_Handler,
-		},
-		{
-			MethodName: "Logout",
-			Handler:    _Lushop_Logout_Handler,
-		},
-		{
-			MethodName: "SendSms",
-			Handler:    _Lushop_SendSms_Handler,
-		},
-		{
-			MethodName: "VerifySms",
-			Handler:    _Lushop_VerifySms_Handler,
-		},
-		{
 			MethodName: "ListUsers",
-			Handler:    _Lushop_ListUsers_Handler,
+			Handler:    _UserAdmin_ListUsers_Handler,
 		},
 		{
 			MethodName: "KickUser",
-			Handler:    _Lushop_KickUser_Handler,
+			Handler:    _UserAdmin_KickUser_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "lushop/v1/lushop.proto",
+}
+
+const (
+	Cart_GetCartList_FullMethodName    = "/lushop.lushop.v1.Cart/GetCartList"
+	Cart_AddToCart_FullMethodName      = "/lushop.lushop.v1.Cart/AddToCart"
+	Cart_UpdateCartItem_FullMethodName = "/lushop.lushop.v1.Cart/UpdateCartItem"
+	Cart_DeleteCartItem_FullMethodName = "/lushop.lushop.v1.Cart/DeleteCartItem"
+)
+
+// CartClient is the client API for Cart service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// ==================== 购物车服务 ====================
+type CartClient interface {
+	// 获取购物车列表
+	GetCartList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*CartListReply, error)
+	// 添加商品到购物车
+	AddToCart(ctx context.Context, in *AddToCartReq, opts ...grpc.CallOption) (*CartItemReply, error)
+	// 更新购物车商品
+	UpdateCartItem(ctx context.Context, in *UpdateCartItemReq, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// 删除购物车商品
+	DeleteCartItem(ctx context.Context, in *DeleteCartItemReq, opts ...grpc.CallOption) (*emptypb.Empty, error)
+}
+
+type cartClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewCartClient(cc grpc.ClientConnInterface) CartClient {
+	return &cartClient{cc}
+}
+
+func (c *cartClient) GetCartList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*CartListReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CartListReply)
+	err := c.cc.Invoke(ctx, Cart_GetCartList_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *cartClient) AddToCart(ctx context.Context, in *AddToCartReq, opts ...grpc.CallOption) (*CartItemReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CartItemReply)
+	err := c.cc.Invoke(ctx, Cart_AddToCart_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *cartClient) UpdateCartItem(ctx context.Context, in *UpdateCartItemReq, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, Cart_UpdateCartItem_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *cartClient) DeleteCartItem(ctx context.Context, in *DeleteCartItemReq, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, Cart_DeleteCartItem_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// CartServer is the server API for Cart service.
+// All implementations must embed UnimplementedCartServer
+// for forward compatibility.
+//
+// ==================== 购物车服务 ====================
+type CartServer interface {
+	// 获取购物车列表
+	GetCartList(context.Context, *emptypb.Empty) (*CartListReply, error)
+	// 添加商品到购物车
+	AddToCart(context.Context, *AddToCartReq) (*CartItemReply, error)
+	// 更新购物车商品
+	UpdateCartItem(context.Context, *UpdateCartItemReq) (*emptypb.Empty, error)
+	// 删除购物车商品
+	DeleteCartItem(context.Context, *DeleteCartItemReq) (*emptypb.Empty, error)
+	mustEmbedUnimplementedCartServer()
+}
+
+// UnimplementedCartServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedCartServer struct{}
+
+func (UnimplementedCartServer) GetCartList(context.Context, *emptypb.Empty) (*CartListReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCartList not implemented")
+}
+func (UnimplementedCartServer) AddToCart(context.Context, *AddToCartReq) (*CartItemReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddToCart not implemented")
+}
+func (UnimplementedCartServer) UpdateCartItem(context.Context, *UpdateCartItemReq) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateCartItem not implemented")
+}
+func (UnimplementedCartServer) DeleteCartItem(context.Context, *DeleteCartItemReq) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteCartItem not implemented")
+}
+func (UnimplementedCartServer) mustEmbedUnimplementedCartServer() {}
+func (UnimplementedCartServer) testEmbeddedByValue()              {}
+
+// UnsafeCartServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to CartServer will
+// result in compilation errors.
+type UnsafeCartServer interface {
+	mustEmbedUnimplementedCartServer()
+}
+
+func RegisterCartServer(s grpc.ServiceRegistrar, srv CartServer) {
+	// If the following call pancis, it indicates UnimplementedCartServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&Cart_ServiceDesc, srv)
+}
+
+func _Cart_GetCartList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CartServer).GetCartList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Cart_GetCartList_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CartServer).GetCartList(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Cart_AddToCart_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddToCartReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CartServer).AddToCart(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Cart_AddToCart_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CartServer).AddToCart(ctx, req.(*AddToCartReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Cart_UpdateCartItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateCartItemReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CartServer).UpdateCartItem(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Cart_UpdateCartItem_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CartServer).UpdateCartItem(ctx, req.(*UpdateCartItemReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Cart_DeleteCartItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteCartItemReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CartServer).DeleteCartItem(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Cart_DeleteCartItem_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CartServer).DeleteCartItem(ctx, req.(*DeleteCartItemReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// Cart_ServiceDesc is the grpc.ServiceDesc for Cart service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var Cart_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "lushop.lushop.v1.Cart",
+	HandlerType: (*CartServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetCartList",
+			Handler:    _Cart_GetCartList_Handler,
+		},
+		{
+			MethodName: "AddToCart",
+			Handler:    _Cart_AddToCart_Handler,
+		},
+		{
+			MethodName: "UpdateCartItem",
+			Handler:    _Cart_UpdateCartItem_Handler,
+		},
+		{
+			MethodName: "DeleteCartItem",
+			Handler:    _Cart_DeleteCartItem_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "lushop/v1/lushop.proto",
+}
+
+const (
+	Goods_GetGoodsList_FullMethodName   = "/lushop.lushop.v1.Goods/GetGoodsList"
+	Goods_GetGoodsDetail_FullMethodName = "/lushop.lushop.v1.Goods/GetGoodsDetail"
+	Goods_SearchGoods_FullMethodName    = "/lushop.lushop.v1.Goods/SearchGoods"
+)
+
+// GoodsClient is the client API for Goods service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// ==================== 商品服务 ====================
+type GoodsClient interface {
+	// 获取商品列表
+	GetGoodsList(ctx context.Context, in *GoodsListReq, opts ...grpc.CallOption) (*GoodsListReply, error)
+	// 获取商品详情
+	GetGoodsDetail(ctx context.Context, in *GoodsDetailReq, opts ...grpc.CallOption) (*GoodsDetailReply, error)
+	// 搜索商品
+	SearchGoods(ctx context.Context, in *SearchGoodsReq, opts ...grpc.CallOption) (*GoodsListReply, error)
+}
+
+type goodsClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewGoodsClient(cc grpc.ClientConnInterface) GoodsClient {
+	return &goodsClient{cc}
+}
+
+func (c *goodsClient) GetGoodsList(ctx context.Context, in *GoodsListReq, opts ...grpc.CallOption) (*GoodsListReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GoodsListReply)
+	err := c.cc.Invoke(ctx, Goods_GetGoodsList_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *goodsClient) GetGoodsDetail(ctx context.Context, in *GoodsDetailReq, opts ...grpc.CallOption) (*GoodsDetailReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GoodsDetailReply)
+	err := c.cc.Invoke(ctx, Goods_GetGoodsDetail_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *goodsClient) SearchGoods(ctx context.Context, in *SearchGoodsReq, opts ...grpc.CallOption) (*GoodsListReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GoodsListReply)
+	err := c.cc.Invoke(ctx, Goods_SearchGoods_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// GoodsServer is the server API for Goods service.
+// All implementations must embed UnimplementedGoodsServer
+// for forward compatibility.
+//
+// ==================== 商品服务 ====================
+type GoodsServer interface {
+	// 获取商品列表
+	GetGoodsList(context.Context, *GoodsListReq) (*GoodsListReply, error)
+	// 获取商品详情
+	GetGoodsDetail(context.Context, *GoodsDetailReq) (*GoodsDetailReply, error)
+	// 搜索商品
+	SearchGoods(context.Context, *SearchGoodsReq) (*GoodsListReply, error)
+	mustEmbedUnimplementedGoodsServer()
+}
+
+// UnimplementedGoodsServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedGoodsServer struct{}
+
+func (UnimplementedGoodsServer) GetGoodsList(context.Context, *GoodsListReq) (*GoodsListReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetGoodsList not implemented")
+}
+func (UnimplementedGoodsServer) GetGoodsDetail(context.Context, *GoodsDetailReq) (*GoodsDetailReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetGoodsDetail not implemented")
+}
+func (UnimplementedGoodsServer) SearchGoods(context.Context, *SearchGoodsReq) (*GoodsListReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchGoods not implemented")
+}
+func (UnimplementedGoodsServer) mustEmbedUnimplementedGoodsServer() {}
+func (UnimplementedGoodsServer) testEmbeddedByValue()               {}
+
+// UnsafeGoodsServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to GoodsServer will
+// result in compilation errors.
+type UnsafeGoodsServer interface {
+	mustEmbedUnimplementedGoodsServer()
+}
+
+func RegisterGoodsServer(s grpc.ServiceRegistrar, srv GoodsServer) {
+	// If the following call pancis, it indicates UnimplementedGoodsServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&Goods_ServiceDesc, srv)
+}
+
+func _Goods_GetGoodsList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GoodsListReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GoodsServer).GetGoodsList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Goods_GetGoodsList_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GoodsServer).GetGoodsList(ctx, req.(*GoodsListReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Goods_GetGoodsDetail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GoodsDetailReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GoodsServer).GetGoodsDetail(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Goods_GetGoodsDetail_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GoodsServer).GetGoodsDetail(ctx, req.(*GoodsDetailReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Goods_SearchGoods_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchGoodsReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GoodsServer).SearchGoods(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Goods_SearchGoods_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GoodsServer).SearchGoods(ctx, req.(*SearchGoodsReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// Goods_ServiceDesc is the grpc.ServiceDesc for Goods service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var Goods_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "lushop.lushop.v1.Goods",
+	HandlerType: (*GoodsServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetGoodsList",
+			Handler:    _Goods_GetGoodsList_Handler,
+		},
+		{
+			MethodName: "GetGoodsDetail",
+			Handler:    _Goods_GetGoodsDetail_Handler,
+		},
+		{
+			MethodName: "SearchGoods",
+			Handler:    _Goods_SearchGoods_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "lushop/v1/lushop.proto",
+}
+
+const (
+	Order_CreateOrder_FullMethodName    = "/lushop.lushop.v1.Order/CreateOrder"
+	Order_GetOrderList_FullMethodName   = "/lushop.lushop.v1.Order/GetOrderList"
+	Order_GetOrderDetail_FullMethodName = "/lushop.lushop.v1.Order/GetOrderDetail"
+	Order_CancelOrder_FullMethodName    = "/lushop.lushop.v1.Order/CancelOrder"
+)
+
+// OrderClient is the client API for Order service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// ==================== 订单服务 ====================
+type OrderClient interface {
+	// 创建订单
+	CreateOrder(ctx context.Context, in *CreateOrderReq, opts ...grpc.CallOption) (*CreateOrderReply, error)
+	// 获取订单列表
+	GetOrderList(ctx context.Context, in *GetOrderListReq, opts ...grpc.CallOption) (*GetOrderListReply, error)
+	// 获取订单详情
+	GetOrderDetail(ctx context.Context, in *GetOrderDetailReq, opts ...grpc.CallOption) (*GetOrderDetailReply, error)
+	// 取消订单
+	CancelOrder(ctx context.Context, in *CancelOrderReq, opts ...grpc.CallOption) (*emptypb.Empty, error)
+}
+
+type orderClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewOrderClient(cc grpc.ClientConnInterface) OrderClient {
+	return &orderClient{cc}
+}
+
+func (c *orderClient) CreateOrder(ctx context.Context, in *CreateOrderReq, opts ...grpc.CallOption) (*CreateOrderReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateOrderReply)
+	err := c.cc.Invoke(ctx, Order_CreateOrder_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *orderClient) GetOrderList(ctx context.Context, in *GetOrderListReq, opts ...grpc.CallOption) (*GetOrderListReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetOrderListReply)
+	err := c.cc.Invoke(ctx, Order_GetOrderList_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *orderClient) GetOrderDetail(ctx context.Context, in *GetOrderDetailReq, opts ...grpc.CallOption) (*GetOrderDetailReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetOrderDetailReply)
+	err := c.cc.Invoke(ctx, Order_GetOrderDetail_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *orderClient) CancelOrder(ctx context.Context, in *CancelOrderReq, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, Order_CancelOrder_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// OrderServer is the server API for Order service.
+// All implementations must embed UnimplementedOrderServer
+// for forward compatibility.
+//
+// ==================== 订单服务 ====================
+type OrderServer interface {
+	// 创建订单
+	CreateOrder(context.Context, *CreateOrderReq) (*CreateOrderReply, error)
+	// 获取订单列表
+	GetOrderList(context.Context, *GetOrderListReq) (*GetOrderListReply, error)
+	// 获取订单详情
+	GetOrderDetail(context.Context, *GetOrderDetailReq) (*GetOrderDetailReply, error)
+	// 取消订单
+	CancelOrder(context.Context, *CancelOrderReq) (*emptypb.Empty, error)
+	mustEmbedUnimplementedOrderServer()
+}
+
+// UnimplementedOrderServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedOrderServer struct{}
+
+func (UnimplementedOrderServer) CreateOrder(context.Context, *CreateOrderReq) (*CreateOrderReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateOrder not implemented")
+}
+func (UnimplementedOrderServer) GetOrderList(context.Context, *GetOrderListReq) (*GetOrderListReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetOrderList not implemented")
+}
+func (UnimplementedOrderServer) GetOrderDetail(context.Context, *GetOrderDetailReq) (*GetOrderDetailReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetOrderDetail not implemented")
+}
+func (UnimplementedOrderServer) CancelOrder(context.Context, *CancelOrderReq) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CancelOrder not implemented")
+}
+func (UnimplementedOrderServer) mustEmbedUnimplementedOrderServer() {}
+func (UnimplementedOrderServer) testEmbeddedByValue()               {}
+
+// UnsafeOrderServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to OrderServer will
+// result in compilation errors.
+type UnsafeOrderServer interface {
+	mustEmbedUnimplementedOrderServer()
+}
+
+func RegisterOrderServer(s grpc.ServiceRegistrar, srv OrderServer) {
+	// If the following call pancis, it indicates UnimplementedOrderServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&Order_ServiceDesc, srv)
+}
+
+func _Order_CreateOrder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateOrderReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OrderServer).CreateOrder(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Order_CreateOrder_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OrderServer).CreateOrder(ctx, req.(*CreateOrderReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Order_GetOrderList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetOrderListReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OrderServer).GetOrderList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Order_GetOrderList_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OrderServer).GetOrderList(ctx, req.(*GetOrderListReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Order_GetOrderDetail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetOrderDetailReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OrderServer).GetOrderDetail(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Order_GetOrderDetail_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OrderServer).GetOrderDetail(ctx, req.(*GetOrderDetailReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Order_CancelOrder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CancelOrderReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OrderServer).CancelOrder(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Order_CancelOrder_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OrderServer).CancelOrder(ctx, req.(*CancelOrderReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// Order_ServiceDesc is the grpc.ServiceDesc for Order service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var Order_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "lushop.lushop.v1.Order",
+	HandlerType: (*OrderServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CreateOrder",
+			Handler:    _Order_CreateOrder_Handler,
+		},
+		{
+			MethodName: "GetOrderList",
+			Handler:    _Order_GetOrderList_Handler,
+		},
+		{
+			MethodName: "GetOrderDetail",
+			Handler:    _Order_GetOrderDetail_Handler,
+		},
+		{
+			MethodName: "CancelOrder",
+			Handler:    _Order_CancelOrder_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "lushop/v1/lushop.proto",
+}
+
+const (
+	Inventory_SetInventory_FullMethodName = "/lushop.lushop.v1.Inventory/SetInventory"
+	Inventory_GetInventory_FullMethodName = "/lushop.lushop.v1.Inventory/GetInventory"
+)
+
+// InventoryClient is the client API for Inventory service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// 库存服务定义
+type InventoryClient interface {
+	// 设置库存
+	SetInventory(ctx context.Context, in *SetInventoryReq, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// 获取库存
+	GetInventory(ctx context.Context, in *GetInventoryReq, opts ...grpc.CallOption) (*GetInventoryReply, error)
+}
+
+type inventoryClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewInventoryClient(cc grpc.ClientConnInterface) InventoryClient {
+	return &inventoryClient{cc}
+}
+
+func (c *inventoryClient) SetInventory(ctx context.Context, in *SetInventoryReq, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, Inventory_SetInventory_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *inventoryClient) GetInventory(ctx context.Context, in *GetInventoryReq, opts ...grpc.CallOption) (*GetInventoryReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetInventoryReply)
+	err := c.cc.Invoke(ctx, Inventory_GetInventory_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// InventoryServer is the server API for Inventory service.
+// All implementations must embed UnimplementedInventoryServer
+// for forward compatibility.
+//
+// 库存服务定义
+type InventoryServer interface {
+	// 设置库存
+	SetInventory(context.Context, *SetInventoryReq) (*emptypb.Empty, error)
+	// 获取库存
+	GetInventory(context.Context, *GetInventoryReq) (*GetInventoryReply, error)
+	mustEmbedUnimplementedInventoryServer()
+}
+
+// UnimplementedInventoryServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedInventoryServer struct{}
+
+func (UnimplementedInventoryServer) SetInventory(context.Context, *SetInventoryReq) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetInventory not implemented")
+}
+func (UnimplementedInventoryServer) GetInventory(context.Context, *GetInventoryReq) (*GetInventoryReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetInventory not implemented")
+}
+func (UnimplementedInventoryServer) mustEmbedUnimplementedInventoryServer() {}
+func (UnimplementedInventoryServer) testEmbeddedByValue()                   {}
+
+// UnsafeInventoryServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to InventoryServer will
+// result in compilation errors.
+type UnsafeInventoryServer interface {
+	mustEmbedUnimplementedInventoryServer()
+}
+
+func RegisterInventoryServer(s grpc.ServiceRegistrar, srv InventoryServer) {
+	// If the following call pancis, it indicates UnimplementedInventoryServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&Inventory_ServiceDesc, srv)
+}
+
+func _Inventory_SetInventory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetInventoryReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InventoryServer).SetInventory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Inventory_SetInventory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InventoryServer).SetInventory(ctx, req.(*SetInventoryReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Inventory_GetInventory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetInventoryReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InventoryServer).GetInventory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Inventory_GetInventory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InventoryServer).GetInventory(ctx, req.(*GetInventoryReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// Inventory_ServiceDesc is the grpc.ServiceDesc for Inventory service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var Inventory_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "lushop.lushop.v1.Inventory",
+	HandlerType: (*InventoryServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "SetInventory",
+			Handler:    _Inventory_SetInventory_Handler,
+		},
+		{
+			MethodName: "GetInventory",
+			Handler:    _Inventory_GetInventory_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "lushop/v1/lushop.proto",
+}
+
+const (
+	UserOp_GetAddressList_FullMethodName  = "/lushop.lushop.v1.UserOp/GetAddressList"
+	UserOp_CreateAddress_FullMethodName   = "/lushop.lushop.v1.UserOp/CreateAddress"
+	UserOp_UpdateAddress_FullMethodName   = "/lushop.lushop.v1.UserOp/UpdateAddress"
+	UserOp_DeleteAddress_FullMethodName   = "/lushop.lushop.v1.UserOp/DeleteAddress"
+	UserOp_GetMessageList_FullMethodName  = "/lushop.lushop.v1.UserOp/GetMessageList"
+	UserOp_CreateMessage_FullMethodName   = "/lushop.lushop.v1.UserOp/CreateMessage"
+	UserOp_GetFavoriteList_FullMethodName = "/lushop.lushop.v1.UserOp/GetFavoriteList"
+	UserOp_AddFavorite_FullMethodName     = "/lushop.lushop.v1.UserOp/AddFavorite"
+	UserOp_DeleteFavorite_FullMethodName  = "/lushop.lushop.v1.UserOp/DeleteFavorite"
+	UserOp_CheckFavorite_FullMethodName   = "/lushop.lushop.v1.UserOp/CheckFavorite"
+)
+
+// UserOpClient is the client API for UserOp service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// ==================== 用户操作服务 ====================
+type UserOpClient interface {
+	// 地址管理
+	GetAddressList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*AddressListReply, error)
+	CreateAddress(ctx context.Context, in *CreateAddressReq, opts ...grpc.CallOption) (*AddressReply, error)
+	UpdateAddress(ctx context.Context, in *UpdateAddressReq, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	DeleteAddress(ctx context.Context, in *DeleteAddressReq, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// 留言管理
+	GetMessageList(ctx context.Context, in *GetMessageListReq, opts ...grpc.CallOption) (*MessageListReply, error)
+	CreateMessage(ctx context.Context, in *CreateMessageReq, opts ...grpc.CallOption) (*MessageReply, error)
+	// 收藏管理
+	GetFavoriteList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*FavoriteListReply, error)
+	AddFavorite(ctx context.Context, in *AddFavoriteReq, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	DeleteFavorite(ctx context.Context, in *DeleteFavoriteReq, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	CheckFavorite(ctx context.Context, in *CheckFavoriteReq, opts ...grpc.CallOption) (*CheckFavoriteReply, error)
+}
+
+type userOpClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewUserOpClient(cc grpc.ClientConnInterface) UserOpClient {
+	return &userOpClient{cc}
+}
+
+func (c *userOpClient) GetAddressList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*AddressListReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AddressListReply)
+	err := c.cc.Invoke(ctx, UserOp_GetAddressList_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userOpClient) CreateAddress(ctx context.Context, in *CreateAddressReq, opts ...grpc.CallOption) (*AddressReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AddressReply)
+	err := c.cc.Invoke(ctx, UserOp_CreateAddress_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userOpClient) UpdateAddress(ctx context.Context, in *UpdateAddressReq, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, UserOp_UpdateAddress_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userOpClient) DeleteAddress(ctx context.Context, in *DeleteAddressReq, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, UserOp_DeleteAddress_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userOpClient) GetMessageList(ctx context.Context, in *GetMessageListReq, opts ...grpc.CallOption) (*MessageListReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MessageListReply)
+	err := c.cc.Invoke(ctx, UserOp_GetMessageList_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userOpClient) CreateMessage(ctx context.Context, in *CreateMessageReq, opts ...grpc.CallOption) (*MessageReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MessageReply)
+	err := c.cc.Invoke(ctx, UserOp_CreateMessage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userOpClient) GetFavoriteList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*FavoriteListReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(FavoriteListReply)
+	err := c.cc.Invoke(ctx, UserOp_GetFavoriteList_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userOpClient) AddFavorite(ctx context.Context, in *AddFavoriteReq, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, UserOp_AddFavorite_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userOpClient) DeleteFavorite(ctx context.Context, in *DeleteFavoriteReq, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, UserOp_DeleteFavorite_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userOpClient) CheckFavorite(ctx context.Context, in *CheckFavoriteReq, opts ...grpc.CallOption) (*CheckFavoriteReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CheckFavoriteReply)
+	err := c.cc.Invoke(ctx, UserOp_CheckFavorite_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// UserOpServer is the server API for UserOp service.
+// All implementations must embed UnimplementedUserOpServer
+// for forward compatibility.
+//
+// ==================== 用户操作服务 ====================
+type UserOpServer interface {
+	// 地址管理
+	GetAddressList(context.Context, *emptypb.Empty) (*AddressListReply, error)
+	CreateAddress(context.Context, *CreateAddressReq) (*AddressReply, error)
+	UpdateAddress(context.Context, *UpdateAddressReq) (*emptypb.Empty, error)
+	DeleteAddress(context.Context, *DeleteAddressReq) (*emptypb.Empty, error)
+	// 留言管理
+	GetMessageList(context.Context, *GetMessageListReq) (*MessageListReply, error)
+	CreateMessage(context.Context, *CreateMessageReq) (*MessageReply, error)
+	// 收藏管理
+	GetFavoriteList(context.Context, *emptypb.Empty) (*FavoriteListReply, error)
+	AddFavorite(context.Context, *AddFavoriteReq) (*emptypb.Empty, error)
+	DeleteFavorite(context.Context, *DeleteFavoriteReq) (*emptypb.Empty, error)
+	CheckFavorite(context.Context, *CheckFavoriteReq) (*CheckFavoriteReply, error)
+	mustEmbedUnimplementedUserOpServer()
+}
+
+// UnimplementedUserOpServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedUserOpServer struct{}
+
+func (UnimplementedUserOpServer) GetAddressList(context.Context, *emptypb.Empty) (*AddressListReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAddressList not implemented")
+}
+func (UnimplementedUserOpServer) CreateAddress(context.Context, *CreateAddressReq) (*AddressReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateAddress not implemented")
+}
+func (UnimplementedUserOpServer) UpdateAddress(context.Context, *UpdateAddressReq) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateAddress not implemented")
+}
+func (UnimplementedUserOpServer) DeleteAddress(context.Context, *DeleteAddressReq) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteAddress not implemented")
+}
+func (UnimplementedUserOpServer) GetMessageList(context.Context, *GetMessageListReq) (*MessageListReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMessageList not implemented")
+}
+func (UnimplementedUserOpServer) CreateMessage(context.Context, *CreateMessageReq) (*MessageReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateMessage not implemented")
+}
+func (UnimplementedUserOpServer) GetFavoriteList(context.Context, *emptypb.Empty) (*FavoriteListReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetFavoriteList not implemented")
+}
+func (UnimplementedUserOpServer) AddFavorite(context.Context, *AddFavoriteReq) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddFavorite not implemented")
+}
+func (UnimplementedUserOpServer) DeleteFavorite(context.Context, *DeleteFavoriteReq) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteFavorite not implemented")
+}
+func (UnimplementedUserOpServer) CheckFavorite(context.Context, *CheckFavoriteReq) (*CheckFavoriteReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckFavorite not implemented")
+}
+func (UnimplementedUserOpServer) mustEmbedUnimplementedUserOpServer() {}
+func (UnimplementedUserOpServer) testEmbeddedByValue()                {}
+
+// UnsafeUserOpServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to UserOpServer will
+// result in compilation errors.
+type UnsafeUserOpServer interface {
+	mustEmbedUnimplementedUserOpServer()
+}
+
+func RegisterUserOpServer(s grpc.ServiceRegistrar, srv UserOpServer) {
+	// If the following call pancis, it indicates UnimplementedUserOpServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&UserOp_ServiceDesc, srv)
+}
+
+func _UserOp_GetAddressList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserOpServer).GetAddressList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserOp_GetAddressList_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserOpServer).GetAddressList(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserOp_CreateAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateAddressReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserOpServer).CreateAddress(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserOp_CreateAddress_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserOpServer).CreateAddress(ctx, req.(*CreateAddressReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserOp_UpdateAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateAddressReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserOpServer).UpdateAddress(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserOp_UpdateAddress_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserOpServer).UpdateAddress(ctx, req.(*UpdateAddressReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserOp_DeleteAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteAddressReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserOpServer).DeleteAddress(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserOp_DeleteAddress_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserOpServer).DeleteAddress(ctx, req.(*DeleteAddressReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserOp_GetMessageList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetMessageListReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserOpServer).GetMessageList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserOp_GetMessageList_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserOpServer).GetMessageList(ctx, req.(*GetMessageListReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserOp_CreateMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateMessageReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserOpServer).CreateMessage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserOp_CreateMessage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserOpServer).CreateMessage(ctx, req.(*CreateMessageReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserOp_GetFavoriteList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserOpServer).GetFavoriteList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserOp_GetFavoriteList_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserOpServer).GetFavoriteList(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserOp_AddFavorite_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddFavoriteReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserOpServer).AddFavorite(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserOp_AddFavorite_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserOpServer).AddFavorite(ctx, req.(*AddFavoriteReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserOp_DeleteFavorite_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteFavoriteReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserOpServer).DeleteFavorite(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserOp_DeleteFavorite_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserOpServer).DeleteFavorite(ctx, req.(*DeleteFavoriteReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserOp_CheckFavorite_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckFavoriteReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserOpServer).CheckFavorite(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserOp_CheckFavorite_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserOpServer).CheckFavorite(ctx, req.(*CheckFavoriteReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// UserOp_ServiceDesc is the grpc.ServiceDesc for UserOp service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var UserOp_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "lushop.lushop.v1.UserOp",
+	HandlerType: (*UserOpServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetAddressList",
+			Handler:    _UserOp_GetAddressList_Handler,
+		},
+		{
+			MethodName: "CreateAddress",
+			Handler:    _UserOp_CreateAddress_Handler,
+		},
+		{
+			MethodName: "UpdateAddress",
+			Handler:    _UserOp_UpdateAddress_Handler,
+		},
+		{
+			MethodName: "DeleteAddress",
+			Handler:    _UserOp_DeleteAddress_Handler,
+		},
+		{
+			MethodName: "GetMessageList",
+			Handler:    _UserOp_GetMessageList_Handler,
+		},
+		{
+			MethodName: "CreateMessage",
+			Handler:    _UserOp_CreateMessage_Handler,
+		},
+		{
+			MethodName: "GetFavoriteList",
+			Handler:    _UserOp_GetFavoriteList_Handler,
+		},
+		{
+			MethodName: "AddFavorite",
+			Handler:    _UserOp_AddFavorite_Handler,
+		},
+		{
+			MethodName: "DeleteFavorite",
+			Handler:    _UserOp_DeleteFavorite_Handler,
+		},
+		{
+			MethodName: "CheckFavorite",
+			Handler:    _UserOp_CheckFavorite_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

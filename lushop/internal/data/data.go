@@ -5,8 +5,12 @@ import (
 	"lushop/internal/conf"
 	"time"
 
+	goodsV1 "lushop/api/service/goods/v1"
+	inventoryV1 "lushop/api/service/inventory/v1"
+	orderV1 "lushop/api/service/order/v1"
 	userV1 "lushop/api/service/user/v1"
-	userauthV1 "lushop/api/userauth/v1"
+	userauthV1 "lushop/api/service/userauth/v1"
+	useropV1 "lushop/api/service/userop/v1"
 
 	consul "github.com/go-kratos/kratos/contrib/registry/consul/v2"
 	"github.com/go-kratos/kratos/v2/log"
@@ -26,8 +30,17 @@ var ProviderSet = wire.NewSet(
 	NewData,
 	NewUserAuthRepoGRPC, // 使用 gRPC 版本的用户仓库（统一治理方案）
 	// NewUserRepo,       // 旧的 Redis 版本（如需回滚可切换）
+	NewCartRepo,      // 购物车仓库
+	NewGoodsRepo,     // 商品仓库
+	NewInventoryRepo, // 库存仓库
+	NewOrderRepo,     // 订单仓库
+	NewUserOpRepo,    // 用户操作仓库
 	NewUserServiceClient,
 	NewUserAuthClient,
+	NewGoodsServiceClient,     // Goods Service 客户端
+	NewInventoryServiceClient, // Inventory Service 客户端
+	NewOrderServiceClient,     // Order Service 客户端
+	NewUserOpServiceClient,    // UserOp Service 客户端
 	NewRegister,
 	NewDiscovery,
 	NewRedis,
@@ -36,8 +49,12 @@ var ProviderSet = wire.NewSet(
 // Data .
 type Data struct {
 	log *log.Helper
-	uc  userV1.UserClient         // 用户服务的客户端
-	uac userauthV1.UserAuthClient // 用户认证服务的客户端
+	uc  userV1.UserClient           // 用户服务的客户端
+	uac userauthV1.UserAuthClient   // 用户认证服务的客户端
+	gc  goodsV1.GoodsClient         // 商品服务的客户端
+	ic  inventoryV1.InventoryClient // 库存服务的客户端
+	oc  orderV1.OrderClient         // 订单服务的客户端
+	uoc useropV1.UserOpClient       // 用户操作服务的客户端
 	rdb *redis.Client
 }
 
@@ -47,9 +64,9 @@ func (d *Data) Rdb() *redis.Client {
 }
 
 // NewData .
-func NewData(c *conf.Data, uc userV1.UserClient, uac userauthV1.UserAuthClient, logger log.Logger, rdb *redis.Client) (*Data, error) {
+func NewData(c *conf.Data, uc userV1.UserClient, uac userauthV1.UserAuthClient, gc goodsV1.GoodsClient, ic inventoryV1.InventoryClient, oc orderV1.OrderClient, uoc useropV1.UserOpClient, logger log.Logger, rdb *redis.Client) (*Data, error) {
 	l := log.NewHelper(log.With(logger, "module", "data"))
-	return &Data{log: l, uc: uc, uac: uac, rdb: rdb}, nil
+	return &Data{log: l, uc: uc, uac: uac, gc: gc, ic: ic, oc: oc, uoc: uoc, rdb: rdb}, nil
 }
 
 // NewUserServiceClient 链接用户grpc服务
@@ -89,6 +106,86 @@ func NewUserAuthClient(ac *conf.Auth, sr *conf.Service, rr registry.Discovery) u
 		panic(err)
 	}
 	c := userauthV1.NewUserAuthClient(conn)
+	return c
+}
+
+// NewGoodsServiceClient 链接商品服务grpc服务
+func NewGoodsServiceClient(ac *conf.Auth, sr *conf.Service, rr registry.Discovery) goodsV1.GoodsClient {
+	conn, err := grpc.DialInsecure(
+		context.Background(),
+		grpc.WithEndpoint(sr.Goods.Endpoint), // consul
+		grpc.WithDiscovery(rr),               // consul
+		grpc.WithMiddleware(
+			tracing.Client(), // 链路追踪
+			recovery.Recovery(),
+		),
+		grpc.WithTimeout(2*time.Second),
+		grpc.WithOptions(grpcx.WithStatsHandler(&tracing.ClientHandler{})),
+	)
+	if err != nil {
+		panic(err)
+	}
+	c := goodsV1.NewGoodsClient(conn)
+	return c
+}
+
+// NewOrderServiceClient 链接订单服务grpc服务
+func NewOrderServiceClient(ac *conf.Auth, sr *conf.Service, rr registry.Discovery) orderV1.OrderClient {
+	conn, err := grpc.DialInsecure(
+		context.Background(),
+		grpc.WithEndpoint(sr.Order.Endpoint), // consul
+		grpc.WithDiscovery(rr),               // consul
+		grpc.WithMiddleware(
+			tracing.Client(), // 链路追踪
+			recovery.Recovery(),
+		),
+		grpc.WithTimeout(2*time.Second),
+		grpc.WithOptions(grpcx.WithStatsHandler(&tracing.ClientHandler{})),
+	)
+	if err != nil {
+		panic(err)
+	}
+	c := orderV1.NewOrderClient(conn)
+	return c
+}
+
+// NewInventoryServiceClient 创建库存服务客户端
+func NewInventoryServiceClient(sr *conf.Service, rr registry.Discovery) inventoryV1.InventoryClient {
+	conn, err := grpc.DialInsecure(
+		context.Background(),
+		grpc.WithEndpoint(sr.Inventory.Endpoint), // consul
+		grpc.WithDiscovery(rr),                   // consul
+		grpc.WithMiddleware(
+			tracing.Client(), // 链路追踪
+			recovery.Recovery(),
+		),
+		grpc.WithTimeout(2*time.Second),
+		grpc.WithOptions(grpcx.WithStatsHandler(&tracing.ClientHandler{})),
+	)
+	if err != nil {
+		panic(err)
+	}
+	c := inventoryV1.NewInventoryClient(conn)
+	return c
+}
+
+// NewUserOpServiceClient 创建用户操作服务客户端
+func NewUserOpServiceClient(sr *conf.Service, rr registry.Discovery) useropV1.UserOpClient {
+	conn, err := grpc.DialInsecure(
+		context.Background(),
+		grpc.WithEndpoint(sr.Userop.Endpoint), // consul
+		grpc.WithDiscovery(rr),                // consul
+		grpc.WithMiddleware(
+			tracing.Client(), // 链路追踪
+			recovery.Recovery(),
+		),
+		grpc.WithTimeout(2*time.Second),
+		grpc.WithOptions(grpcx.WithStatsHandler(&tracing.ClientHandler{})),
+	)
+	if err != nil {
+		panic(err)
+	}
+	c := useropV1.NewUserOpClient(conn)
 	return c
 }
 

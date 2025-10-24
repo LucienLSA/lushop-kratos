@@ -8,74 +8,191 @@ import "google/api/annotations.proto";
 import "validate/validate.proto";
 option go_package = "lushop/api/lushop/v1;v1";
 
-// The Shop service definition.
-service Lushop {
+// ==================== 用户服务 ====================
+service User {
+  // 用户注册
   rpc Register (RegisterReq) returns (RegisterReply) {
     option (google.api.http) = {
       post: "/api/user/register",
       body: "*",
     };
   }
+  
+  // 用户登录
   rpc Login (LoginReq) returns (RegisterReply) {
     option  (google.api.http) = {
       post: "/api/user/login",
       body: "*",
     };
   }
+  
+  // 获取图形验证码
   rpc Captcha(google.protobuf.Empty) returns (CaptchaReply) {
     option (google.api.http) = {
       post: "/api/user/captcha",
       body: "*",
     };
   }
+  
+  // 获取用户详情
   rpc Detail (google.protobuf.Empty) returns (UserDetailResponse) {
     option (google.api.http) = {
       get: "/api/user/detail",
     };
   }
+  
+  // 更新用户信息
   rpc Update(UpdateReq) returns (UserDetailResponse) {
     option (google.api.http) = {
       put: "/api/user/update",
       body: "*",
     };
   }
+  
+  // 修改密码
   rpc UpdatePwd(UpdatePwdReq) returns (UpdatePwdReply) {
     option (google.api.http) = {
       put: "/api/user/update_pwd",
       body: "*",  
     };
   }
-  rpc RefreshToken(RefreshTokenReq) returns (RefreshTokenReply) {
-    option (google.api.http) = {
-      post: "/api/user/refresh_token",
-      body: "*",
-    };
-  }
+  
+  // 退出登录
   rpc Logout(google.protobuf.Empty) returns (LogoutReply) {
     option (google.api.http) = {
       delete: "/api/user/logout",
     };
   }
+}
+
+// ==================== 用户认证服务 ====================
+service UserAuth {
+  // 发送短信验证码
   rpc SendSms(SendSmsReq) returns (SendSmsReply) {
     option  (google.api.http) = {
       post: "/api/user/send_sms",
       body: "*",
     };
   }
+  
+  // 验证短信验证码
   rpc VerifySms(VerifySmsReq) returns (RegisterReply) {
     option (google.api.http) = {
       get: "/api/user/verify_sms",
     };
   }
-  // 添加管理员接口
+  
+  // 刷新 Token
+  rpc RefreshToken(RefreshTokenReq) returns (RefreshTokenReply) {
+    option (google.api.http) = {
+      post: "/api/user/refresh_token",
+      body: "*",
+    };
+  }
+}
+
+// ==================== 用户操作服务（管理员）====================
+service UserAdmin {
+  // 管理员查看用户列表
   rpc ListUsers(ListUsersReq) returns (ListUsersReply) {
     option (google.api.http) = {
       get: "/api/admin/users",
     };
   }
+  
+  // 管理员踢出用户
   rpc KickUser(KickUserReq) returns (KickUserReply) {
     option (google.api.http) = {
       delete: "/api/admin/users/{id}",
+    };
+  }
+}
+
+// ==================== 购物车服务 ====================
+service Cart {
+  // 获取购物车列表
+  rpc GetCartList(google.protobuf.Empty) returns (CartListReply) {
+    option (google.api.http) = {
+      get: "/api/cart/list",
+    };
+  }
+  
+  // 添加商品到购物车
+  rpc AddToCart(AddToCartReq) returns (CartItemReply) {
+    option (google.api.http) = {
+      post: "/api/cart/add",
+      body: "*",
+    };
+  }
+  
+  // 更新购物车商品
+  rpc UpdateCartItem(UpdateCartItemReq) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api/cart/update",
+      body: "*",
+    };
+  }
+  
+  // 删除购物车商品
+  rpc DeleteCartItem(DeleteCartItemReq) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/cart/{id}",
+    };
+  }
+}
+
+// ==================== 商品服务 ====================
+service Goods {
+  // 获取商品列表
+  rpc GetGoodsList(GoodsListReq) returns (GoodsListReply) {
+    option (google.api.http) = {
+      get: "/api/goods/list",
+    };
+  }
+  
+  // 获取商品详情
+  rpc GetGoodsDetail(GoodsDetailReq) returns (GoodsDetailReply) {
+    option (google.api.http) = {
+      get: "/api/goods/{id}",
+    };
+  }
+  
+  // 搜索商品
+  rpc SearchGoods(SearchGoodsReq) returns (GoodsListReply) {
+    option (google.api.http) = {
+      get: "/api/goods/search",
+    };
+  }
+}
+
+// ==================== 订单服务 ====================
+service Order {
+  // 创建订单
+  rpc CreateOrder(CreateOrderReq) returns (CreateOrderReply) {
+    option (google.api.http) = {
+      post: "/api/order/create",
+      body: "*",
+    };
+  }
+  
+  // 获取订单列表
+  rpc GetOrderList(GetOrderListReq) returns (GetOrderListReply) {
+    option (google.api.http) = {
+      get: "/api/order/list",
+    };
+  }
+  
+  // 获取订单详情
+  rpc GetOrderDetail(GetOrderDetailReq) returns (GetOrderDetailReply) {
+    option (google.api.http) = {
+      get: "/api/order/{id}",
+    };
+  }
+  
+  // 取消订单
+  rpc CancelOrder(CancelOrderReq) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/order/{id}",
     };
   }
 }
@@ -174,6 +291,36 @@ message LogoutReply {
   bool success = 1;
 }
 
+// 购物车相关消息定义
+message CartItemReply {
+  int32 id = 1;
+  int32 userId = 2;
+  int32 goodsId = 3;
+  int32 nums = 4;
+  bool checked = 5;
+}
+
+message CartListReply {
+  int32 total = 1;
+  repeated CartItemReply data = 2;
+}
+
+message AddToCartReq {
+  int32 goodsId = 1 [(validate.rules).int32.gt = 0];
+  int32 nums = 2 [(validate.rules).int32.gt = 0];
+  bool checked = 3;
+}
+
+message UpdateCartItemReq {
+  int32 id = 1 [(validate.rules).int32.gt = 0];
+  int32 nums = 2;
+  bool checked = 3;
+}
+
+message DeleteCartItemReq {
+  int32 id = 1 [(validate.rules).int32.gt = 0];
+}
+
 message ListUsersReq {
   int32 page = 1;
   int32 page_size = 2;
@@ -194,4 +341,327 @@ message KickUserReq {
 
 message KickUserReply {
   bool success = 1;
+}
+
+// 商品相关消息定义
+message GoodsListReq {
+  int32 page = 1;
+  int32 pageSize = 2;
+  bool isHot = 3;
+  bool isNew = 4;
+}
+
+message GoodsInfo {
+  int32 id = 1;
+  string name = 2;
+  string goodsSn = 3;
+  float shopPrice = 4;
+  string goodsFrontImage = 5;
+  bool isNew = 6;
+  bool isHot = 7;
+}
+
+message GoodsListReply {
+  int32 total = 1;
+  repeated GoodsInfo data = 2;
+}
+
+message GoodsDetailReq {
+  int32 id = 1 [(validate.rules).int32.gt = 0];
+}
+
+message GoodsDetailReply {
+  int32 id = 1;
+  string name = 2;
+  string goodsSn = 3;
+  int32 categoryId = 4;
+  float marketPrice = 5;
+  float shopPrice = 6;
+  string goodsBrief = 7;
+  string goodsDesc = 8;
+  repeated string images = 9;
+  repeated string descImages = 10;
+  string goodsFrontImage = 11;
+  bool isNew = 12;
+  bool isHot = 13;
+  bool onSale = 14;
+}
+
+message SearchGoodsReq {
+  string keyword = 1 [(validate.rules).string.min_len = 1];
+  int32 page = 2;
+  int32 pageSize = 3;
+}
+
+// 库存服务定义
+service Inventory {
+  // 设置库存
+  rpc SetInventory(SetInventoryReq) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/inventory/set",
+      body: "*",
+    };
+  }
+  
+  // 获取库存
+  rpc GetInventory(GetInventoryReq) returns (GetInventoryReply) {
+    option (google.api.http) = {
+      get: "/api/inventory/{goodsId}",
+    };
+  }
+}
+
+// 设置库存请求
+message SetInventoryReq {
+  int32 goodsId = 1 [(validate.rules).int32.gt = 0];
+  int32 num = 2 [(validate.rules).int32.gte = 0];
+}
+
+// 获取库存请求
+message GetInventoryReq {
+  int32 goodsId = 1 [(validate.rules).int32.gt = 0];
+}
+
+// 获取库存响应
+message GetInventoryReply {
+  int32 goodsId = 1;
+  int32 num = 2;
+}
+
+// ==================== 订单相关消息定义 ====================
+// 创建订单请求
+message CreateOrderReq {
+  string address = 1 [(validate.rules).string.min_len = 1];
+  string name = 2 [(validate.rules).string.min_len = 1];
+  string mobile = 3 [(validate.rules).string.len = 11];
+  string post = 4;  // 留言备注
+}
+
+// 创建订单响应
+message CreateOrderReply {
+  int32 id = 1;
+  string orderSn = 2;
+  float totalAmount = 3;
+  string status = 4;
+}
+
+// 获取订单列表请求
+message GetOrderListReq {
+  int32 page = 1;
+  int32 pageSize = 2;
+  string status = 3;  // 订单状态筛选
+}
+
+// 订单信息
+message OrderInfo {
+  int32 id = 1;
+  string orderSn = 2;
+  float totalAmount = 3;
+  string status = 4;
+  string address = 5;
+  string name = 6;
+  string mobile = 7;
+  int64 createdAt = 8;
+}
+
+// 获取订单列表响应
+message GetOrderListReply {
+  int32 total = 1;
+  repeated OrderInfo data = 2;
+}
+
+// 获取订单详情请求
+message GetOrderDetailReq {
+  int32 id = 1 [(validate.rules).int32.gt = 0];
+}
+
+// 订单商品信息
+message OrderGoodsInfo {
+  int32 goodsId = 1;
+  string goodsName = 2;
+  string goodsImage = 3;
+  float goodsPrice = 4;
+  int32 nums = 5;
+}
+
+// 获取订单详情响应
+message GetOrderDetailReply {
+  int32 id = 1;
+  string orderSn = 2;
+  float totalAmount = 3;
+  string status = 4;
+  string address = 5;
+  string name = 6;
+  string mobile = 7;
+  string post = 8;
+  int64 createdAt = 9;
+  repeated OrderGoodsInfo goods = 10;
+}
+
+// 取消订单请求
+message CancelOrderReq {
+  int32 id = 1 [(validate.rules).int32.gt = 0];
+}
+
+// ==================== 用户操作服务 ====================
+service UserOp {
+  // 地址管理
+  rpc GetAddressList(google.protobuf.Empty) returns (AddressListReply) {
+    option (google.api.http) = {
+      get: "/api/address/list",
+    };
+  }
+  
+  rpc CreateAddress(CreateAddressReq) returns (AddressReply) {
+    option (google.api.http) = {
+      post: "/api/address/create",
+      body: "*",
+    };
+  }
+  
+  rpc UpdateAddress(UpdateAddressReq) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api/address/{id}",
+      body: "*",
+    };
+  }
+  
+  rpc DeleteAddress(DeleteAddressReq) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/address/{id}",
+    };
+  }
+  
+  // 留言管理
+  rpc GetMessageList(GetMessageListReq) returns (MessageListReply) {
+    option (google.api.http) = {
+      get: "/api/message/list",
+    };
+  }
+  
+  rpc CreateMessage(CreateMessageReq) returns (MessageReply) {
+    option (google.api.http) = {
+      post: "/api/message/create",
+      body: "*",
+    };
+  }
+  
+  // 收藏管理
+  rpc GetFavoriteList(google.protobuf.Empty) returns (FavoriteListReply) {
+    option (google.api.http) = {
+      get: "/api/favorite/list",
+    };
+  }
+  
+  rpc AddFavorite(AddFavoriteReq) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/favorite/add",
+      body: "*",
+    };
+  }
+  
+  rpc DeleteFavorite(DeleteFavoriteReq) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/favorite/{goodsId}",
+    };
+  }
+  
+  rpc CheckFavorite(CheckFavoriteReq) returns (CheckFavoriteReply) {
+    option (google.api.http) = {
+      get: "/api/favorite/check/{goodsId}",
+    };
+  }
+}
+
+// ==================== 地址相关消息定义 ====================
+message CreateAddressReq {
+  string province = 1 [(validate.rules).string.min_len = 1];
+  string city = 2 [(validate.rules).string.min_len = 1];
+  string district = 3 [(validate.rules).string.min_len = 1];
+  string address = 4 [(validate.rules).string.min_len = 1];
+  string signerName = 5 [(validate.rules).string.min_len = 1];
+  string signerMobile = 6 [(validate.rules).string.len = 11];
+}
+
+message UpdateAddressReq {
+  int32 id = 1 [(validate.rules).int32.gt = 0];
+  string province = 2;
+  string city = 3;
+  string district = 4;
+  string address = 5;
+  string signerName = 6;
+  string signerMobile = 7;
+}
+
+message DeleteAddressReq {
+  int32 id = 1 [(validate.rules).int32.gt = 0];
+}
+
+message AddressReply {
+  int32 id = 1;
+  string province = 2;
+  string city = 3;
+  string district = 4;
+  string address = 5;
+  string signerName = 6;
+  string signerMobile = 7;
+}
+
+message AddressListReply {
+  int32 total = 1;
+  repeated AddressReply data = 2;
+}
+
+// ==================== 留言相关消息定义 ====================
+message GetMessageListReq {
+  int32 page = 1;
+  int32 pageSize = 2;
+}
+
+message CreateMessageReq {
+  int32 messageType = 1;
+  string subject = 2 [(validate.rules).string.min_len = 1];
+  string message = 3 [(validate.rules).string.min_len = 1];
+  string file = 4;
+}
+
+message MessageReply {
+  int32 id = 1;
+  int32 userId = 2;
+  int32 messageType = 3;
+  string subject = 4;
+  string message = 5;
+  string file = 6;
+}
+
+message MessageListReply {
+  int32 total = 1;
+  repeated MessageReply data = 2;
+}
+
+// ==================== 收藏相关消息定义 ====================
+message AddFavoriteReq {
+  int32 goodsId = 1 [(validate.rules).int32.gt = 0];
+}
+
+message DeleteFavoriteReq {
+  int32 goodsId = 1 [(validate.rules).int32.gt = 0];
+}
+
+message CheckFavoriteReq {
+  int32 goodsId = 1 [(validate.rules).int32.gt = 0];
+}
+
+message CheckFavoriteReply {
+  bool isFavorite = 1;
+}
+
+message FavoriteReply {
+  int32 userId = 1;
+  int32 goodsId = 2;
+}
+
+message FavoriteListReply {
+  int32 total = 1;
+  repeated FavoriteReply data = 2;
 }

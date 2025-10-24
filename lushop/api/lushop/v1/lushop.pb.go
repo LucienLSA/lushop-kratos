@@ -899,6 +899,299 @@ func (x *LogoutReply) GetSuccess() bool {
 	return false
 }
 
+// 购物车相关消息定义
+type CartItemReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	UserId        int32                  `protobuf:"varint,2,opt,name=userId,proto3" json:"userId,omitempty"`
+	GoodsId       int32                  `protobuf:"varint,3,opt,name=goodsId,proto3" json:"goodsId,omitempty"`
+	Nums          int32                  `protobuf:"varint,4,opt,name=nums,proto3" json:"nums,omitempty"`
+	Checked       bool                   `protobuf:"varint,5,opt,name=checked,proto3" json:"checked,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CartItemReply) Reset() {
+	*x = CartItemReply{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CartItemReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CartItemReply) ProtoMessage() {}
+
+func (x *CartItemReply) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CartItemReply.ProtoReflect.Descriptor instead.
+func (*CartItemReply) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *CartItemReply) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *CartItemReply) GetUserId() int32 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *CartItemReply) GetGoodsId() int32 {
+	if x != nil {
+		return x.GoodsId
+	}
+	return 0
+}
+
+func (x *CartItemReply) GetNums() int32 {
+	if x != nil {
+		return x.Nums
+	}
+	return 0
+}
+
+func (x *CartItemReply) GetChecked() bool {
+	if x != nil {
+		return x.Checked
+	}
+	return false
+}
+
+type CartListReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Total         int32                  `protobuf:"varint,1,opt,name=total,proto3" json:"total,omitempty"`
+	Data          []*CartItemReply       `protobuf:"bytes,2,rep,name=data,proto3" json:"data,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CartListReply) Reset() {
+	*x = CartListReply{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CartListReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CartListReply) ProtoMessage() {}
+
+func (x *CartListReply) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CartListReply.ProtoReflect.Descriptor instead.
+func (*CartListReply) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *CartListReply) GetTotal() int32 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+func (x *CartListReply) GetData() []*CartItemReply {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+type AddToCartReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	GoodsId       int32                  `protobuf:"varint,1,opt,name=goodsId,proto3" json:"goodsId,omitempty"`
+	Nums          int32                  `protobuf:"varint,2,opt,name=nums,proto3" json:"nums,omitempty"`
+	Checked       bool                   `protobuf:"varint,3,opt,name=checked,proto3" json:"checked,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AddToCartReq) Reset() {
+	*x = AddToCartReq{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AddToCartReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AddToCartReq) ProtoMessage() {}
+
+func (x *AddToCartReq) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AddToCartReq.ProtoReflect.Descriptor instead.
+func (*AddToCartReq) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *AddToCartReq) GetGoodsId() int32 {
+	if x != nil {
+		return x.GoodsId
+	}
+	return 0
+}
+
+func (x *AddToCartReq) GetNums() int32 {
+	if x != nil {
+		return x.Nums
+	}
+	return 0
+}
+
+func (x *AddToCartReq) GetChecked() bool {
+	if x != nil {
+		return x.Checked
+	}
+	return false
+}
+
+type UpdateCartItemReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Nums          int32                  `protobuf:"varint,2,opt,name=nums,proto3" json:"nums,omitempty"`
+	Checked       bool                   `protobuf:"varint,3,opt,name=checked,proto3" json:"checked,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateCartItemReq) Reset() {
+	*x = UpdateCartItemReq{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateCartItemReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateCartItemReq) ProtoMessage() {}
+
+func (x *UpdateCartItemReq) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateCartItemReq.ProtoReflect.Descriptor instead.
+func (*UpdateCartItemReq) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *UpdateCartItemReq) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *UpdateCartItemReq) GetNums() int32 {
+	if x != nil {
+		return x.Nums
+	}
+	return 0
+}
+
+func (x *UpdateCartItemReq) GetChecked() bool {
+	if x != nil {
+		return x.Checked
+	}
+	return false
+}
+
+type DeleteCartItemReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteCartItemReq) Reset() {
+	*x = DeleteCartItemReq{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteCartItemReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteCartItemReq) ProtoMessage() {}
+
+func (x *DeleteCartItemReq) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteCartItemReq.ProtoReflect.Descriptor instead.
+func (*DeleteCartItemReq) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *DeleteCartItemReq) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
 type ListUsersReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Page          int32                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
@@ -911,7 +1204,7 @@ type ListUsersReq struct {
 
 func (x *ListUsersReq) Reset() {
 	*x = ListUsersReq{}
-	mi := &file_lushop_v1_lushop_proto_msgTypes[15]
+	mi := &file_lushop_v1_lushop_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -923,7 +1216,7 @@ func (x *ListUsersReq) String() string {
 func (*ListUsersReq) ProtoMessage() {}
 
 func (x *ListUsersReq) ProtoReflect() protoreflect.Message {
-	mi := &file_lushop_v1_lushop_proto_msgTypes[15]
+	mi := &file_lushop_v1_lushop_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -936,7 +1229,7 @@ func (x *ListUsersReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListUsersReq.ProtoReflect.Descriptor instead.
 func (*ListUsersReq) Descriptor() ([]byte, []int) {
-	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{15}
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *ListUsersReq) GetPage() int32 {
@@ -979,7 +1272,7 @@ type ListUsersReply struct {
 
 func (x *ListUsersReply) Reset() {
 	*x = ListUsersReply{}
-	mi := &file_lushop_v1_lushop_proto_msgTypes[16]
+	mi := &file_lushop_v1_lushop_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -991,7 +1284,7 @@ func (x *ListUsersReply) String() string {
 func (*ListUsersReply) ProtoMessage() {}
 
 func (x *ListUsersReply) ProtoReflect() protoreflect.Message {
-	mi := &file_lushop_v1_lushop_proto_msgTypes[16]
+	mi := &file_lushop_v1_lushop_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1004,7 +1297,7 @@ func (x *ListUsersReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListUsersReply.ProtoReflect.Descriptor instead.
 func (*ListUsersReply) Descriptor() ([]byte, []int) {
-	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{16}
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *ListUsersReply) GetUsers() []*UserDetailResponse {
@@ -1044,7 +1337,7 @@ type KickUserReq struct {
 
 func (x *KickUserReq) Reset() {
 	*x = KickUserReq{}
-	mi := &file_lushop_v1_lushop_proto_msgTypes[17]
+	mi := &file_lushop_v1_lushop_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1056,7 +1349,7 @@ func (x *KickUserReq) String() string {
 func (*KickUserReq) ProtoMessage() {}
 
 func (x *KickUserReq) ProtoReflect() protoreflect.Message {
-	mi := &file_lushop_v1_lushop_proto_msgTypes[17]
+	mi := &file_lushop_v1_lushop_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1069,7 +1362,7 @@ func (x *KickUserReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use KickUserReq.ProtoReflect.Descriptor instead.
 func (*KickUserReq) Descriptor() ([]byte, []int) {
-	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{17}
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *KickUserReq) GetId() int64 {
@@ -1088,7 +1381,7 @@ type KickUserReply struct {
 
 func (x *KickUserReply) Reset() {
 	*x = KickUserReply{}
-	mi := &file_lushop_v1_lushop_proto_msgTypes[18]
+	mi := &file_lushop_v1_lushop_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1100,7 +1393,7 @@ func (x *KickUserReply) String() string {
 func (*KickUserReply) ProtoMessage() {}
 
 func (x *KickUserReply) ProtoReflect() protoreflect.Message {
-	mi := &file_lushop_v1_lushop_proto_msgTypes[18]
+	mi := &file_lushop_v1_lushop_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1113,7 +1406,7 @@ func (x *KickUserReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use KickUserReply.ProtoReflect.Descriptor instead.
 func (*KickUserReply) Descriptor() ([]byte, []int) {
-	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{18}
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *KickUserReply) GetSuccess() bool {
@@ -1121,6 +1414,2163 @@ func (x *KickUserReply) GetSuccess() bool {
 		return x.Success
 	}
 	return false
+}
+
+// 商品相关消息定义
+type GoodsListReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Page          int32                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int32                  `protobuf:"varint,2,opt,name=pageSize,proto3" json:"pageSize,omitempty"`
+	IsHot         bool                   `protobuf:"varint,3,opt,name=isHot,proto3" json:"isHot,omitempty"`
+	IsNew         bool                   `protobuf:"varint,4,opt,name=isNew,proto3" json:"isNew,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GoodsListReq) Reset() {
+	*x = GoodsListReq{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GoodsListReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GoodsListReq) ProtoMessage() {}
+
+func (x *GoodsListReq) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GoodsListReq.ProtoReflect.Descriptor instead.
+func (*GoodsListReq) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *GoodsListReq) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *GoodsListReq) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *GoodsListReq) GetIsHot() bool {
+	if x != nil {
+		return x.IsHot
+	}
+	return false
+}
+
+func (x *GoodsListReq) GetIsNew() bool {
+	if x != nil {
+		return x.IsNew
+	}
+	return false
+}
+
+type GoodsInfo struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	Id              int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name            string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	GoodsSn         string                 `protobuf:"bytes,3,opt,name=goodsSn,proto3" json:"goodsSn,omitempty"`
+	ShopPrice       float32                `protobuf:"fixed32,4,opt,name=shopPrice,proto3" json:"shopPrice,omitempty"`
+	GoodsFrontImage string                 `protobuf:"bytes,5,opt,name=goodsFrontImage,proto3" json:"goodsFrontImage,omitempty"`
+	IsNew           bool                   `protobuf:"varint,6,opt,name=isNew,proto3" json:"isNew,omitempty"`
+	IsHot           bool                   `protobuf:"varint,7,opt,name=isHot,proto3" json:"isHot,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *GoodsInfo) Reset() {
+	*x = GoodsInfo{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GoodsInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GoodsInfo) ProtoMessage() {}
+
+func (x *GoodsInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GoodsInfo.ProtoReflect.Descriptor instead.
+func (*GoodsInfo) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *GoodsInfo) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *GoodsInfo) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *GoodsInfo) GetGoodsSn() string {
+	if x != nil {
+		return x.GoodsSn
+	}
+	return ""
+}
+
+func (x *GoodsInfo) GetShopPrice() float32 {
+	if x != nil {
+		return x.ShopPrice
+	}
+	return 0
+}
+
+func (x *GoodsInfo) GetGoodsFrontImage() string {
+	if x != nil {
+		return x.GoodsFrontImage
+	}
+	return ""
+}
+
+func (x *GoodsInfo) GetIsNew() bool {
+	if x != nil {
+		return x.IsNew
+	}
+	return false
+}
+
+func (x *GoodsInfo) GetIsHot() bool {
+	if x != nil {
+		return x.IsHot
+	}
+	return false
+}
+
+type GoodsListReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Total         int32                  `protobuf:"varint,1,opt,name=total,proto3" json:"total,omitempty"`
+	Data          []*GoodsInfo           `protobuf:"bytes,2,rep,name=data,proto3" json:"data,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GoodsListReply) Reset() {
+	*x = GoodsListReply{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GoodsListReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GoodsListReply) ProtoMessage() {}
+
+func (x *GoodsListReply) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GoodsListReply.ProtoReflect.Descriptor instead.
+func (*GoodsListReply) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{26}
+}
+
+func (x *GoodsListReply) GetTotal() int32 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+func (x *GoodsListReply) GetData() []*GoodsInfo {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+type GoodsDetailReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GoodsDetailReq) Reset() {
+	*x = GoodsDetailReq{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GoodsDetailReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GoodsDetailReq) ProtoMessage() {}
+
+func (x *GoodsDetailReq) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GoodsDetailReq.ProtoReflect.Descriptor instead.
+func (*GoodsDetailReq) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{27}
+}
+
+func (x *GoodsDetailReq) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+type GoodsDetailReply struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	Id              int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name            string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	GoodsSn         string                 `protobuf:"bytes,3,opt,name=goodsSn,proto3" json:"goodsSn,omitempty"`
+	CategoryId      int32                  `protobuf:"varint,4,opt,name=categoryId,proto3" json:"categoryId,omitempty"`
+	MarketPrice     float32                `protobuf:"fixed32,5,opt,name=marketPrice,proto3" json:"marketPrice,omitempty"`
+	ShopPrice       float32                `protobuf:"fixed32,6,opt,name=shopPrice,proto3" json:"shopPrice,omitempty"`
+	GoodsBrief      string                 `protobuf:"bytes,7,opt,name=goodsBrief,proto3" json:"goodsBrief,omitempty"`
+	GoodsDesc       string                 `protobuf:"bytes,8,opt,name=goodsDesc,proto3" json:"goodsDesc,omitempty"`
+	Images          []string               `protobuf:"bytes,9,rep,name=images,proto3" json:"images,omitempty"`
+	DescImages      []string               `protobuf:"bytes,10,rep,name=descImages,proto3" json:"descImages,omitempty"`
+	GoodsFrontImage string                 `protobuf:"bytes,11,opt,name=goodsFrontImage,proto3" json:"goodsFrontImage,omitempty"`
+	IsNew           bool                   `protobuf:"varint,12,opt,name=isNew,proto3" json:"isNew,omitempty"`
+	IsHot           bool                   `protobuf:"varint,13,opt,name=isHot,proto3" json:"isHot,omitempty"`
+	OnSale          bool                   `protobuf:"varint,14,opt,name=onSale,proto3" json:"onSale,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *GoodsDetailReply) Reset() {
+	*x = GoodsDetailReply{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GoodsDetailReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GoodsDetailReply) ProtoMessage() {}
+
+func (x *GoodsDetailReply) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GoodsDetailReply.ProtoReflect.Descriptor instead.
+func (*GoodsDetailReply) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{28}
+}
+
+func (x *GoodsDetailReply) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *GoodsDetailReply) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *GoodsDetailReply) GetGoodsSn() string {
+	if x != nil {
+		return x.GoodsSn
+	}
+	return ""
+}
+
+func (x *GoodsDetailReply) GetCategoryId() int32 {
+	if x != nil {
+		return x.CategoryId
+	}
+	return 0
+}
+
+func (x *GoodsDetailReply) GetMarketPrice() float32 {
+	if x != nil {
+		return x.MarketPrice
+	}
+	return 0
+}
+
+func (x *GoodsDetailReply) GetShopPrice() float32 {
+	if x != nil {
+		return x.ShopPrice
+	}
+	return 0
+}
+
+func (x *GoodsDetailReply) GetGoodsBrief() string {
+	if x != nil {
+		return x.GoodsBrief
+	}
+	return ""
+}
+
+func (x *GoodsDetailReply) GetGoodsDesc() string {
+	if x != nil {
+		return x.GoodsDesc
+	}
+	return ""
+}
+
+func (x *GoodsDetailReply) GetImages() []string {
+	if x != nil {
+		return x.Images
+	}
+	return nil
+}
+
+func (x *GoodsDetailReply) GetDescImages() []string {
+	if x != nil {
+		return x.DescImages
+	}
+	return nil
+}
+
+func (x *GoodsDetailReply) GetGoodsFrontImage() string {
+	if x != nil {
+		return x.GoodsFrontImage
+	}
+	return ""
+}
+
+func (x *GoodsDetailReply) GetIsNew() bool {
+	if x != nil {
+		return x.IsNew
+	}
+	return false
+}
+
+func (x *GoodsDetailReply) GetIsHot() bool {
+	if x != nil {
+		return x.IsHot
+	}
+	return false
+}
+
+func (x *GoodsDetailReply) GetOnSale() bool {
+	if x != nil {
+		return x.OnSale
+	}
+	return false
+}
+
+type SearchGoodsReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Keyword       string                 `protobuf:"bytes,1,opt,name=keyword,proto3" json:"keyword,omitempty"`
+	Page          int32                  `protobuf:"varint,2,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int32                  `protobuf:"varint,3,opt,name=pageSize,proto3" json:"pageSize,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SearchGoodsReq) Reset() {
+	*x = SearchGoodsReq{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[29]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SearchGoodsReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchGoodsReq) ProtoMessage() {}
+
+func (x *SearchGoodsReq) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[29]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchGoodsReq.ProtoReflect.Descriptor instead.
+func (*SearchGoodsReq) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{29}
+}
+
+func (x *SearchGoodsReq) GetKeyword() string {
+	if x != nil {
+		return x.Keyword
+	}
+	return ""
+}
+
+func (x *SearchGoodsReq) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *SearchGoodsReq) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+// 设置库存请求
+type SetInventoryReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	GoodsId       int32                  `protobuf:"varint,1,opt,name=goodsId,proto3" json:"goodsId,omitempty"`
+	Num           int32                  `protobuf:"varint,2,opt,name=num,proto3" json:"num,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SetInventoryReq) Reset() {
+	*x = SetInventoryReq{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[30]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SetInventoryReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetInventoryReq) ProtoMessage() {}
+
+func (x *SetInventoryReq) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[30]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetInventoryReq.ProtoReflect.Descriptor instead.
+func (*SetInventoryReq) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{30}
+}
+
+func (x *SetInventoryReq) GetGoodsId() int32 {
+	if x != nil {
+		return x.GoodsId
+	}
+	return 0
+}
+
+func (x *SetInventoryReq) GetNum() int32 {
+	if x != nil {
+		return x.Num
+	}
+	return 0
+}
+
+// 获取库存请求
+type GetInventoryReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	GoodsId       int32                  `protobuf:"varint,1,opt,name=goodsId,proto3" json:"goodsId,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetInventoryReq) Reset() {
+	*x = GetInventoryReq{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[31]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetInventoryReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetInventoryReq) ProtoMessage() {}
+
+func (x *GetInventoryReq) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[31]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetInventoryReq.ProtoReflect.Descriptor instead.
+func (*GetInventoryReq) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{31}
+}
+
+func (x *GetInventoryReq) GetGoodsId() int32 {
+	if x != nil {
+		return x.GoodsId
+	}
+	return 0
+}
+
+// 获取库存响应
+type GetInventoryReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	GoodsId       int32                  `protobuf:"varint,1,opt,name=goodsId,proto3" json:"goodsId,omitempty"`
+	Num           int32                  `protobuf:"varint,2,opt,name=num,proto3" json:"num,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetInventoryReply) Reset() {
+	*x = GetInventoryReply{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[32]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetInventoryReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetInventoryReply) ProtoMessage() {}
+
+func (x *GetInventoryReply) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[32]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetInventoryReply.ProtoReflect.Descriptor instead.
+func (*GetInventoryReply) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{32}
+}
+
+func (x *GetInventoryReply) GetGoodsId() int32 {
+	if x != nil {
+		return x.GoodsId
+	}
+	return 0
+}
+
+func (x *GetInventoryReply) GetNum() int32 {
+	if x != nil {
+		return x.Num
+	}
+	return 0
+}
+
+// ==================== 订单相关消息定义 ====================
+// 创建订单请求
+type CreateOrderReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Address       string                 `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Mobile        string                 `protobuf:"bytes,3,opt,name=mobile,proto3" json:"mobile,omitempty"`
+	Post          string                 `protobuf:"bytes,4,opt,name=post,proto3" json:"post,omitempty"` // 留言备注
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateOrderReq) Reset() {
+	*x = CreateOrderReq{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[33]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateOrderReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateOrderReq) ProtoMessage() {}
+
+func (x *CreateOrderReq) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[33]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateOrderReq.ProtoReflect.Descriptor instead.
+func (*CreateOrderReq) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{33}
+}
+
+func (x *CreateOrderReq) GetAddress() string {
+	if x != nil {
+		return x.Address
+	}
+	return ""
+}
+
+func (x *CreateOrderReq) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *CreateOrderReq) GetMobile() string {
+	if x != nil {
+		return x.Mobile
+	}
+	return ""
+}
+
+func (x *CreateOrderReq) GetPost() string {
+	if x != nil {
+		return x.Post
+	}
+	return ""
+}
+
+// 创建订单响应
+type CreateOrderReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	OrderSn       string                 `protobuf:"bytes,2,opt,name=orderSn,proto3" json:"orderSn,omitempty"`
+	TotalAmount   float32                `protobuf:"fixed32,3,opt,name=totalAmount,proto3" json:"totalAmount,omitempty"`
+	Status        string                 `protobuf:"bytes,4,opt,name=status,proto3" json:"status,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateOrderReply) Reset() {
+	*x = CreateOrderReply{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[34]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateOrderReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateOrderReply) ProtoMessage() {}
+
+func (x *CreateOrderReply) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[34]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateOrderReply.ProtoReflect.Descriptor instead.
+func (*CreateOrderReply) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{34}
+}
+
+func (x *CreateOrderReply) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *CreateOrderReply) GetOrderSn() string {
+	if x != nil {
+		return x.OrderSn
+	}
+	return ""
+}
+
+func (x *CreateOrderReply) GetTotalAmount() float32 {
+	if x != nil {
+		return x.TotalAmount
+	}
+	return 0
+}
+
+func (x *CreateOrderReply) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+// 获取订单列表请求
+type GetOrderListReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Page          int32                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int32                  `protobuf:"varint,2,opt,name=pageSize,proto3" json:"pageSize,omitempty"`
+	Status        string                 `protobuf:"bytes,3,opt,name=status,proto3" json:"status,omitempty"` // 订单状态筛选
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetOrderListReq) Reset() {
+	*x = GetOrderListReq{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[35]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetOrderListReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetOrderListReq) ProtoMessage() {}
+
+func (x *GetOrderListReq) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[35]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetOrderListReq.ProtoReflect.Descriptor instead.
+func (*GetOrderListReq) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{35}
+}
+
+func (x *GetOrderListReq) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *GetOrderListReq) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *GetOrderListReq) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+// 订单信息
+type OrderInfo struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	OrderSn       string                 `protobuf:"bytes,2,opt,name=orderSn,proto3" json:"orderSn,omitempty"`
+	TotalAmount   float32                `protobuf:"fixed32,3,opt,name=totalAmount,proto3" json:"totalAmount,omitempty"`
+	Status        string                 `protobuf:"bytes,4,opt,name=status,proto3" json:"status,omitempty"`
+	Address       string                 `protobuf:"bytes,5,opt,name=address,proto3" json:"address,omitempty"`
+	Name          string                 `protobuf:"bytes,6,opt,name=name,proto3" json:"name,omitempty"`
+	Mobile        string                 `protobuf:"bytes,7,opt,name=mobile,proto3" json:"mobile,omitempty"`
+	CreatedAt     int64                  `protobuf:"varint,8,opt,name=createdAt,proto3" json:"createdAt,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OrderInfo) Reset() {
+	*x = OrderInfo{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[36]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OrderInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OrderInfo) ProtoMessage() {}
+
+func (x *OrderInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[36]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OrderInfo.ProtoReflect.Descriptor instead.
+func (*OrderInfo) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{36}
+}
+
+func (x *OrderInfo) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *OrderInfo) GetOrderSn() string {
+	if x != nil {
+		return x.OrderSn
+	}
+	return ""
+}
+
+func (x *OrderInfo) GetTotalAmount() float32 {
+	if x != nil {
+		return x.TotalAmount
+	}
+	return 0
+}
+
+func (x *OrderInfo) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *OrderInfo) GetAddress() string {
+	if x != nil {
+		return x.Address
+	}
+	return ""
+}
+
+func (x *OrderInfo) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *OrderInfo) GetMobile() string {
+	if x != nil {
+		return x.Mobile
+	}
+	return ""
+}
+
+func (x *OrderInfo) GetCreatedAt() int64 {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return 0
+}
+
+// 获取订单列表响应
+type GetOrderListReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Total         int32                  `protobuf:"varint,1,opt,name=total,proto3" json:"total,omitempty"`
+	Data          []*OrderInfo           `protobuf:"bytes,2,rep,name=data,proto3" json:"data,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetOrderListReply) Reset() {
+	*x = GetOrderListReply{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[37]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetOrderListReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetOrderListReply) ProtoMessage() {}
+
+func (x *GetOrderListReply) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[37]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetOrderListReply.ProtoReflect.Descriptor instead.
+func (*GetOrderListReply) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{37}
+}
+
+func (x *GetOrderListReply) GetTotal() int32 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+func (x *GetOrderListReply) GetData() []*OrderInfo {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+// 获取订单详情请求
+type GetOrderDetailReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetOrderDetailReq) Reset() {
+	*x = GetOrderDetailReq{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[38]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetOrderDetailReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetOrderDetailReq) ProtoMessage() {}
+
+func (x *GetOrderDetailReq) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[38]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetOrderDetailReq.ProtoReflect.Descriptor instead.
+func (*GetOrderDetailReq) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{38}
+}
+
+func (x *GetOrderDetailReq) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+// 订单商品信息
+type OrderGoodsInfo struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	GoodsId       int32                  `protobuf:"varint,1,opt,name=goodsId,proto3" json:"goodsId,omitempty"`
+	GoodsName     string                 `protobuf:"bytes,2,opt,name=goodsName,proto3" json:"goodsName,omitempty"`
+	GoodsImage    string                 `protobuf:"bytes,3,opt,name=goodsImage,proto3" json:"goodsImage,omitempty"`
+	GoodsPrice    float32                `protobuf:"fixed32,4,opt,name=goodsPrice,proto3" json:"goodsPrice,omitempty"`
+	Nums          int32                  `protobuf:"varint,5,opt,name=nums,proto3" json:"nums,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OrderGoodsInfo) Reset() {
+	*x = OrderGoodsInfo{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[39]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OrderGoodsInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OrderGoodsInfo) ProtoMessage() {}
+
+func (x *OrderGoodsInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[39]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OrderGoodsInfo.ProtoReflect.Descriptor instead.
+func (*OrderGoodsInfo) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{39}
+}
+
+func (x *OrderGoodsInfo) GetGoodsId() int32 {
+	if x != nil {
+		return x.GoodsId
+	}
+	return 0
+}
+
+func (x *OrderGoodsInfo) GetGoodsName() string {
+	if x != nil {
+		return x.GoodsName
+	}
+	return ""
+}
+
+func (x *OrderGoodsInfo) GetGoodsImage() string {
+	if x != nil {
+		return x.GoodsImage
+	}
+	return ""
+}
+
+func (x *OrderGoodsInfo) GetGoodsPrice() float32 {
+	if x != nil {
+		return x.GoodsPrice
+	}
+	return 0
+}
+
+func (x *OrderGoodsInfo) GetNums() int32 {
+	if x != nil {
+		return x.Nums
+	}
+	return 0
+}
+
+// 获取订单详情响应
+type GetOrderDetailReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	OrderSn       string                 `protobuf:"bytes,2,opt,name=orderSn,proto3" json:"orderSn,omitempty"`
+	TotalAmount   float32                `protobuf:"fixed32,3,opt,name=totalAmount,proto3" json:"totalAmount,omitempty"`
+	Status        string                 `protobuf:"bytes,4,opt,name=status,proto3" json:"status,omitempty"`
+	Address       string                 `protobuf:"bytes,5,opt,name=address,proto3" json:"address,omitempty"`
+	Name          string                 `protobuf:"bytes,6,opt,name=name,proto3" json:"name,omitempty"`
+	Mobile        string                 `protobuf:"bytes,7,opt,name=mobile,proto3" json:"mobile,omitempty"`
+	Post          string                 `protobuf:"bytes,8,opt,name=post,proto3" json:"post,omitempty"`
+	CreatedAt     int64                  `protobuf:"varint,9,opt,name=createdAt,proto3" json:"createdAt,omitempty"`
+	Goods         []*OrderGoodsInfo      `protobuf:"bytes,10,rep,name=goods,proto3" json:"goods,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetOrderDetailReply) Reset() {
+	*x = GetOrderDetailReply{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[40]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetOrderDetailReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetOrderDetailReply) ProtoMessage() {}
+
+func (x *GetOrderDetailReply) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[40]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetOrderDetailReply.ProtoReflect.Descriptor instead.
+func (*GetOrderDetailReply) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{40}
+}
+
+func (x *GetOrderDetailReply) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *GetOrderDetailReply) GetOrderSn() string {
+	if x != nil {
+		return x.OrderSn
+	}
+	return ""
+}
+
+func (x *GetOrderDetailReply) GetTotalAmount() float32 {
+	if x != nil {
+		return x.TotalAmount
+	}
+	return 0
+}
+
+func (x *GetOrderDetailReply) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *GetOrderDetailReply) GetAddress() string {
+	if x != nil {
+		return x.Address
+	}
+	return ""
+}
+
+func (x *GetOrderDetailReply) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *GetOrderDetailReply) GetMobile() string {
+	if x != nil {
+		return x.Mobile
+	}
+	return ""
+}
+
+func (x *GetOrderDetailReply) GetPost() string {
+	if x != nil {
+		return x.Post
+	}
+	return ""
+}
+
+func (x *GetOrderDetailReply) GetCreatedAt() int64 {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return 0
+}
+
+func (x *GetOrderDetailReply) GetGoods() []*OrderGoodsInfo {
+	if x != nil {
+		return x.Goods
+	}
+	return nil
+}
+
+// 取消订单请求
+type CancelOrderReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CancelOrderReq) Reset() {
+	*x = CancelOrderReq{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[41]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CancelOrderReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CancelOrderReq) ProtoMessage() {}
+
+func (x *CancelOrderReq) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[41]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CancelOrderReq.ProtoReflect.Descriptor instead.
+func (*CancelOrderReq) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{41}
+}
+
+func (x *CancelOrderReq) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+// ==================== 地址相关消息定义 ====================
+type CreateAddressReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Province      string                 `protobuf:"bytes,1,opt,name=province,proto3" json:"province,omitempty"`
+	City          string                 `protobuf:"bytes,2,opt,name=city,proto3" json:"city,omitempty"`
+	District      string                 `protobuf:"bytes,3,opt,name=district,proto3" json:"district,omitempty"`
+	Address       string                 `protobuf:"bytes,4,opt,name=address,proto3" json:"address,omitempty"`
+	SignerName    string                 `protobuf:"bytes,5,opt,name=signerName,proto3" json:"signerName,omitempty"`
+	SignerMobile  string                 `protobuf:"bytes,6,opt,name=signerMobile,proto3" json:"signerMobile,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateAddressReq) Reset() {
+	*x = CreateAddressReq{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[42]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateAddressReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateAddressReq) ProtoMessage() {}
+
+func (x *CreateAddressReq) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[42]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateAddressReq.ProtoReflect.Descriptor instead.
+func (*CreateAddressReq) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{42}
+}
+
+func (x *CreateAddressReq) GetProvince() string {
+	if x != nil {
+		return x.Province
+	}
+	return ""
+}
+
+func (x *CreateAddressReq) GetCity() string {
+	if x != nil {
+		return x.City
+	}
+	return ""
+}
+
+func (x *CreateAddressReq) GetDistrict() string {
+	if x != nil {
+		return x.District
+	}
+	return ""
+}
+
+func (x *CreateAddressReq) GetAddress() string {
+	if x != nil {
+		return x.Address
+	}
+	return ""
+}
+
+func (x *CreateAddressReq) GetSignerName() string {
+	if x != nil {
+		return x.SignerName
+	}
+	return ""
+}
+
+func (x *CreateAddressReq) GetSignerMobile() string {
+	if x != nil {
+		return x.SignerMobile
+	}
+	return ""
+}
+
+type UpdateAddressReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Province      string                 `protobuf:"bytes,2,opt,name=province,proto3" json:"province,omitempty"`
+	City          string                 `protobuf:"bytes,3,opt,name=city,proto3" json:"city,omitempty"`
+	District      string                 `protobuf:"bytes,4,opt,name=district,proto3" json:"district,omitempty"`
+	Address       string                 `protobuf:"bytes,5,opt,name=address,proto3" json:"address,omitempty"`
+	SignerName    string                 `protobuf:"bytes,6,opt,name=signerName,proto3" json:"signerName,omitempty"`
+	SignerMobile  string                 `protobuf:"bytes,7,opt,name=signerMobile,proto3" json:"signerMobile,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateAddressReq) Reset() {
+	*x = UpdateAddressReq{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[43]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateAddressReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateAddressReq) ProtoMessage() {}
+
+func (x *UpdateAddressReq) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[43]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateAddressReq.ProtoReflect.Descriptor instead.
+func (*UpdateAddressReq) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{43}
+}
+
+func (x *UpdateAddressReq) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *UpdateAddressReq) GetProvince() string {
+	if x != nil {
+		return x.Province
+	}
+	return ""
+}
+
+func (x *UpdateAddressReq) GetCity() string {
+	if x != nil {
+		return x.City
+	}
+	return ""
+}
+
+func (x *UpdateAddressReq) GetDistrict() string {
+	if x != nil {
+		return x.District
+	}
+	return ""
+}
+
+func (x *UpdateAddressReq) GetAddress() string {
+	if x != nil {
+		return x.Address
+	}
+	return ""
+}
+
+func (x *UpdateAddressReq) GetSignerName() string {
+	if x != nil {
+		return x.SignerName
+	}
+	return ""
+}
+
+func (x *UpdateAddressReq) GetSignerMobile() string {
+	if x != nil {
+		return x.SignerMobile
+	}
+	return ""
+}
+
+type DeleteAddressReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteAddressReq) Reset() {
+	*x = DeleteAddressReq{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[44]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteAddressReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteAddressReq) ProtoMessage() {}
+
+func (x *DeleteAddressReq) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[44]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteAddressReq.ProtoReflect.Descriptor instead.
+func (*DeleteAddressReq) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{44}
+}
+
+func (x *DeleteAddressReq) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+type AddressReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Province      string                 `protobuf:"bytes,2,opt,name=province,proto3" json:"province,omitempty"`
+	City          string                 `protobuf:"bytes,3,opt,name=city,proto3" json:"city,omitempty"`
+	District      string                 `protobuf:"bytes,4,opt,name=district,proto3" json:"district,omitempty"`
+	Address       string                 `protobuf:"bytes,5,opt,name=address,proto3" json:"address,omitempty"`
+	SignerName    string                 `protobuf:"bytes,6,opt,name=signerName,proto3" json:"signerName,omitempty"`
+	SignerMobile  string                 `protobuf:"bytes,7,opt,name=signerMobile,proto3" json:"signerMobile,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AddressReply) Reset() {
+	*x = AddressReply{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[45]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AddressReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AddressReply) ProtoMessage() {}
+
+func (x *AddressReply) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[45]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AddressReply.ProtoReflect.Descriptor instead.
+func (*AddressReply) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{45}
+}
+
+func (x *AddressReply) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *AddressReply) GetProvince() string {
+	if x != nil {
+		return x.Province
+	}
+	return ""
+}
+
+func (x *AddressReply) GetCity() string {
+	if x != nil {
+		return x.City
+	}
+	return ""
+}
+
+func (x *AddressReply) GetDistrict() string {
+	if x != nil {
+		return x.District
+	}
+	return ""
+}
+
+func (x *AddressReply) GetAddress() string {
+	if x != nil {
+		return x.Address
+	}
+	return ""
+}
+
+func (x *AddressReply) GetSignerName() string {
+	if x != nil {
+		return x.SignerName
+	}
+	return ""
+}
+
+func (x *AddressReply) GetSignerMobile() string {
+	if x != nil {
+		return x.SignerMobile
+	}
+	return ""
+}
+
+type AddressListReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Total         int32                  `protobuf:"varint,1,opt,name=total,proto3" json:"total,omitempty"`
+	Data          []*AddressReply        `protobuf:"bytes,2,rep,name=data,proto3" json:"data,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AddressListReply) Reset() {
+	*x = AddressListReply{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[46]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AddressListReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AddressListReply) ProtoMessage() {}
+
+func (x *AddressListReply) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[46]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AddressListReply.ProtoReflect.Descriptor instead.
+func (*AddressListReply) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{46}
+}
+
+func (x *AddressListReply) GetTotal() int32 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+func (x *AddressListReply) GetData() []*AddressReply {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+// ==================== 留言相关消息定义 ====================
+type GetMessageListReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Page          int32                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int32                  `protobuf:"varint,2,opt,name=pageSize,proto3" json:"pageSize,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetMessageListReq) Reset() {
+	*x = GetMessageListReq{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[47]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetMessageListReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetMessageListReq) ProtoMessage() {}
+
+func (x *GetMessageListReq) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[47]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetMessageListReq.ProtoReflect.Descriptor instead.
+func (*GetMessageListReq) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{47}
+}
+
+func (x *GetMessageListReq) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *GetMessageListReq) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+type CreateMessageReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	MessageType   int32                  `protobuf:"varint,1,opt,name=messageType,proto3" json:"messageType,omitempty"`
+	Subject       string                 `protobuf:"bytes,2,opt,name=subject,proto3" json:"subject,omitempty"`
+	Message       string                 `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	File          string                 `protobuf:"bytes,4,opt,name=file,proto3" json:"file,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateMessageReq) Reset() {
+	*x = CreateMessageReq{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[48]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateMessageReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateMessageReq) ProtoMessage() {}
+
+func (x *CreateMessageReq) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[48]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateMessageReq.ProtoReflect.Descriptor instead.
+func (*CreateMessageReq) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{48}
+}
+
+func (x *CreateMessageReq) GetMessageType() int32 {
+	if x != nil {
+		return x.MessageType
+	}
+	return 0
+}
+
+func (x *CreateMessageReq) GetSubject() string {
+	if x != nil {
+		return x.Subject
+	}
+	return ""
+}
+
+func (x *CreateMessageReq) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *CreateMessageReq) GetFile() string {
+	if x != nil {
+		return x.File
+	}
+	return ""
+}
+
+type MessageReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	UserId        int32                  `protobuf:"varint,2,opt,name=userId,proto3" json:"userId,omitempty"`
+	MessageType   int32                  `protobuf:"varint,3,opt,name=messageType,proto3" json:"messageType,omitempty"`
+	Subject       string                 `protobuf:"bytes,4,opt,name=subject,proto3" json:"subject,omitempty"`
+	Message       string                 `protobuf:"bytes,5,opt,name=message,proto3" json:"message,omitempty"`
+	File          string                 `protobuf:"bytes,6,opt,name=file,proto3" json:"file,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MessageReply) Reset() {
+	*x = MessageReply{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[49]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MessageReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MessageReply) ProtoMessage() {}
+
+func (x *MessageReply) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[49]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MessageReply.ProtoReflect.Descriptor instead.
+func (*MessageReply) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{49}
+}
+
+func (x *MessageReply) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *MessageReply) GetUserId() int32 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *MessageReply) GetMessageType() int32 {
+	if x != nil {
+		return x.MessageType
+	}
+	return 0
+}
+
+func (x *MessageReply) GetSubject() string {
+	if x != nil {
+		return x.Subject
+	}
+	return ""
+}
+
+func (x *MessageReply) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *MessageReply) GetFile() string {
+	if x != nil {
+		return x.File
+	}
+	return ""
+}
+
+type MessageListReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Total         int32                  `protobuf:"varint,1,opt,name=total,proto3" json:"total,omitempty"`
+	Data          []*MessageReply        `protobuf:"bytes,2,rep,name=data,proto3" json:"data,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MessageListReply) Reset() {
+	*x = MessageListReply{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[50]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MessageListReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MessageListReply) ProtoMessage() {}
+
+func (x *MessageListReply) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[50]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MessageListReply.ProtoReflect.Descriptor instead.
+func (*MessageListReply) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{50}
+}
+
+func (x *MessageListReply) GetTotal() int32 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+func (x *MessageListReply) GetData() []*MessageReply {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+// ==================== 收藏相关消息定义 ====================
+type AddFavoriteReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	GoodsId       int32                  `protobuf:"varint,1,opt,name=goodsId,proto3" json:"goodsId,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AddFavoriteReq) Reset() {
+	*x = AddFavoriteReq{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[51]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AddFavoriteReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AddFavoriteReq) ProtoMessage() {}
+
+func (x *AddFavoriteReq) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[51]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AddFavoriteReq.ProtoReflect.Descriptor instead.
+func (*AddFavoriteReq) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{51}
+}
+
+func (x *AddFavoriteReq) GetGoodsId() int32 {
+	if x != nil {
+		return x.GoodsId
+	}
+	return 0
+}
+
+type DeleteFavoriteReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	GoodsId       int32                  `protobuf:"varint,1,opt,name=goodsId,proto3" json:"goodsId,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteFavoriteReq) Reset() {
+	*x = DeleteFavoriteReq{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[52]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteFavoriteReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteFavoriteReq) ProtoMessage() {}
+
+func (x *DeleteFavoriteReq) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[52]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteFavoriteReq.ProtoReflect.Descriptor instead.
+func (*DeleteFavoriteReq) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{52}
+}
+
+func (x *DeleteFavoriteReq) GetGoodsId() int32 {
+	if x != nil {
+		return x.GoodsId
+	}
+	return 0
+}
+
+type CheckFavoriteReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	GoodsId       int32                  `protobuf:"varint,1,opt,name=goodsId,proto3" json:"goodsId,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CheckFavoriteReq) Reset() {
+	*x = CheckFavoriteReq{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[53]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CheckFavoriteReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CheckFavoriteReq) ProtoMessage() {}
+
+func (x *CheckFavoriteReq) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[53]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CheckFavoriteReq.ProtoReflect.Descriptor instead.
+func (*CheckFavoriteReq) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{53}
+}
+
+func (x *CheckFavoriteReq) GetGoodsId() int32 {
+	if x != nil {
+		return x.GoodsId
+	}
+	return 0
+}
+
+type CheckFavoriteReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	IsFavorite    bool                   `protobuf:"varint,1,opt,name=isFavorite,proto3" json:"isFavorite,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CheckFavoriteReply) Reset() {
+	*x = CheckFavoriteReply{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[54]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CheckFavoriteReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CheckFavoriteReply) ProtoMessage() {}
+
+func (x *CheckFavoriteReply) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[54]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CheckFavoriteReply.ProtoReflect.Descriptor instead.
+func (*CheckFavoriteReply) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{54}
+}
+
+func (x *CheckFavoriteReply) GetIsFavorite() bool {
+	if x != nil {
+		return x.IsFavorite
+	}
+	return false
+}
+
+type FavoriteReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        int32                  `protobuf:"varint,1,opt,name=userId,proto3" json:"userId,omitempty"`
+	GoodsId       int32                  `protobuf:"varint,2,opt,name=goodsId,proto3" json:"goodsId,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FavoriteReply) Reset() {
+	*x = FavoriteReply{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[55]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FavoriteReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FavoriteReply) ProtoMessage() {}
+
+func (x *FavoriteReply) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[55]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FavoriteReply.ProtoReflect.Descriptor instead.
+func (*FavoriteReply) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{55}
+}
+
+func (x *FavoriteReply) GetUserId() int32 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *FavoriteReply) GetGoodsId() int32 {
+	if x != nil {
+		return x.GoodsId
+	}
+	return 0
+}
+
+type FavoriteListReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Total         int32                  `protobuf:"varint,1,opt,name=total,proto3" json:"total,omitempty"`
+	Data          []*FavoriteReply       `protobuf:"bytes,2,rep,name=data,proto3" json:"data,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FavoriteListReply) Reset() {
+	*x = FavoriteListReply{}
+	mi := &file_lushop_v1_lushop_proto_msgTypes[56]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FavoriteListReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FavoriteListReply) ProtoMessage() {}
+
+func (x *FavoriteListReply) ProtoReflect() protoreflect.Message {
+	mi := &file_lushop_v1_lushop_proto_msgTypes[56]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FavoriteListReply.ProtoReflect.Descriptor instead.
+func (*FavoriteListReply) Descriptor() ([]byte, []int) {
+	return file_lushop_v1_lushop_proto_rawDescGZIP(), []int{56}
+}
+
+func (x *FavoriteListReply) GetTotal() int32 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+func (x *FavoriteListReply) GetData() []*FavoriteReply {
+	if x != nil {
+		return x.Data
+	}
+	return nil
 }
 
 var File_lushop_v1_lushop_proto protoreflect.FileDescriptor
@@ -1184,7 +3634,26 @@ const file_lushop_v1_lushop_proto_rawDesc = "" +
 	"\vaccessToken\x18\x01 \x01(\tR\vaccessToken\x12\"\n" +
 	"\frefreshToken\x18\x02 \x01(\tR\frefreshToken\"'\n" +
 	"\vLogoutReply\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\"m\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"\x7f\n" +
+	"\rCartItemReply\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x16\n" +
+	"\x06userId\x18\x02 \x01(\x05R\x06userId\x12\x18\n" +
+	"\agoodsId\x18\x03 \x01(\x05R\agoodsId\x12\x12\n" +
+	"\x04nums\x18\x04 \x01(\x05R\x04nums\x12\x18\n" +
+	"\achecked\x18\x05 \x01(\bR\achecked\"Z\n" +
+	"\rCartListReply\x12\x14\n" +
+	"\x05total\x18\x01 \x01(\x05R\x05total\x123\n" +
+	"\x04data\x18\x02 \x03(\v2\x1f.lushop.lushop.v1.CartItemReplyR\x04data\"h\n" +
+	"\fAddToCartReq\x12!\n" +
+	"\agoodsId\x18\x01 \x01(\x05B\a\xfaB\x04\x1a\x02 \x00R\agoodsId\x12\x1b\n" +
+	"\x04nums\x18\x02 \x01(\x05B\a\xfaB\x04\x1a\x02 \x00R\x04nums\x12\x18\n" +
+	"\achecked\x18\x03 \x01(\bR\achecked\"Z\n" +
+	"\x11UpdateCartItemReq\x12\x17\n" +
+	"\x02id\x18\x01 \x01(\x05B\a\xfaB\x04\x1a\x02 \x00R\x02id\x12\x12\n" +
+	"\x04nums\x18\x02 \x01(\x05R\x04nums\x12\x18\n" +
+	"\achecked\x18\x03 \x01(\bR\achecked\",\n" +
+	"\x11DeleteCartItemReq\x12\x17\n" +
+	"\x02id\x18\x01 \x01(\x05B\a\xfaB\x04\x1a\x02 \x00R\x02id\"m\n" +
 	"\fListUsersReq\x12\x12\n" +
 	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x18\n" +
@@ -1198,20 +3667,222 @@ const file_lushop_v1_lushop_proto_rawDesc = "" +
 	"\vKickUserReq\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\")\n" +
 	"\rKickUserReply\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess2\xf1\t\n" +
-	"\x06Lushop\x12i\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"j\n" +
+	"\fGoodsListReq\x12\x12\n" +
+	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x1a\n" +
+	"\bpageSize\x18\x02 \x01(\x05R\bpageSize\x12\x14\n" +
+	"\x05isHot\x18\x03 \x01(\bR\x05isHot\x12\x14\n" +
+	"\x05isNew\x18\x04 \x01(\bR\x05isNew\"\xbd\x01\n" +
+	"\tGoodsInfo\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x18\n" +
+	"\agoodsSn\x18\x03 \x01(\tR\agoodsSn\x12\x1c\n" +
+	"\tshopPrice\x18\x04 \x01(\x02R\tshopPrice\x12(\n" +
+	"\x0fgoodsFrontImage\x18\x05 \x01(\tR\x0fgoodsFrontImage\x12\x14\n" +
+	"\x05isNew\x18\x06 \x01(\bR\x05isNew\x12\x14\n" +
+	"\x05isHot\x18\a \x01(\bR\x05isHot\"W\n" +
+	"\x0eGoodsListReply\x12\x14\n" +
+	"\x05total\x18\x01 \x01(\x05R\x05total\x12/\n" +
+	"\x04data\x18\x02 \x03(\v2\x1b.lushop.lushop.v1.GoodsInfoR\x04data\")\n" +
+	"\x0eGoodsDetailReq\x12\x17\n" +
+	"\x02id\x18\x01 \x01(\x05B\a\xfaB\x04\x1a\x02 \x00R\x02id\"\x94\x03\n" +
+	"\x10GoodsDetailReply\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x18\n" +
+	"\agoodsSn\x18\x03 \x01(\tR\agoodsSn\x12\x1e\n" +
+	"\n" +
+	"categoryId\x18\x04 \x01(\x05R\n" +
+	"categoryId\x12 \n" +
+	"\vmarketPrice\x18\x05 \x01(\x02R\vmarketPrice\x12\x1c\n" +
+	"\tshopPrice\x18\x06 \x01(\x02R\tshopPrice\x12\x1e\n" +
+	"\n" +
+	"goodsBrief\x18\a \x01(\tR\n" +
+	"goodsBrief\x12\x1c\n" +
+	"\tgoodsDesc\x18\b \x01(\tR\tgoodsDesc\x12\x16\n" +
+	"\x06images\x18\t \x03(\tR\x06images\x12\x1e\n" +
+	"\n" +
+	"descImages\x18\n" +
+	" \x03(\tR\n" +
+	"descImages\x12(\n" +
+	"\x0fgoodsFrontImage\x18\v \x01(\tR\x0fgoodsFrontImage\x12\x14\n" +
+	"\x05isNew\x18\f \x01(\bR\x05isNew\x12\x14\n" +
+	"\x05isHot\x18\r \x01(\bR\x05isHot\x12\x16\n" +
+	"\x06onSale\x18\x0e \x01(\bR\x06onSale\"c\n" +
+	"\x0eSearchGoodsReq\x12!\n" +
+	"\akeyword\x18\x01 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\akeyword\x12\x12\n" +
+	"\x04page\x18\x02 \x01(\x05R\x04page\x12\x1a\n" +
+	"\bpageSize\x18\x03 \x01(\x05R\bpageSize\"O\n" +
+	"\x0fSetInventoryReq\x12!\n" +
+	"\agoodsId\x18\x01 \x01(\x05B\a\xfaB\x04\x1a\x02 \x00R\agoodsId\x12\x19\n" +
+	"\x03num\x18\x02 \x01(\x05B\a\xfaB\x04\x1a\x02(\x00R\x03num\"4\n" +
+	"\x0fGetInventoryReq\x12!\n" +
+	"\agoodsId\x18\x01 \x01(\x05B\a\xfaB\x04\x1a\x02 \x00R\agoodsId\"?\n" +
+	"\x11GetInventoryReply\x12\x18\n" +
+	"\agoodsId\x18\x01 \x01(\x05R\agoodsId\x12\x10\n" +
+	"\x03num\x18\x02 \x01(\x05R\x03num\"\x86\x01\n" +
+	"\x0eCreateOrderReq\x12!\n" +
+	"\aaddress\x18\x01 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\aaddress\x12\x1b\n" +
+	"\x04name\x18\x02 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\x04name\x12 \n" +
+	"\x06mobile\x18\x03 \x01(\tB\b\xfaB\x05r\x03\x98\x01\vR\x06mobile\x12\x12\n" +
+	"\x04post\x18\x04 \x01(\tR\x04post\"v\n" +
+	"\x10CreateOrderReply\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x18\n" +
+	"\aorderSn\x18\x02 \x01(\tR\aorderSn\x12 \n" +
+	"\vtotalAmount\x18\x03 \x01(\x02R\vtotalAmount\x12\x16\n" +
+	"\x06status\x18\x04 \x01(\tR\x06status\"Y\n" +
+	"\x0fGetOrderListReq\x12\x12\n" +
+	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x1a\n" +
+	"\bpageSize\x18\x02 \x01(\x05R\bpageSize\x12\x16\n" +
+	"\x06status\x18\x03 \x01(\tR\x06status\"\xd3\x01\n" +
+	"\tOrderInfo\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x18\n" +
+	"\aorderSn\x18\x02 \x01(\tR\aorderSn\x12 \n" +
+	"\vtotalAmount\x18\x03 \x01(\x02R\vtotalAmount\x12\x16\n" +
+	"\x06status\x18\x04 \x01(\tR\x06status\x12\x18\n" +
+	"\aaddress\x18\x05 \x01(\tR\aaddress\x12\x12\n" +
+	"\x04name\x18\x06 \x01(\tR\x04name\x12\x16\n" +
+	"\x06mobile\x18\a \x01(\tR\x06mobile\x12\x1c\n" +
+	"\tcreatedAt\x18\b \x01(\x03R\tcreatedAt\"Z\n" +
+	"\x11GetOrderListReply\x12\x14\n" +
+	"\x05total\x18\x01 \x01(\x05R\x05total\x12/\n" +
+	"\x04data\x18\x02 \x03(\v2\x1b.lushop.lushop.v1.OrderInfoR\x04data\",\n" +
+	"\x11GetOrderDetailReq\x12\x17\n" +
+	"\x02id\x18\x01 \x01(\x05B\a\xfaB\x04\x1a\x02 \x00R\x02id\"\x9c\x01\n" +
+	"\x0eOrderGoodsInfo\x12\x18\n" +
+	"\agoodsId\x18\x01 \x01(\x05R\agoodsId\x12\x1c\n" +
+	"\tgoodsName\x18\x02 \x01(\tR\tgoodsName\x12\x1e\n" +
+	"\n" +
+	"goodsImage\x18\x03 \x01(\tR\n" +
+	"goodsImage\x12\x1e\n" +
+	"\n" +
+	"goodsPrice\x18\x04 \x01(\x02R\n" +
+	"goodsPrice\x12\x12\n" +
+	"\x04nums\x18\x05 \x01(\x05R\x04nums\"\xa9\x02\n" +
+	"\x13GetOrderDetailReply\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x18\n" +
+	"\aorderSn\x18\x02 \x01(\tR\aorderSn\x12 \n" +
+	"\vtotalAmount\x18\x03 \x01(\x02R\vtotalAmount\x12\x16\n" +
+	"\x06status\x18\x04 \x01(\tR\x06status\x12\x18\n" +
+	"\aaddress\x18\x05 \x01(\tR\aaddress\x12\x12\n" +
+	"\x04name\x18\x06 \x01(\tR\x04name\x12\x16\n" +
+	"\x06mobile\x18\a \x01(\tR\x06mobile\x12\x12\n" +
+	"\x04post\x18\b \x01(\tR\x04post\x12\x1c\n" +
+	"\tcreatedAt\x18\t \x01(\x03R\tcreatedAt\x126\n" +
+	"\x05goods\x18\n" +
+	" \x03(\v2 .lushop.lushop.v1.OrderGoodsInfoR\x05goods\")\n" +
+	"\x0eCancelOrderReq\x12\x17\n" +
+	"\x02id\x18\x01 \x01(\x05B\a\xfaB\x04\x1a\x02 \x00R\x02id\"\xf3\x01\n" +
+	"\x10CreateAddressReq\x12#\n" +
+	"\bprovince\x18\x01 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\bprovince\x12\x1b\n" +
+	"\x04city\x18\x02 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\x04city\x12#\n" +
+	"\bdistrict\x18\x03 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\bdistrict\x12!\n" +
+	"\aaddress\x18\x04 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\aaddress\x12'\n" +
+	"\n" +
+	"signerName\x18\x05 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\n" +
+	"signerName\x12,\n" +
+	"\fsignerMobile\x18\x06 \x01(\tB\b\xfaB\x05r\x03\x98\x01\vR\fsignerMobile\"\xd5\x01\n" +
+	"\x10UpdateAddressReq\x12\x17\n" +
+	"\x02id\x18\x01 \x01(\x05B\a\xfaB\x04\x1a\x02 \x00R\x02id\x12\x1a\n" +
+	"\bprovince\x18\x02 \x01(\tR\bprovince\x12\x12\n" +
+	"\x04city\x18\x03 \x01(\tR\x04city\x12\x1a\n" +
+	"\bdistrict\x18\x04 \x01(\tR\bdistrict\x12\x18\n" +
+	"\aaddress\x18\x05 \x01(\tR\aaddress\x12\x1e\n" +
+	"\n" +
+	"signerName\x18\x06 \x01(\tR\n" +
+	"signerName\x12\"\n" +
+	"\fsignerMobile\x18\a \x01(\tR\fsignerMobile\"+\n" +
+	"\x10DeleteAddressReq\x12\x17\n" +
+	"\x02id\x18\x01 \x01(\x05B\a\xfaB\x04\x1a\x02 \x00R\x02id\"\xc8\x01\n" +
+	"\fAddressReply\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x1a\n" +
+	"\bprovince\x18\x02 \x01(\tR\bprovince\x12\x12\n" +
+	"\x04city\x18\x03 \x01(\tR\x04city\x12\x1a\n" +
+	"\bdistrict\x18\x04 \x01(\tR\bdistrict\x12\x18\n" +
+	"\aaddress\x18\x05 \x01(\tR\aaddress\x12\x1e\n" +
+	"\n" +
+	"signerName\x18\x06 \x01(\tR\n" +
+	"signerName\x12\"\n" +
+	"\fsignerMobile\x18\a \x01(\tR\fsignerMobile\"\\\n" +
+	"\x10AddressListReply\x12\x14\n" +
+	"\x05total\x18\x01 \x01(\x05R\x05total\x122\n" +
+	"\x04data\x18\x02 \x03(\v2\x1e.lushop.lushop.v1.AddressReplyR\x04data\"C\n" +
+	"\x11GetMessageListReq\x12\x12\n" +
+	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x1a\n" +
+	"\bpageSize\x18\x02 \x01(\x05R\bpageSize\"\x8e\x01\n" +
+	"\x10CreateMessageReq\x12 \n" +
+	"\vmessageType\x18\x01 \x01(\x05R\vmessageType\x12!\n" +
+	"\asubject\x18\x02 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\asubject\x12!\n" +
+	"\amessage\x18\x03 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\amessage\x12\x12\n" +
+	"\x04file\x18\x04 \x01(\tR\x04file\"\xa0\x01\n" +
+	"\fMessageReply\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x16\n" +
+	"\x06userId\x18\x02 \x01(\x05R\x06userId\x12 \n" +
+	"\vmessageType\x18\x03 \x01(\x05R\vmessageType\x12\x18\n" +
+	"\asubject\x18\x04 \x01(\tR\asubject\x12\x18\n" +
+	"\amessage\x18\x05 \x01(\tR\amessage\x12\x12\n" +
+	"\x04file\x18\x06 \x01(\tR\x04file\"\\\n" +
+	"\x10MessageListReply\x12\x14\n" +
+	"\x05total\x18\x01 \x01(\x05R\x05total\x122\n" +
+	"\x04data\x18\x02 \x03(\v2\x1e.lushop.lushop.v1.MessageReplyR\x04data\"3\n" +
+	"\x0eAddFavoriteReq\x12!\n" +
+	"\agoodsId\x18\x01 \x01(\x05B\a\xfaB\x04\x1a\x02 \x00R\agoodsId\"6\n" +
+	"\x11DeleteFavoriteReq\x12!\n" +
+	"\agoodsId\x18\x01 \x01(\x05B\a\xfaB\x04\x1a\x02 \x00R\agoodsId\"5\n" +
+	"\x10CheckFavoriteReq\x12!\n" +
+	"\agoodsId\x18\x01 \x01(\x05B\a\xfaB\x04\x1a\x02 \x00R\agoodsId\"4\n" +
+	"\x12CheckFavoriteReply\x12\x1e\n" +
+	"\n" +
+	"isFavorite\x18\x01 \x01(\bR\n" +
+	"isFavorite\"A\n" +
+	"\rFavoriteReply\x12\x16\n" +
+	"\x06userId\x18\x01 \x01(\x05R\x06userId\x12\x18\n" +
+	"\agoodsId\x18\x02 \x01(\x05R\agoodsId\"^\n" +
+	"\x11FavoriteListReply\x12\x14\n" +
+	"\x05total\x18\x01 \x01(\x05R\x05total\x123\n" +
+	"\x04data\x18\x02 \x03(\v2\x1f.lushop.lushop.v1.FavoriteReplyR\x04data2\xcb\x05\n" +
+	"\x04User\x12i\n" +
 	"\bRegister\x12\x1d.lushop.lushop.v1.RegisterReq\x1a\x1f.lushop.lushop.v1.RegisterReply\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/api/user/register\x12`\n" +
 	"\x05Login\x12\x1a.lushop.lushop.v1.LoginReq\x1a\x1f.lushop.lushop.v1.RegisterReply\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/api/user/login\x12_\n" +
 	"\aCaptcha\x12\x16.google.protobuf.Empty\x1a\x1e.lushop.lushop.v1.CaptchaReply\"\x1c\x82\xd3\xe4\x93\x02\x16:\x01*\"\x11/api/user/captcha\x12`\n" +
 	"\x06Detail\x12\x16.google.protobuf.Empty\x1a$.lushop.lushop.v1.UserDetailResponse\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/api/user/detail\x12h\n" +
 	"\x06Update\x12\x1b.lushop.lushop.v1.UpdateReq\x1a$.lushop.lushop.v1.UserDetailResponse\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*\x1a\x10/api/user/update\x12n\n" +
-	"\tUpdatePwd\x12\x1e.lushop.lushop.v1.UpdatePwdReq\x1a .lushop.lushop.v1.UpdatePwdReply\"\x1f\x82\xd3\xe4\x93\x02\x19:\x01*\x1a\x14/api/user/update_pwd\x12z\n" +
-	"\fRefreshToken\x12!.lushop.lushop.v1.RefreshTokenReq\x1a#.lushop.lushop.v1.RefreshTokenReply\"\"\x82\xd3\xe4\x93\x02\x1c:\x01*\"\x17/api/user/refresh_token\x12Y\n" +
-	"\x06Logout\x12\x16.google.protobuf.Empty\x1a\x1d.lushop.lushop.v1.LogoutReply\"\x18\x82\xd3\xe4\x93\x02\x12*\x10/api/user/logout\x12f\n" +
+	"\tUpdatePwd\x12\x1e.lushop.lushop.v1.UpdatePwdReq\x1a .lushop.lushop.v1.UpdatePwdReply\"\x1f\x82\xd3\xe4\x93\x02\x19:\x01*\x1a\x14/api/user/update_pwd\x12Y\n" +
+	"\x06Logout\x12\x16.google.protobuf.Empty\x1a\x1d.lushop.lushop.v1.LogoutReply\"\x18\x82\xd3\xe4\x93\x02\x12*\x10/api/user/logout2\xda\x02\n" +
+	"\bUserAuth\x12f\n" +
 	"\aSendSms\x12\x1c.lushop.lushop.v1.SendSmsReq\x1a\x1e.lushop.lushop.v1.SendSmsReply\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/api/user/send_sms\x12j\n" +
-	"\tVerifySms\x12\x1e.lushop.lushop.v1.VerifySmsReq\x1a\x1f.lushop.lushop.v1.RegisterReply\"\x1c\x82\xd3\xe4\x93\x02\x16\x12\x14/api/user/verify_sms\x12g\n" +
+	"\tVerifySms\x12\x1e.lushop.lushop.v1.VerifySmsReq\x1a\x1f.lushop.lushop.v1.RegisterReply\"\x1c\x82\xd3\xe4\x93\x02\x16\x12\x14/api/user/verify_sms\x12z\n" +
+	"\fRefreshToken\x12!.lushop.lushop.v1.RefreshTokenReq\x1a#.lushop.lushop.v1.RefreshTokenReply\"\"\x82\xd3\xe4\x93\x02\x1c:\x01*\"\x17/api/user/refresh_token2\xdf\x01\n" +
+	"\tUserAdmin\x12g\n" +
 	"\tListUsers\x12\x1e.lushop.lushop.v1.ListUsersReq\x1a .lushop.lushop.v1.ListUsersReply\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/api/admin/users\x12i\n" +
-	"\bKickUser\x12\x1d.lushop.lushop.v1.KickUserReq\x1a\x1f.lushop.lushop.v1.KickUserReply\"\x1d\x82\xd3\xe4\x93\x02\x17*\x15/api/admin/users/{id}B\x19Z\x17lushop/api/lushop/v1;v1b\x06proto3"
+	"\bKickUser\x12\x1d.lushop.lushop.v1.KickUserReq\x1a\x1f.lushop.lushop.v1.KickUserReply\"\x1d\x82\xd3\xe4\x93\x02\x17*\x15/api/admin/users/{id}2\xa1\x03\n" +
+	"\x04Cart\x12^\n" +
+	"\vGetCartList\x12\x16.google.protobuf.Empty\x1a\x1f.lushop.lushop.v1.CartListReply\"\x16\x82\xd3\xe4\x93\x02\x10\x12\x0e/api/cart/list\x12f\n" +
+	"\tAddToCart\x12\x1e.lushop.lushop.v1.AddToCartReq\x1a\x1f.lushop.lushop.v1.CartItemReply\"\x18\x82\xd3\xe4\x93\x02\x12:\x01*\"\r/api/cart/add\x12j\n" +
+	"\x0eUpdateCartItem\x12#.lushop.lushop.v1.UpdateCartItemReq\x1a\x16.google.protobuf.Empty\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*\x1a\x10/api/cart/update\x12e\n" +
+	"\x0eDeleteCartItem\x12#.lushop.lushop.v1.DeleteCartItemReq\x1a\x16.google.protobuf.Empty\"\x16\x82\xd3\xe4\x93\x02\x10*\x0e/api/cart/{id}2\xd1\x02\n" +
+	"\x05Goods\x12i\n" +
+	"\fGetGoodsList\x12\x1e.lushop.lushop.v1.GoodsListReq\x1a .lushop.lushop.v1.GoodsListReply\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/api/goods/list\x12o\n" +
+	"\x0eGetGoodsDetail\x12 .lushop.lushop.v1.GoodsDetailReq\x1a\".lushop.lushop.v1.GoodsDetailReply\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/api/goods/{id}\x12l\n" +
+	"\vSearchGoods\x12 .lushop.lushop.v1.SearchGoodsReq\x1a .lushop.lushop.v1.GoodsListReply\"\x19\x82\xd3\xe4\x93\x02\x13\x12\x11/api/goods/search2\xc4\x03\n" +
+	"\x05Order\x12q\n" +
+	"\vCreateOrder\x12 .lushop.lushop.v1.CreateOrderReq\x1a\".lushop.lushop.v1.CreateOrderReply\"\x1c\x82\xd3\xe4\x93\x02\x16:\x01*\"\x11/api/order/create\x12o\n" +
+	"\fGetOrderList\x12!.lushop.lushop.v1.GetOrderListReq\x1a#.lushop.lushop.v1.GetOrderListReply\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/api/order/list\x12u\n" +
+	"\x0eGetOrderDetail\x12#.lushop.lushop.v1.GetOrderDetailReq\x1a%.lushop.lushop.v1.GetOrderDetailReply\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/api/order/{id}\x12`\n" +
+	"\vCancelOrder\x12 .lushop.lushop.v1.CancelOrderReq\x1a\x16.google.protobuf.Empty\"\x17\x82\xd3\xe4\x93\x02\x11*\x0f/api/order/{id}2\xef\x01\n" +
+	"\tInventory\x12h\n" +
+	"\fSetInventory\x12!.lushop.lushop.v1.SetInventoryReq\x1a\x16.google.protobuf.Empty\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/api/inventory/set\x12x\n" +
+	"\fGetInventory\x12!.lushop.lushop.v1.GetInventoryReq\x1a#.lushop.lushop.v1.GetInventoryReply\" \x82\xd3\xe4\x93\x02\x1a\x12\x18/api/inventory/{goodsId}2\xea\b\n" +
+	"\x06UserOp\x12g\n" +
+	"\x0eGetAddressList\x12\x16.google.protobuf.Empty\x1a\".lushop.lushop.v1.AddressListReply\"\x19\x82\xd3\xe4\x93\x02\x13\x12\x11/api/address/list\x12s\n" +
+	"\rCreateAddress\x12\".lushop.lushop.v1.CreateAddressReq\x1a\x1e.lushop.lushop.v1.AddressReply\"\x1e\x82\xd3\xe4\x93\x02\x18:\x01*\"\x13/api/address/create\x12i\n" +
+	"\rUpdateAddress\x12\".lushop.lushop.v1.UpdateAddressReq\x1a\x16.google.protobuf.Empty\"\x1c\x82\xd3\xe4\x93\x02\x16:\x01*\x1a\x11/api/address/{id}\x12f\n" +
+	"\rDeleteAddress\x12\".lushop.lushop.v1.DeleteAddressReq\x1a\x16.google.protobuf.Empty\"\x19\x82\xd3\xe4\x93\x02\x13*\x11/api/address/{id}\x12t\n" +
+	"\x0eGetMessageList\x12#.lushop.lushop.v1.GetMessageListReq\x1a\".lushop.lushop.v1.MessageListReply\"\x19\x82\xd3\xe4\x93\x02\x13\x12\x11/api/message/list\x12s\n" +
+	"\rCreateMessage\x12\".lushop.lushop.v1.CreateMessageReq\x1a\x1e.lushop.lushop.v1.MessageReply\"\x1e\x82\xd3\xe4\x93\x02\x18:\x01*\"\x13/api/message/create\x12j\n" +
+	"\x0fGetFavoriteList\x12\x16.google.protobuf.Empty\x1a#.lushop.lushop.v1.FavoriteListReply\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/api/favorite/list\x12e\n" +
+	"\vAddFavorite\x12 .lushop.lushop.v1.AddFavoriteReq\x1a\x16.google.protobuf.Empty\"\x1c\x82\xd3\xe4\x93\x02\x16:\x01*\"\x11/api/favorite/add\x12n\n" +
+	"\x0eDeleteFavorite\x12#.lushop.lushop.v1.DeleteFavoriteReq\x1a\x16.google.protobuf.Empty\"\x1f\x82\xd3\xe4\x93\x02\x19*\x17/api/favorite/{goodsId}\x12\x80\x01\n" +
+	"\rCheckFavorite\x12\".lushop.lushop.v1.CheckFavoriteReq\x1a$.lushop.lushop.v1.CheckFavoriteReply\"%\x82\xd3\xe4\x93\x02\x1f\x12\x1d/api/favorite/check/{goodsId}B\x19Z\x17lushop/api/lushop/v1;v1b\x06proto3"
 
 var (
 	file_lushop_v1_lushop_proto_rawDescOnce sync.Once
@@ -1225,60 +3896,151 @@ func file_lushop_v1_lushop_proto_rawDescGZIP() []byte {
 	return file_lushop_v1_lushop_proto_rawDescData
 }
 
-var file_lushop_v1_lushop_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
+var file_lushop_v1_lushop_proto_msgTypes = make([]protoimpl.MessageInfo, 57)
 var file_lushop_v1_lushop_proto_goTypes = []any{
-	(*CreateUserInfo)(nil),     // 0: lushop.lushop.v1.CreateUserInfo
-	(*RegisterReq)(nil),        // 1: lushop.lushop.v1.RegisterReq
-	(*RegisterReply)(nil),      // 2: lushop.lushop.v1.RegisterReply
-	(*LoginReq)(nil),           // 3: lushop.lushop.v1.LoginReq
-	(*SendSmsReq)(nil),         // 4: lushop.lushop.v1.SendSmsReq
-	(*SendSmsReply)(nil),       // 5: lushop.lushop.v1.SendSmsReply
-	(*VerifySmsReq)(nil),       // 6: lushop.lushop.v1.VerifySmsReq
-	(*UserDetailResponse)(nil), // 7: lushop.lushop.v1.UserDetailResponse
-	(*CaptchaReply)(nil),       // 8: lushop.lushop.v1.CaptchaReply
-	(*UpdateReq)(nil),          // 9: lushop.lushop.v1.UpdateReq
-	(*UpdatePwdReq)(nil),       // 10: lushop.lushop.v1.UpdatePwdReq
-	(*UpdatePwdReply)(nil),     // 11: lushop.lushop.v1.UpdatePwdReply
-	(*RefreshTokenReq)(nil),    // 12: lushop.lushop.v1.RefreshTokenReq
-	(*RefreshTokenReply)(nil),  // 13: lushop.lushop.v1.RefreshTokenReply
-	(*LogoutReply)(nil),        // 14: lushop.lushop.v1.LogoutReply
-	(*ListUsersReq)(nil),       // 15: lushop.lushop.v1.ListUsersReq
-	(*ListUsersReply)(nil),     // 16: lushop.lushop.v1.ListUsersReply
-	(*KickUserReq)(nil),        // 17: lushop.lushop.v1.KickUserReq
-	(*KickUserReply)(nil),      // 18: lushop.lushop.v1.KickUserReply
-	(*emptypb.Empty)(nil),      // 19: google.protobuf.Empty
+	(*CreateUserInfo)(nil),      // 0: lushop.lushop.v1.CreateUserInfo
+	(*RegisterReq)(nil),         // 1: lushop.lushop.v1.RegisterReq
+	(*RegisterReply)(nil),       // 2: lushop.lushop.v1.RegisterReply
+	(*LoginReq)(nil),            // 3: lushop.lushop.v1.LoginReq
+	(*SendSmsReq)(nil),          // 4: lushop.lushop.v1.SendSmsReq
+	(*SendSmsReply)(nil),        // 5: lushop.lushop.v1.SendSmsReply
+	(*VerifySmsReq)(nil),        // 6: lushop.lushop.v1.VerifySmsReq
+	(*UserDetailResponse)(nil),  // 7: lushop.lushop.v1.UserDetailResponse
+	(*CaptchaReply)(nil),        // 8: lushop.lushop.v1.CaptchaReply
+	(*UpdateReq)(nil),           // 9: lushop.lushop.v1.UpdateReq
+	(*UpdatePwdReq)(nil),        // 10: lushop.lushop.v1.UpdatePwdReq
+	(*UpdatePwdReply)(nil),      // 11: lushop.lushop.v1.UpdatePwdReply
+	(*RefreshTokenReq)(nil),     // 12: lushop.lushop.v1.RefreshTokenReq
+	(*RefreshTokenReply)(nil),   // 13: lushop.lushop.v1.RefreshTokenReply
+	(*LogoutReply)(nil),         // 14: lushop.lushop.v1.LogoutReply
+	(*CartItemReply)(nil),       // 15: lushop.lushop.v1.CartItemReply
+	(*CartListReply)(nil),       // 16: lushop.lushop.v1.CartListReply
+	(*AddToCartReq)(nil),        // 17: lushop.lushop.v1.AddToCartReq
+	(*UpdateCartItemReq)(nil),   // 18: lushop.lushop.v1.UpdateCartItemReq
+	(*DeleteCartItemReq)(nil),   // 19: lushop.lushop.v1.DeleteCartItemReq
+	(*ListUsersReq)(nil),        // 20: lushop.lushop.v1.ListUsersReq
+	(*ListUsersReply)(nil),      // 21: lushop.lushop.v1.ListUsersReply
+	(*KickUserReq)(nil),         // 22: lushop.lushop.v1.KickUserReq
+	(*KickUserReply)(nil),       // 23: lushop.lushop.v1.KickUserReply
+	(*GoodsListReq)(nil),        // 24: lushop.lushop.v1.GoodsListReq
+	(*GoodsInfo)(nil),           // 25: lushop.lushop.v1.GoodsInfo
+	(*GoodsListReply)(nil),      // 26: lushop.lushop.v1.GoodsListReply
+	(*GoodsDetailReq)(nil),      // 27: lushop.lushop.v1.GoodsDetailReq
+	(*GoodsDetailReply)(nil),    // 28: lushop.lushop.v1.GoodsDetailReply
+	(*SearchGoodsReq)(nil),      // 29: lushop.lushop.v1.SearchGoodsReq
+	(*SetInventoryReq)(nil),     // 30: lushop.lushop.v1.SetInventoryReq
+	(*GetInventoryReq)(nil),     // 31: lushop.lushop.v1.GetInventoryReq
+	(*GetInventoryReply)(nil),   // 32: lushop.lushop.v1.GetInventoryReply
+	(*CreateOrderReq)(nil),      // 33: lushop.lushop.v1.CreateOrderReq
+	(*CreateOrderReply)(nil),    // 34: lushop.lushop.v1.CreateOrderReply
+	(*GetOrderListReq)(nil),     // 35: lushop.lushop.v1.GetOrderListReq
+	(*OrderInfo)(nil),           // 36: lushop.lushop.v1.OrderInfo
+	(*GetOrderListReply)(nil),   // 37: lushop.lushop.v1.GetOrderListReply
+	(*GetOrderDetailReq)(nil),   // 38: lushop.lushop.v1.GetOrderDetailReq
+	(*OrderGoodsInfo)(nil),      // 39: lushop.lushop.v1.OrderGoodsInfo
+	(*GetOrderDetailReply)(nil), // 40: lushop.lushop.v1.GetOrderDetailReply
+	(*CancelOrderReq)(nil),      // 41: lushop.lushop.v1.CancelOrderReq
+	(*CreateAddressReq)(nil),    // 42: lushop.lushop.v1.CreateAddressReq
+	(*UpdateAddressReq)(nil),    // 43: lushop.lushop.v1.UpdateAddressReq
+	(*DeleteAddressReq)(nil),    // 44: lushop.lushop.v1.DeleteAddressReq
+	(*AddressReply)(nil),        // 45: lushop.lushop.v1.AddressReply
+	(*AddressListReply)(nil),    // 46: lushop.lushop.v1.AddressListReply
+	(*GetMessageListReq)(nil),   // 47: lushop.lushop.v1.GetMessageListReq
+	(*CreateMessageReq)(nil),    // 48: lushop.lushop.v1.CreateMessageReq
+	(*MessageReply)(nil),        // 49: lushop.lushop.v1.MessageReply
+	(*MessageListReply)(nil),    // 50: lushop.lushop.v1.MessageListReply
+	(*AddFavoriteReq)(nil),      // 51: lushop.lushop.v1.AddFavoriteReq
+	(*DeleteFavoriteReq)(nil),   // 52: lushop.lushop.v1.DeleteFavoriteReq
+	(*CheckFavoriteReq)(nil),    // 53: lushop.lushop.v1.CheckFavoriteReq
+	(*CheckFavoriteReply)(nil),  // 54: lushop.lushop.v1.CheckFavoriteReply
+	(*FavoriteReply)(nil),       // 55: lushop.lushop.v1.FavoriteReply
+	(*FavoriteListReply)(nil),   // 56: lushop.lushop.v1.FavoriteListReply
+	(*emptypb.Empty)(nil),       // 57: google.protobuf.Empty
 }
 var file_lushop_v1_lushop_proto_depIdxs = []int32{
-	7,  // 0: lushop.lushop.v1.ListUsersReply.users:type_name -> lushop.lushop.v1.UserDetailResponse
-	1,  // 1: lushop.lushop.v1.Lushop.Register:input_type -> lushop.lushop.v1.RegisterReq
-	3,  // 2: lushop.lushop.v1.Lushop.Login:input_type -> lushop.lushop.v1.LoginReq
-	19, // 3: lushop.lushop.v1.Lushop.Captcha:input_type -> google.protobuf.Empty
-	19, // 4: lushop.lushop.v1.Lushop.Detail:input_type -> google.protobuf.Empty
-	9,  // 5: lushop.lushop.v1.Lushop.Update:input_type -> lushop.lushop.v1.UpdateReq
-	10, // 6: lushop.lushop.v1.Lushop.UpdatePwd:input_type -> lushop.lushop.v1.UpdatePwdReq
-	12, // 7: lushop.lushop.v1.Lushop.RefreshToken:input_type -> lushop.lushop.v1.RefreshTokenReq
-	19, // 8: lushop.lushop.v1.Lushop.Logout:input_type -> google.protobuf.Empty
-	4,  // 9: lushop.lushop.v1.Lushop.SendSms:input_type -> lushop.lushop.v1.SendSmsReq
-	6,  // 10: lushop.lushop.v1.Lushop.VerifySms:input_type -> lushop.lushop.v1.VerifySmsReq
-	15, // 11: lushop.lushop.v1.Lushop.ListUsers:input_type -> lushop.lushop.v1.ListUsersReq
-	17, // 12: lushop.lushop.v1.Lushop.KickUser:input_type -> lushop.lushop.v1.KickUserReq
-	2,  // 13: lushop.lushop.v1.Lushop.Register:output_type -> lushop.lushop.v1.RegisterReply
-	2,  // 14: lushop.lushop.v1.Lushop.Login:output_type -> lushop.lushop.v1.RegisterReply
-	8,  // 15: lushop.lushop.v1.Lushop.Captcha:output_type -> lushop.lushop.v1.CaptchaReply
-	7,  // 16: lushop.lushop.v1.Lushop.Detail:output_type -> lushop.lushop.v1.UserDetailResponse
-	7,  // 17: lushop.lushop.v1.Lushop.Update:output_type -> lushop.lushop.v1.UserDetailResponse
-	11, // 18: lushop.lushop.v1.Lushop.UpdatePwd:output_type -> lushop.lushop.v1.UpdatePwdReply
-	13, // 19: lushop.lushop.v1.Lushop.RefreshToken:output_type -> lushop.lushop.v1.RefreshTokenReply
-	14, // 20: lushop.lushop.v1.Lushop.Logout:output_type -> lushop.lushop.v1.LogoutReply
-	5,  // 21: lushop.lushop.v1.Lushop.SendSms:output_type -> lushop.lushop.v1.SendSmsReply
-	2,  // 22: lushop.lushop.v1.Lushop.VerifySms:output_type -> lushop.lushop.v1.RegisterReply
-	16, // 23: lushop.lushop.v1.Lushop.ListUsers:output_type -> lushop.lushop.v1.ListUsersReply
-	18, // 24: lushop.lushop.v1.Lushop.KickUser:output_type -> lushop.lushop.v1.KickUserReply
-	13, // [13:25] is the sub-list for method output_type
-	1,  // [1:13] is the sub-list for method input_type
-	1,  // [1:1] is the sub-list for extension type_name
-	1,  // [1:1] is the sub-list for extension extendee
-	0,  // [0:1] is the sub-list for field type_name
+	15, // 0: lushop.lushop.v1.CartListReply.data:type_name -> lushop.lushop.v1.CartItemReply
+	7,  // 1: lushop.lushop.v1.ListUsersReply.users:type_name -> lushop.lushop.v1.UserDetailResponse
+	25, // 2: lushop.lushop.v1.GoodsListReply.data:type_name -> lushop.lushop.v1.GoodsInfo
+	36, // 3: lushop.lushop.v1.GetOrderListReply.data:type_name -> lushop.lushop.v1.OrderInfo
+	39, // 4: lushop.lushop.v1.GetOrderDetailReply.goods:type_name -> lushop.lushop.v1.OrderGoodsInfo
+	45, // 5: lushop.lushop.v1.AddressListReply.data:type_name -> lushop.lushop.v1.AddressReply
+	49, // 6: lushop.lushop.v1.MessageListReply.data:type_name -> lushop.lushop.v1.MessageReply
+	55, // 7: lushop.lushop.v1.FavoriteListReply.data:type_name -> lushop.lushop.v1.FavoriteReply
+	1,  // 8: lushop.lushop.v1.User.Register:input_type -> lushop.lushop.v1.RegisterReq
+	3,  // 9: lushop.lushop.v1.User.Login:input_type -> lushop.lushop.v1.LoginReq
+	57, // 10: lushop.lushop.v1.User.Captcha:input_type -> google.protobuf.Empty
+	57, // 11: lushop.lushop.v1.User.Detail:input_type -> google.protobuf.Empty
+	9,  // 12: lushop.lushop.v1.User.Update:input_type -> lushop.lushop.v1.UpdateReq
+	10, // 13: lushop.lushop.v1.User.UpdatePwd:input_type -> lushop.lushop.v1.UpdatePwdReq
+	57, // 14: lushop.lushop.v1.User.Logout:input_type -> google.protobuf.Empty
+	4,  // 15: lushop.lushop.v1.UserAuth.SendSms:input_type -> lushop.lushop.v1.SendSmsReq
+	6,  // 16: lushop.lushop.v1.UserAuth.VerifySms:input_type -> lushop.lushop.v1.VerifySmsReq
+	12, // 17: lushop.lushop.v1.UserAuth.RefreshToken:input_type -> lushop.lushop.v1.RefreshTokenReq
+	20, // 18: lushop.lushop.v1.UserAdmin.ListUsers:input_type -> lushop.lushop.v1.ListUsersReq
+	22, // 19: lushop.lushop.v1.UserAdmin.KickUser:input_type -> lushop.lushop.v1.KickUserReq
+	57, // 20: lushop.lushop.v1.Cart.GetCartList:input_type -> google.protobuf.Empty
+	17, // 21: lushop.lushop.v1.Cart.AddToCart:input_type -> lushop.lushop.v1.AddToCartReq
+	18, // 22: lushop.lushop.v1.Cart.UpdateCartItem:input_type -> lushop.lushop.v1.UpdateCartItemReq
+	19, // 23: lushop.lushop.v1.Cart.DeleteCartItem:input_type -> lushop.lushop.v1.DeleteCartItemReq
+	24, // 24: lushop.lushop.v1.Goods.GetGoodsList:input_type -> lushop.lushop.v1.GoodsListReq
+	27, // 25: lushop.lushop.v1.Goods.GetGoodsDetail:input_type -> lushop.lushop.v1.GoodsDetailReq
+	29, // 26: lushop.lushop.v1.Goods.SearchGoods:input_type -> lushop.lushop.v1.SearchGoodsReq
+	33, // 27: lushop.lushop.v1.Order.CreateOrder:input_type -> lushop.lushop.v1.CreateOrderReq
+	35, // 28: lushop.lushop.v1.Order.GetOrderList:input_type -> lushop.lushop.v1.GetOrderListReq
+	38, // 29: lushop.lushop.v1.Order.GetOrderDetail:input_type -> lushop.lushop.v1.GetOrderDetailReq
+	41, // 30: lushop.lushop.v1.Order.CancelOrder:input_type -> lushop.lushop.v1.CancelOrderReq
+	30, // 31: lushop.lushop.v1.Inventory.SetInventory:input_type -> lushop.lushop.v1.SetInventoryReq
+	31, // 32: lushop.lushop.v1.Inventory.GetInventory:input_type -> lushop.lushop.v1.GetInventoryReq
+	57, // 33: lushop.lushop.v1.UserOp.GetAddressList:input_type -> google.protobuf.Empty
+	42, // 34: lushop.lushop.v1.UserOp.CreateAddress:input_type -> lushop.lushop.v1.CreateAddressReq
+	43, // 35: lushop.lushop.v1.UserOp.UpdateAddress:input_type -> lushop.lushop.v1.UpdateAddressReq
+	44, // 36: lushop.lushop.v1.UserOp.DeleteAddress:input_type -> lushop.lushop.v1.DeleteAddressReq
+	47, // 37: lushop.lushop.v1.UserOp.GetMessageList:input_type -> lushop.lushop.v1.GetMessageListReq
+	48, // 38: lushop.lushop.v1.UserOp.CreateMessage:input_type -> lushop.lushop.v1.CreateMessageReq
+	57, // 39: lushop.lushop.v1.UserOp.GetFavoriteList:input_type -> google.protobuf.Empty
+	51, // 40: lushop.lushop.v1.UserOp.AddFavorite:input_type -> lushop.lushop.v1.AddFavoriteReq
+	52, // 41: lushop.lushop.v1.UserOp.DeleteFavorite:input_type -> lushop.lushop.v1.DeleteFavoriteReq
+	53, // 42: lushop.lushop.v1.UserOp.CheckFavorite:input_type -> lushop.lushop.v1.CheckFavoriteReq
+	2,  // 43: lushop.lushop.v1.User.Register:output_type -> lushop.lushop.v1.RegisterReply
+	2,  // 44: lushop.lushop.v1.User.Login:output_type -> lushop.lushop.v1.RegisterReply
+	8,  // 45: lushop.lushop.v1.User.Captcha:output_type -> lushop.lushop.v1.CaptchaReply
+	7,  // 46: lushop.lushop.v1.User.Detail:output_type -> lushop.lushop.v1.UserDetailResponse
+	7,  // 47: lushop.lushop.v1.User.Update:output_type -> lushop.lushop.v1.UserDetailResponse
+	11, // 48: lushop.lushop.v1.User.UpdatePwd:output_type -> lushop.lushop.v1.UpdatePwdReply
+	14, // 49: lushop.lushop.v1.User.Logout:output_type -> lushop.lushop.v1.LogoutReply
+	5,  // 50: lushop.lushop.v1.UserAuth.SendSms:output_type -> lushop.lushop.v1.SendSmsReply
+	2,  // 51: lushop.lushop.v1.UserAuth.VerifySms:output_type -> lushop.lushop.v1.RegisterReply
+	13, // 52: lushop.lushop.v1.UserAuth.RefreshToken:output_type -> lushop.lushop.v1.RefreshTokenReply
+	21, // 53: lushop.lushop.v1.UserAdmin.ListUsers:output_type -> lushop.lushop.v1.ListUsersReply
+	23, // 54: lushop.lushop.v1.UserAdmin.KickUser:output_type -> lushop.lushop.v1.KickUserReply
+	16, // 55: lushop.lushop.v1.Cart.GetCartList:output_type -> lushop.lushop.v1.CartListReply
+	15, // 56: lushop.lushop.v1.Cart.AddToCart:output_type -> lushop.lushop.v1.CartItemReply
+	57, // 57: lushop.lushop.v1.Cart.UpdateCartItem:output_type -> google.protobuf.Empty
+	57, // 58: lushop.lushop.v1.Cart.DeleteCartItem:output_type -> google.protobuf.Empty
+	26, // 59: lushop.lushop.v1.Goods.GetGoodsList:output_type -> lushop.lushop.v1.GoodsListReply
+	28, // 60: lushop.lushop.v1.Goods.GetGoodsDetail:output_type -> lushop.lushop.v1.GoodsDetailReply
+	26, // 61: lushop.lushop.v1.Goods.SearchGoods:output_type -> lushop.lushop.v1.GoodsListReply
+	34, // 62: lushop.lushop.v1.Order.CreateOrder:output_type -> lushop.lushop.v1.CreateOrderReply
+	37, // 63: lushop.lushop.v1.Order.GetOrderList:output_type -> lushop.lushop.v1.GetOrderListReply
+	40, // 64: lushop.lushop.v1.Order.GetOrderDetail:output_type -> lushop.lushop.v1.GetOrderDetailReply
+	57, // 65: lushop.lushop.v1.Order.CancelOrder:output_type -> google.protobuf.Empty
+	57, // 66: lushop.lushop.v1.Inventory.SetInventory:output_type -> google.protobuf.Empty
+	32, // 67: lushop.lushop.v1.Inventory.GetInventory:output_type -> lushop.lushop.v1.GetInventoryReply
+	46, // 68: lushop.lushop.v1.UserOp.GetAddressList:output_type -> lushop.lushop.v1.AddressListReply
+	45, // 69: lushop.lushop.v1.UserOp.CreateAddress:output_type -> lushop.lushop.v1.AddressReply
+	57, // 70: lushop.lushop.v1.UserOp.UpdateAddress:output_type -> google.protobuf.Empty
+	57, // 71: lushop.lushop.v1.UserOp.DeleteAddress:output_type -> google.protobuf.Empty
+	50, // 72: lushop.lushop.v1.UserOp.GetMessageList:output_type -> lushop.lushop.v1.MessageListReply
+	49, // 73: lushop.lushop.v1.UserOp.CreateMessage:output_type -> lushop.lushop.v1.MessageReply
+	56, // 74: lushop.lushop.v1.UserOp.GetFavoriteList:output_type -> lushop.lushop.v1.FavoriteListReply
+	57, // 75: lushop.lushop.v1.UserOp.AddFavorite:output_type -> google.protobuf.Empty
+	57, // 76: lushop.lushop.v1.UserOp.DeleteFavorite:output_type -> google.protobuf.Empty
+	54, // 77: lushop.lushop.v1.UserOp.CheckFavorite:output_type -> lushop.lushop.v1.CheckFavoriteReply
+	43, // [43:78] is the sub-list for method output_type
+	8,  // [8:43] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_lushop_v1_lushop_proto_init() }
@@ -1292,9 +4054,9 @@ func file_lushop_v1_lushop_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_lushop_v1_lushop_proto_rawDesc), len(file_lushop_v1_lushop_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   19,
+			NumMessages:   57,
 			NumExtensions: 0,
-			NumServices:   1,
+			NumServices:   8,
 		},
 		GoTypes:           file_lushop_v1_lushop_proto_goTypes,
 		DependencyIndexes: file_lushop_v1_lushop_proto_depIdxs,

@@ -1,0 +1,58 @@
+version: '3.8' #按照自己版本来
+services:
+  rmqnamesrv:
+    image: ccr.ccs.tencentyun.com/lucien/apache-rocketmq:v2 #选择自己下载的镜像名
+    privileged: true
+    container_name: rmqnamesrv
+    ports:
+      - 9876:9876
+    volumes:
+      - ./logs:/opt/logs
+      - ./store:/opt/store
+    command: sh mqnamesrv #注意：1. 是mqnamesrv而不是rmqnamesrv 2. 前面必须加sh
+    networks:
+      rmq:
+        aliases:
+          - rmqnamesrv
+
+  rmqbroker:
+    image: ccr.ccs.tencentyun.com/lucien/apache-rocketmq:v2  #选择自己下载的镜像名
+    privileged: true
+    container_name: rmqbroker
+    ports:
+      - 10909:10909
+      - 10911:10911
+    volumes:
+      - ./logs:/opt/logs
+      - ./store:/opt/store
+      - ./conf/broker.conf:/etc/rocketmq/broker.conf #选择自己下的版本：4.4.0
+    environment:
+        NAMESRV_ADDR: "rmqnamesrv:9876"
+        JAVA_OPTS: "-Duser.home=/opt"
+        JAVA_OPT_EXT: "-server -Xms256m -Xmx256m -Xmn256m"
+    command: sh mqbroker -c /etc/rocketmq/broker.conf #注意：1. 是mqbroker而不是rmqbroker 2. 前面必须加sh
+    depends_on:
+      - rmqnamesrv
+    networks:
+      rmq:
+        aliases:
+          - rmqbroker
+
+  rmqconsole:
+    image: ccr.ccs.tencentyun.com/lucien/rocketmq-dashboard:v2  #选择自己下载的镜像名
+    container_name: rmqconsole
+    ports:
+      - 8080:8080
+    environment:
+        JAVA_OPTS: "-Xmx256M -Xms256M -Xmn128M -Drocketmq.namesrv.addr=rmqnamesrv:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false"
+    depends_on:
+      - rmqnamesrv
+    networks:
+      rmq:
+        aliases:
+         - rmqconsole
+ 
+networks:
+  rmq:
+    name: rmq
+    driver: bridge

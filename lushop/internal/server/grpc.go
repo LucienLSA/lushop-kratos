@@ -37,6 +37,16 @@ func NewGRPCServer(c *conf.Server, s *service.LushopService, logger log.Logger) 
 		opts = append(opts, grpc.Timeout(c.Grpc.Timeout.AsDuration()))
 	}
 	srv := grpc.NewServer(opts...)
-	v1.RegisterLushopServer(srv, s)
+	
+	// 注册所有 gRPC 服务
+	v1.RegisterUserServer(srv, s)
+	v1.RegisterUserAuthServer(srv, s)
+	v1.RegisterUserAdminServer(srv, s)
+	v1.RegisterCartServer(srv, s)
+	v1.RegisterGoodsServer(srv, s)
+	v1.RegisterOrderServer(srv, s)
+	v1.RegisterInventoryServer(srv, s)
+	v1.RegisterUserOpServer(srv, s)
+	
 	return srv
 }

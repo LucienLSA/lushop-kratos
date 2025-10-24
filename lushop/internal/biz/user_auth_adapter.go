@@ -2,7 +2,7 @@ package biz
 
 import (
 	"context"
-	userauthV1 "lushop/api/userauth/v1"
+	userauthV1 "lushop/api/service/userauth/v1"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"google.golang.org/protobuf/types/known/emptypb"

@@ -1,0 +1,154 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: UserAuth API
+    description: 用户认证服务 - 统一治理 Token/验证码/SMS/黑名单
+    version: 0.0.1
+paths:
+    /userauth/v1/captcha:
+        get:
+            tags:
+                - UserAuth
+            description: |-
+                ========== 验证码相关 ==========
+                 获取图形验证码
+            operationId: UserAuth_GetCaptcha
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/lushop.userauth.v1.CaptchaReply'
+    /userauth/v1/sms/send:
+        post:
+            tags:
+                - UserAuth
+            description: |-
+                ========== 短信相关 ==========
+                 发送短信验证码
+            operationId: UserAuth_SendSms
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/lushop.userauth.v1.SendSmsReq'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/lushop.userauth.v1.SendSmsReply'
+    /userauth/v1/token/issue:
+        post:
+            tags:
+                - UserAuth
+            description: |-
+                ========== Token 管理 ==========
+                 签发 Token（用于登录成功后）
+            operationId: UserAuth_IssueToken
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/lushop.userauth.v1.IssueTokenReq'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/lushop.userauth.v1.TokenReply'
+    /userauth/v1/token/refresh:
+        post:
+            tags:
+                - UserAuth
+            description: 刷新 Token
+            operationId: UserAuth_RefreshToken
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/lushop.userauth.v1.RefreshTokenReq'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/lushop.userauth.v1.TokenReply'
+    /userauth/v1/token/revoke:
+        post:
+            tags:
+                - UserAuth
+            description: 撤销 Token（登出）
+            operationId: UserAuth_RevokeToken
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/lushop.userauth.v1.RevokeTokenReq'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+components:
+    schemas:
+        lushop.userauth.v1.CaptchaReply:
+            type: object
+            properties:
+                captchaId:
+                    type: string
+                picPath:
+                    type: string
+            description: ========== 验证码消息 ==========
+        lushop.userauth.v1.IssueTokenReq:
+            type: object
+            properties:
+                userId:
+                    type: string
+                nickName:
+                    type: string
+                role:
+                    type: integer
+                    format: int32
+            description: ========== Token 消息 ==========
+        lushop.userauth.v1.RefreshTokenReq:
+            type: object
+            properties:
+                refreshToken:
+                    type: string
+        lushop.userauth.v1.RevokeTokenReq:
+            type: object
+            properties:
+                userId:
+                    type: string
+        lushop.userauth.v1.SendSmsReply:
+            type: object
+            properties:
+                success:
+                    type: boolean
+        lushop.userauth.v1.SendSmsReq:
+            type: object
+            properties:
+                mobile:
+                    type: string
+            description: ========== 短信消息 ==========
+        lushop.userauth.v1.TokenReply:
+            type: object
+            properties:
+                accessToken:
+                    type: string
+                refreshToken:
+                    type: string
+                expiredAt:
+                    type: string
+tags:
+    - name: UserAuth

@@ -3,7 +3,7 @@ server:
     addr: 0.0.0.0:50052
     timeout: 1s
 service:
-  name: "goods.service"
+  name: "lushop.goods.service"
 data:
   database:
     driver: mysql

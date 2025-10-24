@@ -69,9 +69,21 @@ message Service {
   message UserAuth { // 用户认证服务
     string endpoint = 1;
   }
+  message Order { // 订单服务
+    string endpoint = 1;
+  }
+  message Inventory { // 库存服务
+    string endpoint = 1;
+  }
+  message UserOp { // 用户操作服务
+    string endpoint = 1;
+  }
   User user = 1;
   Goods goods = 2;
   UserAuth user_auth = 3;
+  Order order = 4;
+  Inventory inventory = 5;
+  UserOp userop = 6;
 }
 
 message Trace {

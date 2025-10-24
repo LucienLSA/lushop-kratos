@@ -10,6 +10,7 @@ import (
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
 	"order/internal/biz"
+	"order/internal/client/goods"
 	"order/internal/conf"
 	"order/internal/data"
 	"order/internal/server"
@@ -23,14 +24,19 @@ import (
 // Injectors from wire.go:
 
 // wireApp init kratos application.
-func wireApp(confServer *conf.Server, confData *conf.Data, registry *conf.Registry, logger log.Logger) (*kratos.App, func(), error) {
+func wireApp(confServer *conf.Server, confData *conf.Data, registry *conf.Registry, confService *conf.Service, bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(), error) {
 	db := data.NewDB(confData)
 	client := data.NewRedis(confData)
-	dataData, cleanup, err := data.NewData(confData, logger, db, client)
+	producer := data.NewRocketMQProducer(bootstrap, logger)
+	goodsService, err := goods.NewGoodsServiceClient(confService, registry, logger)
 	if err != nil {
 		return nil, nil, err
 	}
-	orderRepo := data.NewOrderRepo(dataData, logger)
+	dataData, cleanup, err := data.NewData(confData, logger, db, client, producer, goodsService)
+	if err != nil {
+		return nil, nil, err
+	}
+	orderRepo := data.NewOrderRepo(dataData, bootstrap, logger)
 	orderUsecase := biz.NewOrderUsecase(orderRepo, logger)
 	orderService := service.NewOrderService(orderUsecase, logger)
 	grpcServer := server.NewGRPCServer(confServer, orderService, logger)

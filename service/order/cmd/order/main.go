@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	nacosconfig "order/internal/conf/nacos"
+	"order/internal/pkg/snowflake"
 	"os"
 
 	"github.com/go-kratos/kratos/v2"
@@ -23,9 +24,9 @@ import (
 // go build -ldflags "-X main.Version=x.y.z"
 var (
 	// Name is the name of the compiled software.
-	Name = "lushop.userop.service"
+	Name = "lushop.order.service"
 	// Version is the version of the compiled software.
-	Version = "userop.v1"
+	Version = "order.v1"
 	// flagconf is the config flag.
 	flagconf string
 
@@ -84,6 +85,13 @@ func main() {
 		"span.id", tracing.SpanID(),
 	)
 
+	// 初始化雪花算法（使用节点ID 1，生产环境应该从配置文件读取）
+	if err := snowflake.Init(1); err != nil {
+		logger.Log(log.LevelError, "msg", "failed to initialize snowflake", "error", err)
+		panic(err)
+	}
+	logger.Log(log.LevelInfo, "msg", "snowflake initialized successfully")
+
 	// 创建配置加载器
 	configLoader := nacosconfig.NewNacosConfigLoader(logger)
 	// 首先加载本地配置获取 Nacos 连接信息
@@ -122,7 +130,7 @@ func main() {
 	} else {
 		logger.Log(log.LevelWarn, "msg", "Trace configuration not found, skipping tracer setup")
 	}
-	app, cleanup, err := wireApp(bc.Server, bc.Data, rc, logger)
+	app, cleanup, err := wireApp(bc.Server, bc.Data, rc, bc.Service, bc, logger)
 	if err != nil {
 		panic(err)
 	}

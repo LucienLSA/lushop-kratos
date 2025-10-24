@@ -15,18 +15,35 @@ var ProviderSet = wire.NewSet(NewLushopService)
 // 在项目的 main.go 或初始化部分，所有的 ProviderSet 会被收集起来，Wire 会自动分析依赖关系并生成最终的初始化代码
 // LushopService is a lushop service.
 type LushopService struct {
-	v1.UnimplementedLushopServer
-	uc  *biz.UserUsecase
-	log *log.Helper
+	v1.UnimplementedUserServer
+	v1.UnimplementedUserAuthServer
+	v1.UnimplementedUserAdminServer
+	v1.UnimplementedCartServer
+	v1.UnimplementedGoodsServer
+	v1.UnimplementedOrderServer
+	v1.UnimplementedInventoryServer
+	v1.UnimplementedUserOpServer
+	uc          *biz.UserUsecase
+	cartUc      *biz.CartUsecase
+	goodsUc     *biz.GoodsUsecase
+	orderUc     *biz.OrderUsecase
+	inventoryUc *biz.InventoryUsecase
+	useropUc    *biz.UserOpUsecase
+	log         *log.Helper
 }
 
 // NewLushopService new a shop service.
 // 遵循了 Wire 要求的依赖注入规范
 // gRPC 服务器启动时，Kratos 的依赖注入系统会调用 NewLushopService
 // 自动创建好 LushopService 实例，并把它注册到 gRPC 服务器上，外部就可以通过 gRPC 调用定义的方法
-func NewLushopService(uc *biz.UserUsecase, logger log.Logger) *LushopService {
+func NewLushopService(uc *biz.UserUsecase, cartUc *biz.CartUsecase, goodsUc *biz.GoodsUsecase, orderUc *biz.OrderUsecase, inventoryUc *biz.InventoryUsecase, useropUc *biz.UserOpUsecase, logger log.Logger) *LushopService {
 	return &LushopService{
-		uc:  uc,
-		log: log.NewHelper(log.With(logger, "module", "service/lushop")),
+		uc:          uc,
+		cartUc:      cartUc,
+		goodsUc:     goodsUc,
+		orderUc:     orderUc,
+		inventoryUc: inventoryUc,
+		useropUc:    useropUc,
+		log:         log.NewHelper(log.With(logger, "module", "service/lushop")),
 	}
 }

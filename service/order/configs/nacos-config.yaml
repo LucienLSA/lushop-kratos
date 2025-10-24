@@ -3,7 +3,7 @@ server:
     addr: 0.0.0.0:50053
     timeout: 1s
 service:
-  name: "order.service"
+  name: "lushop.order.service"
 data:
   database:
     driver: mysql
@@ -21,3 +21,10 @@ registry:
   consul:
     address: 127.0.0.1:8500
     scheme: http
+rocketmq:
+  name_server:
+    - "127.0.0.1:9876"
+  group_name: "order_producer_group"
+  topic: "order_inventory_topic"
+  retry_times: 2
+  enable: true

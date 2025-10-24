@@ -20,52 +20,43 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
-const OperationLushopCaptcha = "/lushop.lushop.v1.Lushop/Captcha"
-const OperationLushopDetail = "/lushop.lushop.v1.Lushop/Detail"
-const OperationLushopKickUser = "/lushop.lushop.v1.Lushop/KickUser"
-const OperationLushopListUsers = "/lushop.lushop.v1.Lushop/ListUsers"
-const OperationLushopLogin = "/lushop.lushop.v1.Lushop/Login"
-const OperationLushopLogout = "/lushop.lushop.v1.Lushop/Logout"
-const OperationLushopRefreshToken = "/lushop.lushop.v1.Lushop/RefreshToken"
-const OperationLushopRegister = "/lushop.lushop.v1.Lushop/Register"
-const OperationLushopSendSms = "/lushop.lushop.v1.Lushop/SendSms"
-const OperationLushopUpdate = "/lushop.lushop.v1.Lushop/Update"
-const OperationLushopUpdatePwd = "/lushop.lushop.v1.Lushop/UpdatePwd"
-const OperationLushopVerifySms = "/lushop.lushop.v1.Lushop/VerifySms"
+const OperationUserCaptcha = "/lushop.lushop.v1.User/Captcha"
+const OperationUserDetail = "/lushop.lushop.v1.User/Detail"
+const OperationUserLogin = "/lushop.lushop.v1.User/Login"
+const OperationUserLogout = "/lushop.lushop.v1.User/Logout"
+const OperationUserRegister = "/lushop.lushop.v1.User/Register"
+const OperationUserUpdate = "/lushop.lushop.v1.User/Update"
+const OperationUserUpdatePwd = "/lushop.lushop.v1.User/UpdatePwd"
 
-type LushopHTTPServer interface {
+type UserHTTPServer interface {
+	// Captcha 获取图形验证码
 	Captcha(context.Context, *emptypb.Empty) (*CaptchaReply, error)
+	// Detail 获取用户详情
 	Detail(context.Context, *emptypb.Empty) (*UserDetailResponse, error)
-	KickUser(context.Context, *KickUserReq) (*KickUserReply, error)
-	// ListUsers 添加管理员接口
-	ListUsers(context.Context, *ListUsersReq) (*ListUsersReply, error)
+	// Login 用户登录
 	Login(context.Context, *LoginReq) (*RegisterReply, error)
+	// Logout 退出登录
 	Logout(context.Context, *emptypb.Empty) (*LogoutReply, error)
-	RefreshToken(context.Context, *RefreshTokenReq) (*RefreshTokenReply, error)
+	// Register 用户注册
 	Register(context.Context, *RegisterReq) (*RegisterReply, error)
-	SendSms(context.Context, *SendSmsReq) (*SendSmsReply, error)
+	// Update 更新用户信息
 	Update(context.Context, *UpdateReq) (*UserDetailResponse, error)
+	// UpdatePwd 修改密码
 	UpdatePwd(context.Context, *UpdatePwdReq) (*UpdatePwdReply, error)
-	VerifySms(context.Context, *VerifySmsReq) (*RegisterReply, error)
 }
 
-func RegisterLushopHTTPServer(s *http.Server, srv LushopHTTPServer) {
+func RegisterUserHTTPServer(s *http.Server, srv UserHTTPServer) {
 	r := s.Route("/")
-	r.POST("/api/user/register", _Lushop_Register0_HTTP_Handler(srv))
-	r.POST("/api/user/login", _Lushop_Login0_HTTP_Handler(srv))
-	r.POST("/api/user/captcha", _Lushop_Captcha0_HTTP_Handler(srv))
-	r.GET("/api/user/detail", _Lushop_Detail0_HTTP_Handler(srv))
-	r.PUT("/api/user/update", _Lushop_Update0_HTTP_Handler(srv))
-	r.PUT("/api/user/update_pwd", _Lushop_UpdatePwd0_HTTP_Handler(srv))
-	r.POST("/api/user/refresh_token", _Lushop_RefreshToken0_HTTP_Handler(srv))
-	r.DELETE("/api/user/logout", _Lushop_Logout0_HTTP_Handler(srv))
-	r.POST("/api/user/send_sms", _Lushop_SendSms0_HTTP_Handler(srv))
-	r.GET("/api/user/verify_sms", _Lushop_VerifySms0_HTTP_Handler(srv))
-	r.GET("/api/admin/users", _Lushop_ListUsers0_HTTP_Handler(srv))
-	r.DELETE("/api/admin/users/{id}", _Lushop_KickUser0_HTTP_Handler(srv))
+	r.POST("/api/user/register", _User_Register0_HTTP_Handler(srv))
+	r.POST("/api/user/login", _User_Login0_HTTP_Handler(srv))
+	r.POST("/api/user/captcha", _User_Captcha0_HTTP_Handler(srv))
+	r.GET("/api/user/detail", _User_Detail0_HTTP_Handler(srv))
+	r.PUT("/api/user/update", _User_Update0_HTTP_Handler(srv))
+	r.PUT("/api/user/update_pwd", _User_UpdatePwd0_HTTP_Handler(srv))
+	r.DELETE("/api/user/logout", _User_Logout0_HTTP_Handler(srv))
 }
 
-func _Lushop_Register0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context) error {
+func _User_Register0_HTTP_Handler(srv UserHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in RegisterReq
 		if err := ctx.Bind(&in); err != nil {
@@ -74,7 +65,7 @@ func _Lushop_Register0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context)
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, OperationLushopRegister)
+		http.SetOperation(ctx, OperationUserRegister)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.Register(ctx, req.(*RegisterReq))
 		})
@@ -87,7 +78,7 @@ func _Lushop_Register0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context)
 	}
 }
 
-func _Lushop_Login0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context) error {
+func _User_Login0_HTTP_Handler(srv UserHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in LoginReq
 		if err := ctx.Bind(&in); err != nil {
@@ -96,7 +87,7 @@ func _Lushop_Login0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context) er
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, OperationLushopLogin)
+		http.SetOperation(ctx, OperationUserLogin)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.Login(ctx, req.(*LoginReq))
 		})
@@ -109,7 +100,7 @@ func _Lushop_Login0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context) er
 	}
 }
 
-func _Lushop_Captcha0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context) error {
+func _User_Captcha0_HTTP_Handler(srv UserHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in emptypb.Empty
 		if err := ctx.Bind(&in); err != nil {
@@ -118,7 +109,7 @@ func _Lushop_Captcha0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context) 
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, OperationLushopCaptcha)
+		http.SetOperation(ctx, OperationUserCaptcha)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.Captcha(ctx, req.(*emptypb.Empty))
 		})
@@ -131,13 +122,13 @@ func _Lushop_Captcha0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context) 
 	}
 }
 
-func _Lushop_Detail0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context) error {
+func _User_Detail0_HTTP_Handler(srv UserHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in emptypb.Empty
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, OperationLushopDetail)
+		http.SetOperation(ctx, OperationUserDetail)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.Detail(ctx, req.(*emptypb.Empty))
 		})
@@ -150,7 +141,7 @@ func _Lushop_Detail0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context) e
 	}
 }
 
-func _Lushop_Update0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context) error {
+func _User_Update0_HTTP_Handler(srv UserHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in UpdateReq
 		if err := ctx.Bind(&in); err != nil {
@@ -159,7 +150,7 @@ func _Lushop_Update0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context) e
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, OperationLushopUpdate)
+		http.SetOperation(ctx, OperationUserUpdate)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.Update(ctx, req.(*UpdateReq))
 		})
@@ -172,7 +163,7 @@ func _Lushop_Update0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context) e
 	}
 }
 
-func _Lushop_UpdatePwd0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context) error {
+func _User_UpdatePwd0_HTTP_Handler(srv UserHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in UpdatePwdReq
 		if err := ctx.Bind(&in); err != nil {
@@ -181,7 +172,7 @@ func _Lushop_UpdatePwd0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, OperationLushopUpdatePwd)
+		http.SetOperation(ctx, OperationUserUpdatePwd)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.UpdatePwd(ctx, req.(*UpdatePwdReq))
 		})
@@ -194,35 +185,13 @@ func _Lushop_UpdatePwd0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context
 	}
 }
 
-func _Lushop_RefreshToken0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context) error {
-	return func(ctx http.Context) error {
-		var in RefreshTokenReq
-		if err := ctx.Bind(&in); err != nil {
-			return err
-		}
-		if err := ctx.BindQuery(&in); err != nil {
-			return err
-		}
-		http.SetOperation(ctx, OperationLushopRefreshToken)
-		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.RefreshToken(ctx, req.(*RefreshTokenReq))
-		})
-		out, err := h(ctx, &in)
-		if err != nil {
-			return err
-		}
-		reply := out.(*RefreshTokenReply)
-		return ctx.Result(200, reply)
-	}
-}
-
-func _Lushop_Logout0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context) error {
+func _User_Logout0_HTTP_Handler(srv UserHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in emptypb.Empty
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, OperationLushopLogout)
+		http.SetOperation(ctx, OperationUserLogout)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.Logout(ctx, req.(*emptypb.Empty))
 		})
@@ -235,7 +204,150 @@ func _Lushop_Logout0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context) e
 	}
 }
 
-func _Lushop_SendSms0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context) error {
+type UserHTTPClient interface {
+	// Captcha 获取图形验证码
+	Captcha(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *CaptchaReply, err error)
+	// Detail 获取用户详情
+	Detail(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *UserDetailResponse, err error)
+	// Login 用户登录
+	Login(ctx context.Context, req *LoginReq, opts ...http.CallOption) (rsp *RegisterReply, err error)
+	// Logout 退出登录
+	Logout(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *LogoutReply, err error)
+	// Register 用户注册
+	Register(ctx context.Context, req *RegisterReq, opts ...http.CallOption) (rsp *RegisterReply, err error)
+	// Update 更新用户信息
+	Update(ctx context.Context, req *UpdateReq, opts ...http.CallOption) (rsp *UserDetailResponse, err error)
+	// UpdatePwd 修改密码
+	UpdatePwd(ctx context.Context, req *UpdatePwdReq, opts ...http.CallOption) (rsp *UpdatePwdReply, err error)
+}
+
+type UserHTTPClientImpl struct {
+	cc *http.Client
+}
+
+func NewUserHTTPClient(client *http.Client) UserHTTPClient {
+	return &UserHTTPClientImpl{client}
+}
+
+// Captcha 获取图形验证码
+func (c *UserHTTPClientImpl) Captcha(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*CaptchaReply, error) {
+	var out CaptchaReply
+	pattern := "/api/user/captcha"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationUserCaptcha))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Detail 获取用户详情
+func (c *UserHTTPClientImpl) Detail(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*UserDetailResponse, error) {
+	var out UserDetailResponse
+	pattern := "/api/user/detail"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationUserDetail))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Login 用户登录
+func (c *UserHTTPClientImpl) Login(ctx context.Context, in *LoginReq, opts ...http.CallOption) (*RegisterReply, error) {
+	var out RegisterReply
+	pattern := "/api/user/login"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationUserLogin))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Logout 退出登录
+func (c *UserHTTPClientImpl) Logout(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*LogoutReply, error) {
+	var out LogoutReply
+	pattern := "/api/user/logout"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationUserLogout))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Register 用户注册
+func (c *UserHTTPClientImpl) Register(ctx context.Context, in *RegisterReq, opts ...http.CallOption) (*RegisterReply, error) {
+	var out RegisterReply
+	pattern := "/api/user/register"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationUserRegister))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// Update 更新用户信息
+func (c *UserHTTPClientImpl) Update(ctx context.Context, in *UpdateReq, opts ...http.CallOption) (*UserDetailResponse, error) {
+	var out UserDetailResponse
+	pattern := "/api/user/update"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationUserUpdate))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// UpdatePwd 修改密码
+func (c *UserHTTPClientImpl) UpdatePwd(ctx context.Context, in *UpdatePwdReq, opts ...http.CallOption) (*UpdatePwdReply, error) {
+	var out UpdatePwdReply
+	pattern := "/api/user/update_pwd"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationUserUpdatePwd))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+const OperationUserAuthRefreshToken = "/lushop.lushop.v1.UserAuth/RefreshToken"
+const OperationUserAuthSendSms = "/lushop.lushop.v1.UserAuth/SendSms"
+const OperationUserAuthVerifySms = "/lushop.lushop.v1.UserAuth/VerifySms"
+
+type UserAuthHTTPServer interface {
+	// RefreshToken 刷新 Token
+	RefreshToken(context.Context, *RefreshTokenReq) (*RefreshTokenReply, error)
+	// SendSms 发送短信验证码
+	SendSms(context.Context, *SendSmsReq) (*SendSmsReply, error)
+	// VerifySms 验证短信验证码
+	VerifySms(context.Context, *VerifySmsReq) (*RegisterReply, error)
+}
+
+func RegisterUserAuthHTTPServer(s *http.Server, srv UserAuthHTTPServer) {
+	r := s.Route("/")
+	r.POST("/api/user/send_sms", _UserAuth_SendSms1_HTTP_Handler(srv))
+	r.GET("/api/user/verify_sms", _UserAuth_VerifySms0_HTTP_Handler(srv))
+	r.POST("/api/user/refresh_token", _UserAuth_RefreshToken1_HTTP_Handler(srv))
+}
+
+func _UserAuth_SendSms1_HTTP_Handler(srv UserAuthHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in SendSmsReq
 		if err := ctx.Bind(&in); err != nil {
@@ -244,7 +356,7 @@ func _Lushop_SendSms0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context) 
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, OperationLushopSendSms)
+		http.SetOperation(ctx, OperationUserAuthSendSms)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.SendSms(ctx, req.(*SendSmsReq))
 		})
@@ -257,13 +369,13 @@ func _Lushop_SendSms0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context) 
 	}
 }
 
-func _Lushop_VerifySms0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context) error {
+func _UserAuth_VerifySms0_HTTP_Handler(srv UserAuthHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in VerifySmsReq
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, OperationLushopVerifySms)
+		http.SetOperation(ctx, OperationUserAuthVerifySms)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.VerifySms(ctx, req.(*VerifySmsReq))
 		})
@@ -276,13 +388,110 @@ func _Lushop_VerifySms0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context
 	}
 }
 
-func _Lushop_ListUsers0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context) error {
+func _UserAuth_RefreshToken1_HTTP_Handler(srv UserAuthHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in RefreshTokenReq
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserAuthRefreshToken)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.RefreshToken(ctx, req.(*RefreshTokenReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*RefreshTokenReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+type UserAuthHTTPClient interface {
+	// RefreshToken 刷新 Token
+	RefreshToken(ctx context.Context, req *RefreshTokenReq, opts ...http.CallOption) (rsp *RefreshTokenReply, err error)
+	// SendSms 发送短信验证码
+	SendSms(ctx context.Context, req *SendSmsReq, opts ...http.CallOption) (rsp *SendSmsReply, err error)
+	// VerifySms 验证短信验证码
+	VerifySms(ctx context.Context, req *VerifySmsReq, opts ...http.CallOption) (rsp *RegisterReply, err error)
+}
+
+type UserAuthHTTPClientImpl struct {
+	cc *http.Client
+}
+
+func NewUserAuthHTTPClient(client *http.Client) UserAuthHTTPClient {
+	return &UserAuthHTTPClientImpl{client}
+}
+
+// RefreshToken 刷新 Token
+func (c *UserAuthHTTPClientImpl) RefreshToken(ctx context.Context, in *RefreshTokenReq, opts ...http.CallOption) (*RefreshTokenReply, error) {
+	var out RefreshTokenReply
+	pattern := "/api/user/refresh_token"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationUserAuthRefreshToken))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// SendSms 发送短信验证码
+func (c *UserAuthHTTPClientImpl) SendSms(ctx context.Context, in *SendSmsReq, opts ...http.CallOption) (*SendSmsReply, error) {
+	var out SendSmsReply
+	pattern := "/api/user/send_sms"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationUserAuthSendSms))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// VerifySms 验证短信验证码
+func (c *UserAuthHTTPClientImpl) VerifySms(ctx context.Context, in *VerifySmsReq, opts ...http.CallOption) (*RegisterReply, error) {
+	var out RegisterReply
+	pattern := "/api/user/verify_sms"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationUserAuthVerifySms))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+const OperationUserAdminKickUser = "/lushop.lushop.v1.UserAdmin/KickUser"
+const OperationUserAdminListUsers = "/lushop.lushop.v1.UserAdmin/ListUsers"
+
+type UserAdminHTTPServer interface {
+	// KickUser 管理员踢出用户
+	KickUser(context.Context, *KickUserReq) (*KickUserReply, error)
+	// ListUsers 管理员查看用户列表
+	ListUsers(context.Context, *ListUsersReq) (*ListUsersReply, error)
+}
+
+func RegisterUserAdminHTTPServer(s *http.Server, srv UserAdminHTTPServer) {
+	r := s.Route("/")
+	r.GET("/api/admin/users", _UserAdmin_ListUsers0_HTTP_Handler(srv))
+	r.DELETE("/api/admin/users/{id}", _UserAdmin_KickUser0_HTTP_Handler(srv))
+}
+
+func _UserAdmin_ListUsers0_HTTP_Handler(srv UserAdminHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in ListUsersReq
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, OperationLushopListUsers)
+		http.SetOperation(ctx, OperationUserAdminListUsers)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.ListUsers(ctx, req.(*ListUsersReq))
 		})
@@ -295,7 +504,7 @@ func _Lushop_ListUsers0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context
 	}
 }
 
-func _Lushop_KickUser0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context) error {
+func _UserAdmin_KickUser0_HTTP_Handler(srv UserAdminHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in KickUserReq
 		if err := ctx.BindQuery(&in); err != nil {
@@ -304,7 +513,7 @@ func _Lushop_KickUser0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context)
 		if err := ctx.BindVars(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, OperationLushopKickUser)
+		http.SetOperation(ctx, OperationUserAdminKickUser)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.KickUser(ctx, req.(*KickUserReq))
 		})
@@ -317,61 +526,27 @@ func _Lushop_KickUser0_HTTP_Handler(srv LushopHTTPServer) func(ctx http.Context)
 	}
 }
 
-type LushopHTTPClient interface {
-	Captcha(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *CaptchaReply, err error)
-	Detail(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *UserDetailResponse, err error)
+type UserAdminHTTPClient interface {
+	// KickUser 管理员踢出用户
 	KickUser(ctx context.Context, req *KickUserReq, opts ...http.CallOption) (rsp *KickUserReply, err error)
-	// ListUsers 添加管理员接口
+	// ListUsers 管理员查看用户列表
 	ListUsers(ctx context.Context, req *ListUsersReq, opts ...http.CallOption) (rsp *ListUsersReply, err error)
-	Login(ctx context.Context, req *LoginReq, opts ...http.CallOption) (rsp *RegisterReply, err error)
-	Logout(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *LogoutReply, err error)
-	RefreshToken(ctx context.Context, req *RefreshTokenReq, opts ...http.CallOption) (rsp *RefreshTokenReply, err error)
-	Register(ctx context.Context, req *RegisterReq, opts ...http.CallOption) (rsp *RegisterReply, err error)
-	SendSms(ctx context.Context, req *SendSmsReq, opts ...http.CallOption) (rsp *SendSmsReply, err error)
-	Update(ctx context.Context, req *UpdateReq, opts ...http.CallOption) (rsp *UserDetailResponse, err error)
-	UpdatePwd(ctx context.Context, req *UpdatePwdReq, opts ...http.CallOption) (rsp *UpdatePwdReply, err error)
-	VerifySms(ctx context.Context, req *VerifySmsReq, opts ...http.CallOption) (rsp *RegisterReply, err error)
 }
 
-type LushopHTTPClientImpl struct {
+type UserAdminHTTPClientImpl struct {
 	cc *http.Client
 }
 
-func NewLushopHTTPClient(client *http.Client) LushopHTTPClient {
-	return &LushopHTTPClientImpl{client}
+func NewUserAdminHTTPClient(client *http.Client) UserAdminHTTPClient {
+	return &UserAdminHTTPClientImpl{client}
 }
 
-func (c *LushopHTTPClientImpl) Captcha(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*CaptchaReply, error) {
-	var out CaptchaReply
-	pattern := "/api/user/captcha"
-	path := binding.EncodeURL(pattern, in, false)
-	opts = append(opts, http.Operation(OperationLushopCaptcha))
-	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-func (c *LushopHTTPClientImpl) Detail(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*UserDetailResponse, error) {
-	var out UserDetailResponse
-	pattern := "/api/user/detail"
-	path := binding.EncodeURL(pattern, in, true)
-	opts = append(opts, http.Operation(OperationLushopDetail))
-	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-func (c *LushopHTTPClientImpl) KickUser(ctx context.Context, in *KickUserReq, opts ...http.CallOption) (*KickUserReply, error) {
+// KickUser 管理员踢出用户
+func (c *UserAdminHTTPClientImpl) KickUser(ctx context.Context, in *KickUserReq, opts ...http.CallOption) (*KickUserReply, error) {
 	var out KickUserReply
 	pattern := "/api/admin/users/{id}"
 	path := binding.EncodeURL(pattern, in, true)
-	opts = append(opts, http.Operation(OperationLushopKickUser))
+	opts = append(opts, http.Operation(OperationUserAdminKickUser))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
 	if err != nil {
@@ -380,12 +555,12 @@ func (c *LushopHTTPClientImpl) KickUser(ctx context.Context, in *KickUserReq, op
 	return &out, nil
 }
 
-// ListUsers 添加管理员接口
-func (c *LushopHTTPClientImpl) ListUsers(ctx context.Context, in *ListUsersReq, opts ...http.CallOption) (*ListUsersReply, error) {
+// ListUsers 管理员查看用户列表
+func (c *UserAdminHTTPClientImpl) ListUsers(ctx context.Context, in *ListUsersReq, opts ...http.CallOption) (*ListUsersReply, error) {
 	var out ListUsersReply
 	pattern := "/api/admin/users"
 	path := binding.EncodeURL(pattern, in, true)
-	opts = append(opts, http.Operation(OperationLushopListUsers))
+	opts = append(opts, http.Operation(OperationUserAdminListUsers))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
@@ -394,11 +569,140 @@ func (c *LushopHTTPClientImpl) ListUsers(ctx context.Context, in *ListUsersReq, 
 	return &out, nil
 }
 
-func (c *LushopHTTPClientImpl) Login(ctx context.Context, in *LoginReq, opts ...http.CallOption) (*RegisterReply, error) {
-	var out RegisterReply
-	pattern := "/api/user/login"
+const OperationCartAddToCart = "/lushop.lushop.v1.Cart/AddToCart"
+const OperationCartDeleteCartItem = "/lushop.lushop.v1.Cart/DeleteCartItem"
+const OperationCartGetCartList = "/lushop.lushop.v1.Cart/GetCartList"
+const OperationCartUpdateCartItem = "/lushop.lushop.v1.Cart/UpdateCartItem"
+
+type CartHTTPServer interface {
+	// AddToCart 添加商品到购物车
+	AddToCart(context.Context, *AddToCartReq) (*CartItemReply, error)
+	// DeleteCartItem 删除购物车商品
+	DeleteCartItem(context.Context, *DeleteCartItemReq) (*emptypb.Empty, error)
+	// GetCartList 获取购物车列表
+	GetCartList(context.Context, *emptypb.Empty) (*CartListReply, error)
+	// UpdateCartItem 更新购物车商品
+	UpdateCartItem(context.Context, *UpdateCartItemReq) (*emptypb.Empty, error)
+}
+
+func RegisterCartHTTPServer(s *http.Server, srv CartHTTPServer) {
+	r := s.Route("/")
+	r.GET("/api/cart/list", _Cart_GetCartList0_HTTP_Handler(srv))
+	r.POST("/api/cart/add", _Cart_AddToCart0_HTTP_Handler(srv))
+	r.PUT("/api/cart/update", _Cart_UpdateCartItem0_HTTP_Handler(srv))
+	r.DELETE("/api/cart/{id}", _Cart_DeleteCartItem0_HTTP_Handler(srv))
+}
+
+func _Cart_GetCartList0_HTTP_Handler(srv CartHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in emptypb.Empty
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationCartGetCartList)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetCartList(ctx, req.(*emptypb.Empty))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*CartListReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _Cart_AddToCart0_HTTP_Handler(srv CartHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in AddToCartReq
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationCartAddToCart)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.AddToCart(ctx, req.(*AddToCartReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*CartItemReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _Cart_UpdateCartItem0_HTTP_Handler(srv CartHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in UpdateCartItemReq
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationCartUpdateCartItem)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.UpdateCartItem(ctx, req.(*UpdateCartItemReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _Cart_DeleteCartItem0_HTTP_Handler(srv CartHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in DeleteCartItemReq
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationCartDeleteCartItem)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.DeleteCartItem(ctx, req.(*DeleteCartItemReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
+type CartHTTPClient interface {
+	// AddToCart 添加商品到购物车
+	AddToCart(ctx context.Context, req *AddToCartReq, opts ...http.CallOption) (rsp *CartItemReply, err error)
+	// DeleteCartItem 删除购物车商品
+	DeleteCartItem(ctx context.Context, req *DeleteCartItemReq, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	// GetCartList 获取购物车列表
+	GetCartList(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *CartListReply, err error)
+	// UpdateCartItem 更新购物车商品
+	UpdateCartItem(ctx context.Context, req *UpdateCartItemReq, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+}
+
+type CartHTTPClientImpl struct {
+	cc *http.Client
+}
+
+func NewCartHTTPClient(client *http.Client) CartHTTPClient {
+	return &CartHTTPClientImpl{client}
+}
+
+// AddToCart 添加商品到购物车
+func (c *CartHTTPClientImpl) AddToCart(ctx context.Context, in *AddToCartReq, opts ...http.CallOption) (*CartItemReply, error) {
+	var out CartItemReply
+	pattern := "/api/cart/add"
 	path := binding.EncodeURL(pattern, in, false)
-	opts = append(opts, http.Operation(OperationLushopLogin))
+	opts = append(opts, http.Operation(OperationCartAddToCart))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
@@ -407,11 +711,12 @@ func (c *LushopHTTPClientImpl) Login(ctx context.Context, in *LoginReq, opts ...
 	return &out, nil
 }
 
-func (c *LushopHTTPClientImpl) Logout(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*LogoutReply, error) {
-	var out LogoutReply
-	pattern := "/api/user/logout"
+// DeleteCartItem 删除购物车商品
+func (c *CartHTTPClientImpl) DeleteCartItem(ctx context.Context, in *DeleteCartItemReq, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/api/cart/{id}"
 	path := binding.EncodeURL(pattern, in, true)
-	opts = append(opts, http.Operation(OperationLushopLogout))
+	opts = append(opts, http.Operation(OperationCartDeleteCartItem))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
 	if err != nil {
@@ -420,78 +725,866 @@ func (c *LushopHTTPClientImpl) Logout(ctx context.Context, in *emptypb.Empty, op
 	return &out, nil
 }
 
-func (c *LushopHTTPClientImpl) RefreshToken(ctx context.Context, in *RefreshTokenReq, opts ...http.CallOption) (*RefreshTokenReply, error) {
-	var out RefreshTokenReply
-	pattern := "/api/user/refresh_token"
-	path := binding.EncodeURL(pattern, in, false)
-	opts = append(opts, http.Operation(OperationLushopRefreshToken))
-	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-func (c *LushopHTTPClientImpl) Register(ctx context.Context, in *RegisterReq, opts ...http.CallOption) (*RegisterReply, error) {
-	var out RegisterReply
-	pattern := "/api/user/register"
-	path := binding.EncodeURL(pattern, in, false)
-	opts = append(opts, http.Operation(OperationLushopRegister))
-	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-func (c *LushopHTTPClientImpl) SendSms(ctx context.Context, in *SendSmsReq, opts ...http.CallOption) (*SendSmsReply, error) {
-	var out SendSmsReply
-	pattern := "/api/user/send_sms"
-	path := binding.EncodeURL(pattern, in, false)
-	opts = append(opts, http.Operation(OperationLushopSendSms))
-	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-func (c *LushopHTTPClientImpl) Update(ctx context.Context, in *UpdateReq, opts ...http.CallOption) (*UserDetailResponse, error) {
-	var out UserDetailResponse
-	pattern := "/api/user/update"
-	path := binding.EncodeURL(pattern, in, false)
-	opts = append(opts, http.Operation(OperationLushopUpdate))
-	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-func (c *LushopHTTPClientImpl) UpdatePwd(ctx context.Context, in *UpdatePwdReq, opts ...http.CallOption) (*UpdatePwdReply, error) {
-	var out UpdatePwdReply
-	pattern := "/api/user/update_pwd"
-	path := binding.EncodeURL(pattern, in, false)
-	opts = append(opts, http.Operation(OperationLushopUpdatePwd))
-	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-func (c *LushopHTTPClientImpl) VerifySms(ctx context.Context, in *VerifySmsReq, opts ...http.CallOption) (*RegisterReply, error) {
-	var out RegisterReply
-	pattern := "/api/user/verify_sms"
+// GetCartList 获取购物车列表
+func (c *CartHTTPClientImpl) GetCartList(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*CartListReply, error) {
+	var out CartListReply
+	pattern := "/api/cart/list"
 	path := binding.EncodeURL(pattern, in, true)
-	opts = append(opts, http.Operation(OperationLushopVerifySms))
+	opts = append(opts, http.Operation(OperationCartGetCartList))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// UpdateCartItem 更新购物车商品
+func (c *CartHTTPClientImpl) UpdateCartItem(ctx context.Context, in *UpdateCartItemReq, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/api/cart/update"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationCartUpdateCartItem))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+const OperationGoodsGetGoodsDetail = "/lushop.lushop.v1.Goods/GetGoodsDetail"
+const OperationGoodsGetGoodsList = "/lushop.lushop.v1.Goods/GetGoodsList"
+const OperationGoodsSearchGoods = "/lushop.lushop.v1.Goods/SearchGoods"
+
+type GoodsHTTPServer interface {
+	// GetGoodsDetail 获取商品详情
+	GetGoodsDetail(context.Context, *GoodsDetailReq) (*GoodsDetailReply, error)
+	// GetGoodsList 获取商品列表
+	GetGoodsList(context.Context, *GoodsListReq) (*GoodsListReply, error)
+	// SearchGoods 搜索商品
+	SearchGoods(context.Context, *SearchGoodsReq) (*GoodsListReply, error)
+}
+
+func RegisterGoodsHTTPServer(s *http.Server, srv GoodsHTTPServer) {
+	r := s.Route("/")
+	r.GET("/api/goods/list", _Goods_GetGoodsList0_HTTP_Handler(srv))
+	r.GET("/api/goods/{id}", _Goods_GetGoodsDetail0_HTTP_Handler(srv))
+	r.GET("/api/goods/search", _Goods_SearchGoods0_HTTP_Handler(srv))
+}
+
+func _Goods_GetGoodsList0_HTTP_Handler(srv GoodsHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GoodsListReq
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationGoodsGetGoodsList)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetGoodsList(ctx, req.(*GoodsListReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*GoodsListReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _Goods_GetGoodsDetail0_HTTP_Handler(srv GoodsHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GoodsDetailReq
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationGoodsGetGoodsDetail)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetGoodsDetail(ctx, req.(*GoodsDetailReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*GoodsDetailReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _Goods_SearchGoods0_HTTP_Handler(srv GoodsHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in SearchGoodsReq
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationGoodsSearchGoods)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.SearchGoods(ctx, req.(*SearchGoodsReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*GoodsListReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+type GoodsHTTPClient interface {
+	// GetGoodsDetail 获取商品详情
+	GetGoodsDetail(ctx context.Context, req *GoodsDetailReq, opts ...http.CallOption) (rsp *GoodsDetailReply, err error)
+	// GetGoodsList 获取商品列表
+	GetGoodsList(ctx context.Context, req *GoodsListReq, opts ...http.CallOption) (rsp *GoodsListReply, err error)
+	// SearchGoods 搜索商品
+	SearchGoods(ctx context.Context, req *SearchGoodsReq, opts ...http.CallOption) (rsp *GoodsListReply, err error)
+}
+
+type GoodsHTTPClientImpl struct {
+	cc *http.Client
+}
+
+func NewGoodsHTTPClient(client *http.Client) GoodsHTTPClient {
+	return &GoodsHTTPClientImpl{client}
+}
+
+// GetGoodsDetail 获取商品详情
+func (c *GoodsHTTPClientImpl) GetGoodsDetail(ctx context.Context, in *GoodsDetailReq, opts ...http.CallOption) (*GoodsDetailReply, error) {
+	var out GoodsDetailReply
+	pattern := "/api/goods/{id}"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationGoodsGetGoodsDetail))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// GetGoodsList 获取商品列表
+func (c *GoodsHTTPClientImpl) GetGoodsList(ctx context.Context, in *GoodsListReq, opts ...http.CallOption) (*GoodsListReply, error) {
+	var out GoodsListReply
+	pattern := "/api/goods/list"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationGoodsGetGoodsList))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// SearchGoods 搜索商品
+func (c *GoodsHTTPClientImpl) SearchGoods(ctx context.Context, in *SearchGoodsReq, opts ...http.CallOption) (*GoodsListReply, error) {
+	var out GoodsListReply
+	pattern := "/api/goods/search"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationGoodsSearchGoods))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+const OperationOrderCancelOrder = "/lushop.lushop.v1.Order/CancelOrder"
+const OperationOrderCreateOrder = "/lushop.lushop.v1.Order/CreateOrder"
+const OperationOrderGetOrderDetail = "/lushop.lushop.v1.Order/GetOrderDetail"
+const OperationOrderGetOrderList = "/lushop.lushop.v1.Order/GetOrderList"
+
+type OrderHTTPServer interface {
+	// CancelOrder 取消订单
+	CancelOrder(context.Context, *CancelOrderReq) (*emptypb.Empty, error)
+	// CreateOrder 创建订单
+	CreateOrder(context.Context, *CreateOrderReq) (*CreateOrderReply, error)
+	// GetOrderDetail 获取订单详情
+	GetOrderDetail(context.Context, *GetOrderDetailReq) (*GetOrderDetailReply, error)
+	// GetOrderList 获取订单列表
+	GetOrderList(context.Context, *GetOrderListReq) (*GetOrderListReply, error)
+}
+
+func RegisterOrderHTTPServer(s *http.Server, srv OrderHTTPServer) {
+	r := s.Route("/")
+	r.POST("/api/order/create", _Order_CreateOrder0_HTTP_Handler(srv))
+	r.GET("/api/order/list", _Order_GetOrderList0_HTTP_Handler(srv))
+	r.GET("/api/order/{id}", _Order_GetOrderDetail0_HTTP_Handler(srv))
+	r.DELETE("/api/order/{id}", _Order_CancelOrder0_HTTP_Handler(srv))
+}
+
+func _Order_CreateOrder0_HTTP_Handler(srv OrderHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in CreateOrderReq
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationOrderCreateOrder)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.CreateOrder(ctx, req.(*CreateOrderReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*CreateOrderReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _Order_GetOrderList0_HTTP_Handler(srv OrderHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetOrderListReq
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationOrderGetOrderList)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetOrderList(ctx, req.(*GetOrderListReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*GetOrderListReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _Order_GetOrderDetail0_HTTP_Handler(srv OrderHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetOrderDetailReq
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationOrderGetOrderDetail)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetOrderDetail(ctx, req.(*GetOrderDetailReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*GetOrderDetailReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _Order_CancelOrder0_HTTP_Handler(srv OrderHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in CancelOrderReq
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationOrderCancelOrder)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.CancelOrder(ctx, req.(*CancelOrderReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
+type OrderHTTPClient interface {
+	// CancelOrder 取消订单
+	CancelOrder(ctx context.Context, req *CancelOrderReq, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	// CreateOrder 创建订单
+	CreateOrder(ctx context.Context, req *CreateOrderReq, opts ...http.CallOption) (rsp *CreateOrderReply, err error)
+	// GetOrderDetail 获取订单详情
+	GetOrderDetail(ctx context.Context, req *GetOrderDetailReq, opts ...http.CallOption) (rsp *GetOrderDetailReply, err error)
+	// GetOrderList 获取订单列表
+	GetOrderList(ctx context.Context, req *GetOrderListReq, opts ...http.CallOption) (rsp *GetOrderListReply, err error)
+}
+
+type OrderHTTPClientImpl struct {
+	cc *http.Client
+}
+
+func NewOrderHTTPClient(client *http.Client) OrderHTTPClient {
+	return &OrderHTTPClientImpl{client}
+}
+
+// CancelOrder 取消订单
+func (c *OrderHTTPClientImpl) CancelOrder(ctx context.Context, in *CancelOrderReq, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/api/order/{id}"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationOrderCancelOrder))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// CreateOrder 创建订单
+func (c *OrderHTTPClientImpl) CreateOrder(ctx context.Context, in *CreateOrderReq, opts ...http.CallOption) (*CreateOrderReply, error) {
+	var out CreateOrderReply
+	pattern := "/api/order/create"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationOrderCreateOrder))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// GetOrderDetail 获取订单详情
+func (c *OrderHTTPClientImpl) GetOrderDetail(ctx context.Context, in *GetOrderDetailReq, opts ...http.CallOption) (*GetOrderDetailReply, error) {
+	var out GetOrderDetailReply
+	pattern := "/api/order/{id}"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationOrderGetOrderDetail))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// GetOrderList 获取订单列表
+func (c *OrderHTTPClientImpl) GetOrderList(ctx context.Context, in *GetOrderListReq, opts ...http.CallOption) (*GetOrderListReply, error) {
+	var out GetOrderListReply
+	pattern := "/api/order/list"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationOrderGetOrderList))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+const OperationInventoryGetInventory = "/lushop.lushop.v1.Inventory/GetInventory"
+const OperationInventorySetInventory = "/lushop.lushop.v1.Inventory/SetInventory"
+
+type InventoryHTTPServer interface {
+	// GetInventory 获取库存
+	GetInventory(context.Context, *GetInventoryReq) (*GetInventoryReply, error)
+	// SetInventory 设置库存
+	SetInventory(context.Context, *SetInventoryReq) (*emptypb.Empty, error)
+}
+
+func RegisterInventoryHTTPServer(s *http.Server, srv InventoryHTTPServer) {
+	r := s.Route("/")
+	r.POST("/api/inventory/set", _Inventory_SetInventory0_HTTP_Handler(srv))
+	r.GET("/api/inventory/{goodsId}", _Inventory_GetInventory0_HTTP_Handler(srv))
+}
+
+func _Inventory_SetInventory0_HTTP_Handler(srv InventoryHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in SetInventoryReq
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationInventorySetInventory)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.SetInventory(ctx, req.(*SetInventoryReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _Inventory_GetInventory0_HTTP_Handler(srv InventoryHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetInventoryReq
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationInventoryGetInventory)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetInventory(ctx, req.(*GetInventoryReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*GetInventoryReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+type InventoryHTTPClient interface {
+	// GetInventory 获取库存
+	GetInventory(ctx context.Context, req *GetInventoryReq, opts ...http.CallOption) (rsp *GetInventoryReply, err error)
+	// SetInventory 设置库存
+	SetInventory(ctx context.Context, req *SetInventoryReq, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+}
+
+type InventoryHTTPClientImpl struct {
+	cc *http.Client
+}
+
+func NewInventoryHTTPClient(client *http.Client) InventoryHTTPClient {
+	return &InventoryHTTPClientImpl{client}
+}
+
+// GetInventory 获取库存
+func (c *InventoryHTTPClientImpl) GetInventory(ctx context.Context, in *GetInventoryReq, opts ...http.CallOption) (*GetInventoryReply, error) {
+	var out GetInventoryReply
+	pattern := "/api/inventory/{goodsId}"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationInventoryGetInventory))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// SetInventory 设置库存
+func (c *InventoryHTTPClientImpl) SetInventory(ctx context.Context, in *SetInventoryReq, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/api/inventory/set"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationInventorySetInventory))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+const OperationUserOpAddFavorite = "/lushop.lushop.v1.UserOp/AddFavorite"
+const OperationUserOpCheckFavorite = "/lushop.lushop.v1.UserOp/CheckFavorite"
+const OperationUserOpCreateAddress = "/lushop.lushop.v1.UserOp/CreateAddress"
+const OperationUserOpCreateMessage = "/lushop.lushop.v1.UserOp/CreateMessage"
+const OperationUserOpDeleteAddress = "/lushop.lushop.v1.UserOp/DeleteAddress"
+const OperationUserOpDeleteFavorite = "/lushop.lushop.v1.UserOp/DeleteFavorite"
+const OperationUserOpGetAddressList = "/lushop.lushop.v1.UserOp/GetAddressList"
+const OperationUserOpGetFavoriteList = "/lushop.lushop.v1.UserOp/GetFavoriteList"
+const OperationUserOpGetMessageList = "/lushop.lushop.v1.UserOp/GetMessageList"
+const OperationUserOpUpdateAddress = "/lushop.lushop.v1.UserOp/UpdateAddress"
+
+type UserOpHTTPServer interface {
+	AddFavorite(context.Context, *AddFavoriteReq) (*emptypb.Empty, error)
+	CheckFavorite(context.Context, *CheckFavoriteReq) (*CheckFavoriteReply, error)
+	CreateAddress(context.Context, *CreateAddressReq) (*AddressReply, error)
+	CreateMessage(context.Context, *CreateMessageReq) (*MessageReply, error)
+	DeleteAddress(context.Context, *DeleteAddressReq) (*emptypb.Empty, error)
+	DeleteFavorite(context.Context, *DeleteFavoriteReq) (*emptypb.Empty, error)
+	// GetAddressList 地址管理
+	GetAddressList(context.Context, *emptypb.Empty) (*AddressListReply, error)
+	// GetFavoriteList 收藏管理
+	GetFavoriteList(context.Context, *emptypb.Empty) (*FavoriteListReply, error)
+	// GetMessageList 留言管理
+	GetMessageList(context.Context, *GetMessageListReq) (*MessageListReply, error)
+	UpdateAddress(context.Context, *UpdateAddressReq) (*emptypb.Empty, error)
+}
+
+func RegisterUserOpHTTPServer(s *http.Server, srv UserOpHTTPServer) {
+	r := s.Route("/")
+	r.GET("/api/address/list", _UserOp_GetAddressList0_HTTP_Handler(srv))
+	r.POST("/api/address/create", _UserOp_CreateAddress0_HTTP_Handler(srv))
+	r.PUT("/api/address/{id}", _UserOp_UpdateAddress0_HTTP_Handler(srv))
+	r.DELETE("/api/address/{id}", _UserOp_DeleteAddress0_HTTP_Handler(srv))
+	r.GET("/api/message/list", _UserOp_GetMessageList0_HTTP_Handler(srv))
+	r.POST("/api/message/create", _UserOp_CreateMessage0_HTTP_Handler(srv))
+	r.GET("/api/favorite/list", _UserOp_GetFavoriteList0_HTTP_Handler(srv))
+	r.POST("/api/favorite/add", _UserOp_AddFavorite0_HTTP_Handler(srv))
+	r.DELETE("/api/favorite/{goodsId}", _UserOp_DeleteFavorite0_HTTP_Handler(srv))
+	r.GET("/api/favorite/check/{goodsId}", _UserOp_CheckFavorite0_HTTP_Handler(srv))
+}
+
+func _UserOp_GetAddressList0_HTTP_Handler(srv UserOpHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in emptypb.Empty
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserOpGetAddressList)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetAddressList(ctx, req.(*emptypb.Empty))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*AddressListReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _UserOp_CreateAddress0_HTTP_Handler(srv UserOpHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in CreateAddressReq
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserOpCreateAddress)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.CreateAddress(ctx, req.(*CreateAddressReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*AddressReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _UserOp_UpdateAddress0_HTTP_Handler(srv UserOpHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in UpdateAddressReq
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserOpUpdateAddress)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.UpdateAddress(ctx, req.(*UpdateAddressReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _UserOp_DeleteAddress0_HTTP_Handler(srv UserOpHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in DeleteAddressReq
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserOpDeleteAddress)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.DeleteAddress(ctx, req.(*DeleteAddressReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _UserOp_GetMessageList0_HTTP_Handler(srv UserOpHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetMessageListReq
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserOpGetMessageList)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetMessageList(ctx, req.(*GetMessageListReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*MessageListReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _UserOp_CreateMessage0_HTTP_Handler(srv UserOpHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in CreateMessageReq
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserOpCreateMessage)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.CreateMessage(ctx, req.(*CreateMessageReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*MessageReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _UserOp_GetFavoriteList0_HTTP_Handler(srv UserOpHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in emptypb.Empty
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserOpGetFavoriteList)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetFavoriteList(ctx, req.(*emptypb.Empty))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*FavoriteListReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _UserOp_AddFavorite0_HTTP_Handler(srv UserOpHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in AddFavoriteReq
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserOpAddFavorite)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.AddFavorite(ctx, req.(*AddFavoriteReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _UserOp_DeleteFavorite0_HTTP_Handler(srv UserOpHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in DeleteFavoriteReq
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserOpDeleteFavorite)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.DeleteFavorite(ctx, req.(*DeleteFavoriteReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _UserOp_CheckFavorite0_HTTP_Handler(srv UserOpHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in CheckFavoriteReq
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserOpCheckFavorite)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.CheckFavorite(ctx, req.(*CheckFavoriteReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*CheckFavoriteReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+type UserOpHTTPClient interface {
+	AddFavorite(ctx context.Context, req *AddFavoriteReq, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	CheckFavorite(ctx context.Context, req *CheckFavoriteReq, opts ...http.CallOption) (rsp *CheckFavoriteReply, err error)
+	CreateAddress(ctx context.Context, req *CreateAddressReq, opts ...http.CallOption) (rsp *AddressReply, err error)
+	CreateMessage(ctx context.Context, req *CreateMessageReq, opts ...http.CallOption) (rsp *MessageReply, err error)
+	DeleteAddress(ctx context.Context, req *DeleteAddressReq, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	DeleteFavorite(ctx context.Context, req *DeleteFavoriteReq, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	// GetAddressList 地址管理
+	GetAddressList(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *AddressListReply, err error)
+	// GetFavoriteList 收藏管理
+	GetFavoriteList(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *FavoriteListReply, err error)
+	// GetMessageList 留言管理
+	GetMessageList(ctx context.Context, req *GetMessageListReq, opts ...http.CallOption) (rsp *MessageListReply, err error)
+	UpdateAddress(ctx context.Context, req *UpdateAddressReq, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+}
+
+type UserOpHTTPClientImpl struct {
+	cc *http.Client
+}
+
+func NewUserOpHTTPClient(client *http.Client) UserOpHTTPClient {
+	return &UserOpHTTPClientImpl{client}
+}
+
+func (c *UserOpHTTPClientImpl) AddFavorite(ctx context.Context, in *AddFavoriteReq, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/api/favorite/add"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationUserOpAddFavorite))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *UserOpHTTPClientImpl) CheckFavorite(ctx context.Context, in *CheckFavoriteReq, opts ...http.CallOption) (*CheckFavoriteReply, error) {
+	var out CheckFavoriteReply
+	pattern := "/api/favorite/check/{goodsId}"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationUserOpCheckFavorite))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *UserOpHTTPClientImpl) CreateAddress(ctx context.Context, in *CreateAddressReq, opts ...http.CallOption) (*AddressReply, error) {
+	var out AddressReply
+	pattern := "/api/address/create"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationUserOpCreateAddress))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *UserOpHTTPClientImpl) CreateMessage(ctx context.Context, in *CreateMessageReq, opts ...http.CallOption) (*MessageReply, error) {
+	var out MessageReply
+	pattern := "/api/message/create"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationUserOpCreateMessage))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *UserOpHTTPClientImpl) DeleteAddress(ctx context.Context, in *DeleteAddressReq, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/api/address/{id}"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationUserOpDeleteAddress))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *UserOpHTTPClientImpl) DeleteFavorite(ctx context.Context, in *DeleteFavoriteReq, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/api/favorite/{goodsId}"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationUserOpDeleteFavorite))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// GetAddressList 地址管理
+func (c *UserOpHTTPClientImpl) GetAddressList(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*AddressListReply, error) {
+	var out AddressListReply
+	pattern := "/api/address/list"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationUserOpGetAddressList))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// GetFavoriteList 收藏管理
+func (c *UserOpHTTPClientImpl) GetFavoriteList(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*FavoriteListReply, error) {
+	var out FavoriteListReply
+	pattern := "/api/favorite/list"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationUserOpGetFavoriteList))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// GetMessageList 留言管理
+func (c *UserOpHTTPClientImpl) GetMessageList(ctx context.Context, in *GetMessageListReq, opts ...http.CallOption) (*MessageListReply, error) {
+	var out MessageListReply
+	pattern := "/api/message/list"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationUserOpGetMessageList))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *UserOpHTTPClientImpl) UpdateAddress(ctx context.Context, in *UpdateAddressReq, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/api/address/{id}"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationUserOpUpdateAddress))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

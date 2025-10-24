@@ -46,9 +46,12 @@ func (s *InventoryService) Sell(ctx context.Context, req *v1.SellInfo) (*emptypb
 	return &emptypb.Empty{}, nil
 }
 
-// func (s *InventoryService) Reback(ctx context.Context, req *v1.SellInfo) (*emptypb.Empty, error) {
-// 	items := make([]domain.GoodsInvInfo, 0, len(req.GoodsInfo))
-// 	for _, gi := range req.GoodsInfo {
-// 		items = append(items, domain.GoodsInvInfo{GoodsID: gi.GoodsId, Nums: gi.Num})
-// 	}
-// }
+// Reback 库存归还
+// 通过订单号归还库存，支持幂等性
+// 适用场景：订单取消、超时未支付等需要归还库存的场景
+func (s *InventoryService) Reback(ctx context.Context, req *v1.SellInfo) (*emptypb.Empty, error) {
+	if err := s.uc.Reback(ctx, req.OrderSn); err != nil {
+		return nil, err
+	}
+	return &emptypb.Empty{}, nil
+}
