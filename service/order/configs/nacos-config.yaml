@@ -4,6 +4,8 @@ server:
     timeout: 1s
 service:
   name: "lushop.order.service"
+  goods:
+    endpoint: "discovery:///lushop.goods.service"
 data:
   database:
     driver: mysql

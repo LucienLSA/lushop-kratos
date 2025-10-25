@@ -1,0 +1,716 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>biz: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">inventory/internal/biz/inventory.go (100.0%)</option>
+				
+				<option value="file1">inventory/internal/data/base.go (20.0%)</option>
+				
+				<option value="file2">inventory/internal/data/data.go (35.0%)</option>
+				
+				<option value="file3">inventory/internal/data/entity/inventory.go (0.0%)</option>
+				
+				<option value="file4">inventory/internal/data/inventory.go (83.6%)</option>
+				
+				<option value="file5">inventory/internal/data/test_helper.go (100.0%)</option>
+				
+				<option value="file6">inventory/internal/service/consumer.go (0.0%)</option>
+				
+				<option value="file7">inventory/internal/service/inventory.go (100.0%)</option>
+				
+				<option value="file8">inventory/internal/service/service.go (100.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package biz
+
+import (
+        "context"
+        "inventory/internal/domain"
+
+        "github.com/go-kratos/kratos/v2/log"
+)
+
+// InventoryRepo is a Inventory repo.
+type InventoryRepo interface {
+        AddInv(ctx context.Context, inv *domain.Inventory) error
+        GetInvById(ctx context.Context, goodsId int32) (*domain.Inventory, error)
+        Sell(ctx context.Context, sell *domain.SellInfo) error
+        Reback(ctx context.Context, orderSn string) error
+}
+
+// InventoryUsecase is a Inventory usecase.
+type InventoryUsecase struct {
+        repo InventoryRepo
+        log  *log.Helper
+}
+
+// NewInventoryUsecase new a Inventory usecase.
+func NewInventoryUsecase(repo InventoryRepo, logger log.Logger) *InventoryUsecase <span class="cov8" title="1">{
+        return &amp;InventoryUsecase{repo: repo, log: log.NewHelper(logger)}
+}</span>
+
+func (uc *InventoryUsecase) SetInv(ctx context.Context, inv *domain.Inventory) error <span class="cov8" title="1">{
+        return uc.repo.AddInv(ctx, inv)
+}</span>
+
+func (uc *InventoryUsecase) GetInvById(ctx context.Context, goodsId int32) (*domain.Inventory, error) <span class="cov8" title="1">{
+        return uc.repo.GetInvById(ctx, goodsId)
+}</span>
+
+func (uc *InventoryUsecase) Sell(ctx context.Context, sell *domain.SellInfo) error <span class="cov8" title="1">{
+        return uc.repo.Sell(ctx, sell)
+}</span>
+
+// Reback 库存归还
+// 通过订单号归还库存，确保幂等性
+func (uc *InventoryUsecase) Reback(ctx context.Context, orderSn string) error <span class="cov8" title="1">{
+        return uc.repo.Reback(ctx, orderSn)
+}</span>
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package data
+
+import (
+        "database/sql/driver"
+        "encoding/json"
+        "time"
+
+        "gorm.io/gorm"
+)
+
+type GoodsDetail struct {
+        Goods int32
+        Num   int32
+}
+
+type GormDetailList []GoodsDetail
+
+// 实现 sql.Scanner 接口，Scan 将 value 扫描至 Jsonb
+func (g *GormDetailList) Scan(value interface{}) error <span class="cov8" title="1">{
+        return json.Unmarshal(value.([]byte), &amp;g)
+}</span>
+
+// 实现 driver.Valuer 接口，Value 返回 json value
+func (g GormDetailList) Value() (driver.Value, error) <span class="cov8" title="1">{
+        return json.Marshal(g)
+}</span>
+
+type BaseFields struct {
+        ID        int64          `gorm:"primarykey;type:int" json:"id"` // bigint
+        CreatedAt time.Time      `gorm:"column:add_time" json:"created_at"`
+        UpdatedAt time.Time      `gorm:"column:update_time" json:"updated_at"`
+        DeletedAt gorm.DeletedAt `json:"deleted_at"`
+}
+
+// Paginate 分页
+func Paginate(page, pageSize int) func(db *gorm.DB) *gorm.DB <span class="cov0" title="0">{
+        return func(db *gorm.DB) *gorm.DB </span><span class="cov0" title="0">{
+                if page == 0 </span><span class="cov0" title="0">{
+                        page = 1
+                }</span>
+                <span class="cov0" title="0">switch </span>{
+                case pageSize &gt; 100:<span class="cov0" title="0">
+                        pageSize = 100</span>
+                case pageSize &lt;= 0:<span class="cov0" title="0">
+                        pageSize = 10</span>
+                }
+
+                <span class="cov0" title="0">offset := (page - 1) * pageSize
+                return db.Offset(offset).Limit(pageSize)</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package data
+
+import (
+        "context"
+        "inventory/internal/biz"
+        "inventory/internal/conf"
+        slog "log"
+        "os"
+        "time"
+
+        "github.com/go-kratos/kratos/v2/log"
+        "github.com/go-redis/redis/extra/redisotel"
+        "github.com/go-redis/redis/v8"
+        "github.com/google/wire"
+        "gorm.io/driver/mysql"
+        "gorm.io/gorm"
+        "gorm.io/gorm/logger"
+        "gorm.io/gorm/schema"
+)
+
+// ProviderSet is data providers.
+var ProviderSet = wire.NewSet(NewData, NewInventoryRepo, NewDB, NewRedis, NewTransaction)
+
+// Data .
+type Data struct {
+        db  *gorm.DB
+        rdb *redis.Client
+}
+
+// NewData .
+func NewData(c *conf.Data, logger log.Logger, db *gorm.DB, rdb *redis.Client) (*Data, func(), error) <span class="cov0" title="0">{
+        cleanup := func() </span><span class="cov0" title="0">{
+                log.NewHelper(logger).Info("closing the data resources")
+        }</span>
+        <span class="cov0" title="0">return &amp;Data{
+                db:  db,
+                rdb: rdb,
+        }, cleanup, nil</span>
+}
+
+// 用来承载事务的上下文
+type contextTxKey struct{}
+
+// NewTransaction .
+func NewTransaction(d *Data) biz.Transaction <span class="cov0" title="0">{
+        return d
+}</span>
+
+// ExecTx gorm Transaction
+func (d *Data) ExecTx(ctx context.Context, fn func(ctx context.Context) error) error <span class="cov8" title="1">{
+        return d.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error </span><span class="cov8" title="1">{
+                ctx = context.WithValue(ctx, contextTxKey{}, tx)
+                return fn(ctx)
+        }</span>)
+}
+
+// DB 根据此方法来判断当前的 db 是不是使用 事务的 DB
+func (d *Data) DB(ctx context.Context) *gorm.DB <span class="cov8" title="1">{
+        tx, ok := ctx.Value(contextTxKey{}).(*gorm.DB)
+        if ok </span><span class="cov8" title="1">{
+                return tx
+        }</span>
+        <span class="cov8" title="1">return d.db</span>
+}
+
+// NewDB .
+func NewDB(c *conf.Data) *gorm.DB <span class="cov0" title="0">{
+        // 终端打印输入 sql 执行记录
+        newLogger := logger.New(
+                slog.New(os.Stdout, "\r\n", slog.LstdFlags), // io writer
+                logger.Config{
+                        SlowThreshold: time.Second, // 慢查询 SQL 阈值
+                        Colorful:      true,        // 禁用彩色打印
+                        //IgnoreRecordNotFoundError: false,
+                        LogLevel: logger.Info, // Log lever
+                },
+        )
+
+        db, err := gorm.Open(mysql.Open(c.Database.Source), &amp;gorm.Config{
+                Logger:                                   newLogger,
+                DisableForeignKeyConstraintWhenMigrating: true,
+                NamingStrategy: schema.NamingStrategy{
+                        SingularTable: true, // 表名是否加 s
+                },
+        })
+
+        if err != nil </span><span class="cov0" title="0">{
+                log.Errorf("failed opening connection to sqlite: %v", err)
+                panic("failed to connect database")</span>
+        }
+        <span class="cov0" title="0">return db</span>
+}
+
+func NewRedis(c *conf.Data) *redis.Client <span class="cov0" title="0">{
+        rdb := redis.NewClient(&amp;redis.Options{
+                Addr:         c.Redis.Addr,
+                Password:     c.Redis.Password,
+                DB:           int(c.Redis.Db),
+                DialTimeout:  c.Redis.DialTimeout.AsDuration(),
+                WriteTimeout: c.Redis.WriteTimeout.AsDuration(),
+                ReadTimeout:  c.Redis.ReadTimeout.AsDuration(),
+        })
+        rdb.AddHook(redisotel.TracingHook{})
+        return rdb
+}</span>
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package main
+
+import (
+        "inventory/internal/data"
+        "log"
+        "os"
+        "time"
+
+        "gorm.io/driver/mysql"
+        "gorm.io/gorm"
+        "gorm.io/gorm/logger"
+        "gorm.io/gorm/schema"
+)
+
+// 链接数据库
+func main() <span class="cov0" title="0">{
+        dsn := "root:123456@tcp(127.0.0.1:3306)/lushop_inventory?charset=utf8mb4&amp;parseTime=True&amp;loc=Local"
+        newLogger := logger.New(
+                log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
+                logger.Config{
+                        SlowThreshold: time.Second, // 慢 SQL 阈值
+                        LogLevel:      logger.Info, // Log level
+                        Colorful:      true,        // 禁用彩色打印
+                },
+        )
+
+        // 全局模式
+        db, err := gorm.Open(mysql.Open(dsn), &amp;gorm.Config{
+                NamingStrategy: schema.NamingStrategy{
+                        SingularTable: true,
+                },
+                Logger: newLogger,
+        })
+        if err != nil </span><span class="cov0" title="0">{
+                panic(err)</span>
+        }
+        <span class="cov0" title="0">_ = db.AutoMigrate(
+                &amp;data.Inventory{},
+        )</span>
+}
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package data
+
+import (
+        "context"
+        "fmt"
+        "inventory/internal/biz"
+        "inventory/internal/domain"
+        "sort"
+        "time"
+
+        "github.com/go-kratos/kratos/v2/errors"
+        "github.com/go-kratos/kratos/v2/log"
+        "github.com/go-redsync/redsync/v4"
+        "github.com/go-redsync/redsync/v4/redis/goredis/v8"
+        "gorm.io/gorm"
+)
+
+type Inventory struct {
+        BaseFields
+        Goods   int32 `gorm:"type:int;index;comment:商品id"`
+        Stocks  int32 `gorm:"type:int;comment:仓库"`
+        Version int32 `gorm:"type:int;comment:分布式锁-乐观锁"` // 分布式锁的乐观锁
+}
+type InventoryNew struct {
+        BaseFields
+        Goods   int32 `gorm:"type:int;index"`
+        Stocks  int32 `gorm:"type:int"`
+        Version int32 `gorm:"type:int"` //分布式锁的乐观锁
+        Freeze  int32 `gorm:"type:int"` //冻结库存
+}
+
+type Delivery struct {
+        Goods   int32  `gorm:"type:int;index"`
+        Nums    int32  `gorm:"type:int"`
+        OrderSn string `gorm:"type:varchar(200)"`
+        Status  string `gorm:"type:varchar(200)"` // 1.代表等待支付，2.代表支付成功，3.支付失败
+}
+
+type StockSellDetail struct {
+        BaseFields
+        OrderSn string         `gorm:"type:varchar(200);index:idx_order_sn,unique;comment:订单编号"`
+        Status  int32          `gorm:"type:varchar(200);comment:1.已扣减,2.已归还"` // 1.代表已扣减，2.代表已归还，3.失败
+        Detail  GormDetailList `gorm:"type:varchar(200);comment:详细商品"`
+}
+
+func (StockSellDetail) TableName() string <span class="cov8" title="1">{
+        return "stockselldetail"
+}</span>
+
+type inventoryRepo struct {
+        data *Data
+        log  *log.Helper
+}
+
+// NewInventoryRepo .
+func NewInventoryRepo(data *Data, logger log.Logger) biz.InventoryRepo <span class="cov8" title="1">{
+        return &amp;inventoryRepo{
+                data: data,
+                log:  log.NewHelper(logger),
+        }
+}</span>
+func (p *Inventory) ToDomain() *domain.Inventory <span class="cov8" title="1">{
+        return &amp;domain.Inventory{
+                Goods:  int32(p.Goods),
+                Stocks: int32(p.Stocks),
+        }
+}</span>
+func (r *inventoryRepo) GetInvById(ctx context.Context, goodsId int32) (*domain.Inventory, error) <span class="cov8" title="1">{
+        var inv Inventory
+        err := r.data.DB(ctx).Where(&amp;Inventory{Goods: goodsId}).First(&amp;inv).Error
+        if err != nil </span><span class="cov8" title="1">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">return inv.ToDomain(), nil</span>
+}
+
+func (r *inventoryRepo) AddInv(ctx context.Context, inv *domain.Inventory) error <span class="cov8" title="1">{
+        db := r.data.DB(ctx)
+        var m Inventory
+        // try to find existing inventory by goods id
+        res := db.Where("goods = ?", inv.Goods).First(&amp;m)
+        if res.Error != nil </span><span class="cov8" title="1">{
+                if res.Error == gorm.ErrRecordNotFound </span><span class="cov8" title="1">{
+                        // create new record
+                        m = Inventory{
+                                Goods:  inv.Goods,
+                                Stocks: inv.Stocks,
+                        }
+                        if err := db.Create(&amp;m).Error; err != nil </span><span class="cov0" title="0">{
+                                return errors.InternalServer("ADD_INV_ERROR", err.Error())
+                        }</span>
+                        <span class="cov8" title="1">return nil</span>
+                }
+                <span class="cov0" title="0">return errors.InternalServer("GET_INV_ERROR", res.Error.Error())</span>
+        }
+        // update existing stocks
+        <span class="cov8" title="1">m.Stocks = inv.Stocks
+        if err := db.Save(&amp;m).Error; err != nil </span><span class="cov0" title="0">{
+                return errors.InternalServer("UPDATE_INV_ERROR", err.Error())
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+
+func (r *inventoryRepo) Sell(ctx context.Context, sell *domain.SellInfo) error <span class="cov8" title="1">{
+        // initialize redsync with existing redis client
+        pool := goredis.NewPool(r.data.rdb)
+        rs := redsync.New(pool)
+
+        return r.data.ExecTx(ctx, func(ctx context.Context) error </span><span class="cov8" title="1">{
+                db := r.data.DB(ctx)
+                // sort by GoodsID to avoid potential lock order deadlocks
+                items := make([]domain.GoodsInvInfo, len(sell.GoodsInvInfo))
+                copy(items, sell.GoodsInvInfo)
+                sort.Slice(items, func(i, j int) bool </span><span class="cov8" title="1">{ return items[i].GoodsID &lt; items[j].GoodsID }</span>)
+
+                // deduct stock with guarded updates to prevent oversell, lock per item sequentially
+                <span class="cov8" title="1">details := make(GormDetailList, 0, len(items))
+                for _, gi := range items </span><span class="cov8" title="1">{
+                        m := rs.NewMutex(
+                                fmt.Sprintf("goods_%d", gi.GoodsID),
+                                redsync.WithExpiry(5*time.Second),
+                                redsync.WithTries(3),
+                                redsync.WithRetryDelay(100*time.Millisecond),
+                        )
+                        if err := m.Lock(); err != nil </span><span class="cov0" title="0">{
+                                return errors.InternalServer("LOCK_ERROR", "failed to acquire distributed lock")
+                        }</span>
+                        <span class="cov8" title="1">res := db.Model(&amp;Inventory{}).
+                                Where("goods = ? AND stocks &gt;= ?", gi.GoodsID, gi.Nums).
+                                Update("stocks", gorm.Expr("stocks - ?", gi.Nums))
+                        if res.Error != nil </span><span class="cov0" title="0">{
+                                _, _ = m.Unlock()
+                                return errors.InternalServer("DEDUCT_INV_ERROR", res.Error.Error())
+                        }</span>
+                        <span class="cov8" title="1">if res.RowsAffected == 0 </span><span class="cov8" title="1">{
+                                _, _ = m.Unlock()
+                                return errors.BadRequest("STOCK_NOT_ENOUGH", "not enough stock or goods not found")
+                        }</span>
+                        <span class="cov8" title="1">details = append(details, GoodsDetail{Goods: gi.GoodsID, Num: gi.Nums})
+                        _, _ = m.Unlock()</span>
+                }
+                <span class="cov8" title="1">rec := StockSellDetail{OrderSn: sell.OrderSn, Status: 1, Detail: details}
+                if err := db.Create(&amp;rec).Error; err != nil </span><span class="cov0" title="0">{
+                        return errors.InternalServer("SAVE_SELL_DETAIL_ERROR", err.Error())
+                }</span>
+                <span class="cov8" title="1">return nil</span>
+        })
+}
+
+// Reback 库存归还
+// 通过订单号归还库存，确保幂等性
+// 1. 查询扣减明细表，只处理 Status=1（已扣减未归还）的订单
+// 2. 逐个归还库存
+// 3. 更新扣减明细状态为 2（已归还）
+// 4. 所有操作在事务中执行，保证原子性
+func (r *inventoryRepo) Reback(ctx context.Context, orderSn string) error <span class="cov8" title="1">{
+        return r.data.ExecTx(ctx, func(ctx context.Context) error </span><span class="cov8" title="1">{
+                db := r.data.DB(ctx)
+                
+                // 查询扣减明细，只处理 Status=1 的订单
+                var sellDetail StockSellDetail
+                result := db.Where("order_sn = ? AND status = 1", orderSn).First(&amp;sellDetail)
+                if result.Error != nil </span><span class="cov8" title="1">{
+                        if result.Error == gorm.ErrRecordNotFound </span><span class="cov8" title="1">{
+                                // 订单不存在或已归还，幂等处理
+                                r.log.Infof("订单 %s 无需归还库存（不存在或已归还）", orderSn)
+                                return nil
+                        }</span>
+                        <span class="cov0" title="0">return errors.InternalServer("QUERY_SELL_DETAIL_ERROR", result.Error.Error())</span>
+                }
+                
+                // 批量归还库存
+                <span class="cov8" title="1">for _, item := range sellDetail.Detail </span><span class="cov8" title="1">{
+                        res := db.Model(&amp;Inventory{}).
+                                Where("goods = ?", item.Goods).
+                                Update("stocks", gorm.Expr("stocks + ?", item.Num))
+                        if res.Error != nil </span><span class="cov0" title="0">{
+                                return errors.InternalServer("REBACK_INV_ERROR", res.Error.Error())
+                        }</span>
+                        <span class="cov8" title="1">if res.RowsAffected == 0 </span><span class="cov0" title="0">{
+                                return errors.NotFound("GOODS_NOT_FOUND", fmt.Sprintf("商品 %d 不存在", item.Goods))
+                        }</span>
+                }
+                
+                // 更新扣减明细状态为 2（已归还）
+                <span class="cov8" title="1">if err := db.Model(&amp;sellDetail).Update("status", 2).Error; err != nil </span><span class="cov0" title="0">{
+                        return errors.InternalServer("UPDATE_SELL_DETAIL_ERROR", err.Error())
+                }</span>
+                
+                <span class="cov8" title="1">r.log.Infof("订单 %s 库存归还成功", orderSn)
+                return nil</span>
+        })
+}
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">package data
+
+import (
+        "github.com/go-redis/redis/v8"
+        "gorm.io/gorm"
+)
+
+// NewTestData 创建用于测试的 Data 实例
+// 这个函数仅用于测试，允许直接设置 db 和 rdb
+func NewTestData(db *gorm.DB, rdb *redis.Client) *Data <span class="cov8" title="1">{
+        return &amp;Data{
+                db:  db,
+                rdb: rdb,
+        }
+}</span>
+</pre>
+		
+		<pre class="file" id="file6" style="display: none">package service
+
+import (
+        "context"
+        "inventory/internal/biz"
+        "inventory/internal/domain"
+        "inventory/internal/pkg/rocketmq"
+
+        "github.com/go-kratos/kratos/v2/log"
+)
+
+// InventoryConsumerService 库存消费服务
+type InventoryConsumerService struct {
+        uc  *biz.InventoryUsecase
+        log *log.Helper
+}
+
+// NewInventoryConsumerService 创建库存消费服务
+func NewInventoryConsumerService(uc *biz.InventoryUsecase, logger log.Logger) *InventoryConsumerService <span class="cov0" title="0">{
+        return &amp;InventoryConsumerService{
+                uc:  uc,
+                log: log.NewHelper(logger),
+        }
+}</span>
+
+// HandleInventoryMessage 处理库存扣减消息
+func (s *InventoryConsumerService) HandleInventoryMessage(ctx context.Context, msg *rocketmq.OrderInventoryMessage) error <span class="cov0" title="0">{
+        s.log.Infof("handling inventory message: orderSn=%s, userId=%d, goods_count=%d",
+                msg.OrderSn, msg.UserID, len(msg.GoodsInfo))
+
+        // 转换消息为领域模型
+        items := make([]domain.GoodsInvInfo, 0, len(msg.GoodsInfo))
+        for _, gi := range msg.GoodsInfo </span><span class="cov0" title="0">{
+                items = append(items, domain.GoodsInvInfo{
+                        GoodsID: gi.GoodsID,
+                        Nums:    gi.Nums,
+                })
+        }</span>
+
+        <span class="cov0" title="0">sellInfo := &amp;domain.SellInfo{
+                GoodsInvInfo: items,
+                OrderSn:      msg.OrderSn,
+        }
+
+        // 调用业务层扣减库存
+        if err := s.uc.Sell(ctx, sellInfo); err != nil </span><span class="cov0" title="0">{
+                s.log.Errorf("failed to sell inventory: orderSn=%s, error=%v", msg.OrderSn, err)
+                return err
+        }</span>
+
+        <span class="cov0" title="0">s.log.Infof("inventory sold successfully: orderSn=%s", msg.OrderSn)
+        return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file7" style="display: none">package service
+
+import (
+        "context"
+        v1 "inventory/api/inventory/v1"
+        "inventory/internal/domain"
+
+        "google.golang.org/protobuf/types/known/emptypb"
+)
+
+func (s *InventoryService) SetInv(ctx context.Context, req *v1.GoodsInvInfo) (*emptypb.Empty, error) <span class="cov8" title="1">{
+        goodsInv := &amp;domain.Inventory{
+                Goods:  req.GoodsId,
+                Stocks: req.Num,
+        }
+        err := s.uc.SetInv(ctx, goodsInv)
+        if err != nil </span><span class="cov8" title="1">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">return &amp;emptypb.Empty{}, nil</span>
+}
+
+func (s *InventoryService) InvDetail(ctx context.Context, req *v1.GoodsInvInfo) (*v1.GoodsInvInfo, error) <span class="cov8" title="1">{
+        inv, err := s.uc.GetInvById(ctx, req.GoodsId)
+        if err != nil </span><span class="cov8" title="1">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">return &amp;v1.GoodsInvInfo{
+                GoodsId: inv.Goods,
+                Num:     inv.Stocks,
+        }, nil</span>
+}
+
+func (s *InventoryService) Sell(ctx context.Context, req *v1.SellInfo) (*emptypb.Empty, error) <span class="cov8" title="1">{
+        items := make([]domain.GoodsInvInfo, 0, len(req.GoodsInfo))
+        for _, gi := range req.GoodsInfo </span><span class="cov8" title="1">{
+                items = append(items, domain.GoodsInvInfo{GoodsID: gi.GoodsId, Nums: gi.Num})
+        }</span>
+        <span class="cov8" title="1">sell := &amp;domain.SellInfo{
+                GoodsInvInfo: items,
+                OrderSn:      req.OrderSn,
+        }
+        if err := s.uc.Sell(ctx, sell); err != nil </span><span class="cov8" title="1">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">return &amp;emptypb.Empty{}, nil</span>
+}
+
+// Reback 库存归还
+// 通过订单号归还库存，支持幂等性
+// 适用场景：订单取消、超时未支付等需要归还库存的场景
+func (s *InventoryService) Reback(ctx context.Context, req *v1.SellInfo) (*emptypb.Empty, error) <span class="cov8" title="1">{
+        if err := s.uc.Reback(ctx, req.OrderSn); err != nil </span><span class="cov8" title="1">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">return &amp;emptypb.Empty{}, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file8" style="display: none">package service
+
+import (
+        v1 "inventory/api/inventory/v1"
+        "inventory/internal/biz"
+
+        "github.com/google/wire"
+)
+
+// ProviderSet is service providers.
+var ProviderSet = wire.NewSet(NewInventoryService)
+
+// InventoryService is a inventory service.
+type InventoryService struct {
+        v1.UnimplementedInventoryServer
+        uc *biz.InventoryUsecase
+}
+
+// NewInventoryService new a inventory service.
+func NewInventoryService(uc *biz.InventoryUsecase) *InventoryService <span class="cov8" title="1">{
+        return &amp;InventoryService{uc: uc}
+}</span>
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

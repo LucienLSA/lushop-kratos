@@ -192,12 +192,21 @@ func (loader *NacosConfigLoader) LoadConfigWithNacosPriority(bc *conf.Bootstrap,
 	return loader.CreateLocalConfig(flagconf)
 }
 
+var cfg struct {
+	Registry *conf.Registry `json:"registry" yaml:"registry"`
+}
+
 // LoadRegistryConfig 加载注册中心配置
-// 这里引入consul
 func (loader *NacosConfigLoader) LoadRegistryConfig(c config.Config) (*conf.Registry, error) {
-	var rc conf.Registry
-	if err := c.Scan(&rc); err != nil {
+	if err := c.Scan(&cfg); err != nil {
 		return nil, err
 	}
-	return &rc, nil
+
+	// 如果没有配置 registry，返回空配置（允许服务不注册）
+	if cfg.Registry == nil {
+		loader.logger.Log(log.LevelWarn, "msg", "No registry config found in configuration")
+		return &conf.Registry{}, nil
+	}
+
+	return cfg.Registry, nil
 }

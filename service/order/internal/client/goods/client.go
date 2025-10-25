@@ -27,6 +27,14 @@ type client struct {
 func NewGoodsServiceClient(c *conf.Service, r *conf.Registry, logger log.Logger) (biz.GoodsService, error) {
 	l := log.NewHelper(logger)
 
+	// 检查配置
+	if r == nil || r.Consul == nil {
+		return nil, fmt.Errorf("registry config is required for goods service client")
+	}
+	if c == nil || c.Goods == nil {
+		return nil, fmt.Errorf("goods service config is required")
+	}
+
 	// 创建 Consul 注册中心客户端
 	consulConfig := consulAPI.DefaultConfig()
 	consulConfig.Address = r.Consul.Address

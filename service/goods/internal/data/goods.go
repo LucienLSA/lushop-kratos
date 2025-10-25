@@ -12,10 +12,10 @@ import (
 // Goods 商品表
 type Goods struct {
 	BaseFields
-	CategoryID      int32 `gorm:"type:int;not null;comment:'商品分类ID'"`
-	Category        Category
-	BrandsID        int32 `gorm:"type:int;not null"`
-	Brand           Brand
+	CategoryID      int32    `gorm:"type:int;not null;comment:'商品分类ID'"`
+	Category        Category `gorm:"foreignKey:CategoryID;references:ID"`
+	BrandsID        int32    `gorm:"type:int;not null"`
+	Brand           Brand    `gorm:"foreignKey:BrandsID;references:ID"`
 	OnSale          bool     `gorm:"default:false;not null;comment:'是否特价'"`
 	GoodsSn         string   `gorm:"type:varchar(50);not null;comment:'商品编号'"`
 	Name            string   `gorm:"type:varchar(100);not null;comment:'商品名称'"`
@@ -55,6 +55,7 @@ func (p *Goods) ToDomain() *domain.Goods {
 		Name:            p.Name,
 		GoodsSn:         p.GoodsSn,
 		MarketPrice:     p.MarketPrice,
+		ShopPrice:       p.ShopPrice,
 		GoodsBrief:      p.GoodsBrief,
 		GoodsFrontImage: p.GoodsFrontImage,
 		GoodsImages:     p.Images,
@@ -73,16 +74,19 @@ func (g GoodsRepo) CreateGoods(c context.Context, goods *domain.Goods) (*domain.
 		Name:            goods.Name,
 		GoodsSn:         goods.GoodsSn,
 		MarketPrice:     goods.MarketPrice,
+		ShopPrice:       goods.ShopPrice,
 		GoodsBrief:      goods.GoodsBrief,
 		GoodsFrontImage: goods.GoodsFrontImage,
 		Images:          goods.GoodsImages,
+		DescImages:      goods.DescImages,
 		OnSale:          goods.OnSale,
 		ShipFree:        goods.ShipFree,
 		IsNew:           goods.IsNew,
 		IsHot:           goods.IsHot,
 	}
 
-	result := g.data.DB(c).Save(product)
+	// 使用 Create 而不是 Save，并且忽略关联字段
+	result := g.data.DB(c).Omit("Category", "Brand").Create(product)
 	if result.Error != nil {
 		return nil, errors.InternalServer("GOODS_CREATE_ERROR", "商品创建失败")
 	}
@@ -110,23 +114,35 @@ func (g GoodsRepo) GoodsByID(c context.Context, id int64) (*domain.Goods, error)
 }
 
 func (g GoodsRepo) UpdateGoods(c context.Context, d *domain.Goods) error {
-	updates := map[string]interface{}{
-		"category_id":       d.CategoryID,
-		"brands_id":         d.BrandsID,
-		"name":              d.Name,
-		"goods_sn":          d.GoodsSn,
-		"market_price":      d.MarketPrice,
-		"shop_price":        d.ShopPrice,
-		"goods_brief":       d.GoodsBrief,
-		"ship_free":         d.ShipFree,
-		"images":            d.GoodsImages,
-		"desc_images":       d.DescImages,
-		"goods_front_image": d.GoodsFrontImage,
-		"is_new":            d.IsNew,
-		"is_hot":            d.IsHot,
-		"on_sale":           d.OnSale,
+	// 先检查商品是否存在
+	var exists Goods
+	if err := g.data.DB(c).Where("id = ?", d.ID).First(&exists).Error; err != nil {
+		return errors.NotFound("GOODS_NOT_FOUND", "商品不存在")
 	}
-	if err := g.data.DB(c).Model(&Goods{}).Where("id = ?", d.ID).Updates(updates).Error; err != nil {
+
+	// 构建更新的商品对象
+	goods := Goods{
+		BaseFields: BaseFields{
+			ID: d.ID,
+		},
+		CategoryID:      d.CategoryID,
+		BrandsID:        d.BrandsID,
+		Name:            d.Name,
+		GoodsSn:         d.GoodsSn,
+		MarketPrice:     d.MarketPrice,
+		ShopPrice:       d.ShopPrice,
+		GoodsBrief:      d.GoodsBrief,
+		ShipFree:        d.ShipFree,
+		Images:          d.GoodsImages,
+		DescImages:      d.DescImages,
+		GoodsFrontImage: d.GoodsFrontImage,
+		IsNew:           d.IsNew,
+		IsHot:           d.IsHot,
+		OnSale:          d.OnSale,
+	}
+	
+	// 使用 Save 更新所有字段（包括零值），忽略关联字段和创建时间
+	if err := g.data.DB(c).Omit("Category", "Brand", "add_time", "CreatedAt").Save(&goods).Error; err != nil {
 		return errors.InternalServer("GOODS_UPDATE_ERROR", "商品更新失败")
 	}
 	return nil

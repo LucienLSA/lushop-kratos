@@ -16,7 +16,7 @@ data:
     write_timeout: 0.2s
 
 auth:
-  jwt_key: "lushop-secret-key-2024"
+  jwt_key: "lCBOKwLE5w9JHriyihpaKKXiQGnqztgA/lmDYtfExC1BwYDdarpdW0hsVHGf0m9x"
 
 sms:
   api_key: "Ali_ApiKey"

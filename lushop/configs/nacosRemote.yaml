@@ -23,7 +23,7 @@ data:
 trace:
   endpoint: http://127.0.0.1:14268/api/traces
 auth:
-  jwt_key: "lushop-secret-key-2024"
+  jwt_key: "lCBOKwLE5w9JHriyihpaKKXiQGnqztgA/lmDYtfExC1BwYDdarpdW0hsVHGf0m9x"
 service:
   user:
     endpoint: discovery:///lushop.user.service

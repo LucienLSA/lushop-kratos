@@ -1,0 +1,634 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>biz: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">userauth/internal/biz/auth.go (41.2%)</option>
+				
+				<option value="file1">userauth/internal/data/auth.go (93.3%)</option>
+				
+				<option value="file2">userauth/internal/data/data.go (40.0%)</option>
+				
+				<option value="file3">userauth/internal/service/userauth.go (62.5%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package biz
+
+import (
+        "context"
+        "fmt"
+        "time"
+
+        v1 "userauth/api/userauth/v1"
+        "userauth/internal/conf"
+        "userauth/internal/pkg/auth"
+        "userauth/internal/pkg/captcha"
+        "userauth/internal/pkg/sms"
+
+        "github.com/go-kratos/kratos/v2/log"
+        jwt5 "github.com/golang-jwt/jwt/v5"
+)
+
+type AuthRepo interface {
+        // 验证码
+        StoreCaptcha(ctx context.Context, captchaId, ans string, expiration time.Duration) error
+        GetCaptcha(ctx context.Context, captchaId string) (string, error)
+
+        // 短信
+        StoreSmsCode(ctx context.Context, mobile, code string, expiration time.Duration) error
+        GetSmsCode(ctx context.Context, mobile string) (string, error)
+        SetSmsCooldown(ctx context.Context, mobile string, expiration time.Duration) error
+        CheckSmsCooldown(ctx context.Context, mobile string) (bool, error)
+
+        // Token
+        StoreAccessToken(ctx context.Context, userId int64, token string, expiration time.Duration) error
+        StoreRefreshToken(ctx context.Context, userId int64, token string, expiration time.Duration) error
+        GetRefreshToken(ctx context.Context, userId int64) (string, error)
+        DeleteTokens(ctx context.Context, userId int64) error
+
+        // 黑名单
+        AddToBlacklist(ctx context.Context, userId int64, ttl time.Duration) error
+        CheckBlacklist(ctx context.Context, userId int64) (bool, error)
+}
+
+type AuthUsecase struct {
+        repo     AuthRepo
+        authConf *conf.Auth
+        smsConf  *conf.Sms
+        log      *log.Helper
+}
+
+func NewAuthUsecase(repo AuthRepo, authConf *conf.Auth, smsConf *conf.Sms, logger log.Logger) *AuthUsecase <span class="cov8" title="1">{
+        return &amp;AuthUsecase{
+                repo:     repo,
+                authConf: authConf,
+                smsConf:  smsConf,
+                log:      log.NewHelper(log.With(logger, "module", "biz/auth")),
+        }
+}</span>
+
+// GetCaptcha 生成图形验证码
+func (uc *AuthUsecase) GetCaptcha(ctx context.Context) (*v1.CaptchaReply, error) <span class="cov0" title="0">{
+        captchaInfo, err := captcha.GetCaptcha(ctx)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        // 存储验证码（5分钟过期）
+        <span class="cov0" title="0">err = uc.repo.StoreCaptcha(ctx, captchaInfo.CaptchaId, captchaInfo.Ans, 5*time.Minute)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov0" title="0">return &amp;v1.CaptchaReply{
+                CaptchaId: captchaInfo.CaptchaId,
+                PicPath:   captchaInfo.PicPath,
+        }, nil</span>
+}
+
+// VerifyCaptcha 校验图形验证码
+func (uc *AuthUsecase) VerifyCaptcha(ctx context.Context, captchaId, captcha string) (bool, error) <span class="cov8" title="1">{
+        storedAns, err := uc.repo.GetCaptcha(ctx, captchaId)
+        if err != nil || storedAns == "" </span><span class="cov8" title="1">{
+                return false, nil
+        }</span>
+        <span class="cov8" title="1">return storedAns == captcha, nil</span>
+}
+
+// SendSms 发送短信验证码
+func (uc *AuthUsecase) SendSms(ctx context.Context, mobile string) (bool, error) <span class="cov0" title="0">{
+        // 检查冷却
+        cooling, err := uc.repo.CheckSmsCooldown(ctx, mobile)
+        if err != nil </span><span class="cov0" title="0">{
+                return false, err
+        }</span>
+        <span class="cov0" title="0">if cooling </span><span class="cov0" title="0">{
+                uc.log.Infof("手机号 %s 处于冷却期，跳过发送", mobile)
+                return true, nil // 冷却中，直接返回成功
+        }</span>
+
+        // 生成验证码
+        <span class="cov0" title="0">code := sms.GenerateSmsCode(6)
+        uc.log.Infof("为手机号 %s 生成验证码: %s", mobile, code)
+
+        // 发送短信（集成阿里云）
+        err = sms.SendSms(uc.smsConf, mobile, code)
+        if err != nil </span><span class="cov0" title="0">{
+                uc.log.Errorf("发送短信失败: %v", err)
+                return false, err
+        }</span>
+
+        // 存储验证码（5分钟过期）
+        <span class="cov0" title="0">err = uc.repo.StoreSmsCode(ctx, mobile, code, 5*time.Minute)
+        if err != nil </span><span class="cov0" title="0">{
+                return false, err
+        }</span>
+
+        // 设置冷却（60秒）
+        <span class="cov0" title="0">err = uc.repo.SetSmsCooldown(ctx, mobile, 60*time.Second)
+        if err != nil </span><span class="cov0" title="0">{
+                return false, err
+        }</span>
+
+        <span class="cov0" title="0">return true, nil</span>
+}
+
+// VerifySms 校验短信验证码
+func (uc *AuthUsecase) VerifySms(ctx context.Context, mobile, smsCode string) (bool, error) <span class="cov8" title="1">{
+        storedCode, err := uc.repo.GetSmsCode(ctx, mobile)
+        if err != nil || storedCode == "" </span><span class="cov8" title="1">{
+                return false, nil
+        }</span>
+        <span class="cov8" title="1">return storedCode == smsCode, nil</span>
+}
+
+// IssueToken 签发 Token
+func (uc *AuthUsecase) IssueToken(ctx context.Context, userId int64, nickName string, role int32) (*v1.TokenReply, error) <span class="cov8" title="1">{
+        now := time.Now()
+
+        // 生成 Access Token（30分钟）
+        accessExpiry := now.Add(30 * time.Minute)
+        accessToken, err := auth.CreateToken(auth.CustomClaims{
+                ID:          userId,
+                NickName:    nickName,
+                AuthorityId: int(role),
+                RegisteredClaims: jwt5.RegisteredClaims{
+                        NotBefore: jwt5.NewNumericDate(now),
+                        ExpiresAt: jwt5.NewNumericDate(accessExpiry),
+                        Issuer:    "userauth-service",
+                },
+        }, uc.authConf.JwtKey)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        // 生成 Refresh Token（7天）
+        <span class="cov8" title="1">refreshExpiry := now.Add(7 * 24 * time.Hour)
+        refreshToken, err := auth.CreateToken(auth.CustomClaims{
+                ID: userId,
+                RegisteredClaims: jwt5.RegisteredClaims{
+                        NotBefore: jwt5.NewNumericDate(now),
+                        ExpiresAt: jwt5.NewNumericDate(refreshExpiry),
+                        Issuer:    "userauth-service",
+                },
+        }, uc.authConf.JwtKey)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        // 存储到 Redis
+        <span class="cov8" title="1">err = uc.repo.StoreAccessToken(ctx, userId, accessToken, 30*time.Minute)
+        if err != nil </span><span class="cov8" title="1">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">err = uc.repo.StoreRefreshToken(ctx, userId, refreshToken, 7*24*time.Hour)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="1">uc.log.Infof("为用户 %d (%s) 签发 Token 成功", userId, nickName)
+
+        return &amp;v1.TokenReply{
+                AccessToken:  accessToken,
+                RefreshToken: refreshToken,
+                ExpiredAt:    accessExpiry.Unix(),
+        }, nil</span>
+}
+
+// RefreshToken 刷新 Token
+func (uc *AuthUsecase) RefreshToken(ctx context.Context, refreshToken string) (*v1.TokenReply, error) <span class="cov0" title="0">{
+        // 解析 Refresh Token
+        token, err := jwt5.ParseWithClaims(refreshToken, &amp;auth.CustomClaims{}, func(token *jwt5.Token) (interface{}, error) </span><span class="cov0" title="0">{
+                return []byte(uc.authConf.JwtKey), nil
+        }</span>)
+        <span class="cov0" title="0">if err != nil || !token.Valid </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("invalid refresh token")
+        }</span>
+
+        <span class="cov0" title="0">claims, ok := token.Claims.(*auth.CustomClaims)
+        if !ok </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("invalid claims")
+        }</span>
+
+        // 验证 Refresh Token 是否存在于 Redis
+        <span class="cov0" title="0">storedToken, err := uc.repo.GetRefreshToken(ctx, claims.ID)
+        if err != nil || storedToken != refreshToken </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("refresh token not found or mismatch")
+        }</span>
+
+        // 签发新的 Access Token（保持 Refresh Token 不变）
+        <span class="cov0" title="0">now := time.Now()
+        accessExpiry := now.Add(30 * time.Minute)
+        newAccessToken, err := auth.CreateToken(auth.CustomClaims{
+                ID:          claims.ID,
+                NickName:    claims.NickName,
+                AuthorityId: claims.AuthorityId,
+                RegisteredClaims: jwt5.RegisteredClaims{
+                        NotBefore: jwt5.NewNumericDate(now),
+                        ExpiresAt: jwt5.NewNumericDate(accessExpiry),
+                        Issuer:    "userauth-service",
+                },
+        }, uc.authConf.JwtKey)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        // 更新 Redis 中的 Access Token
+        <span class="cov0" title="0">err = uc.repo.StoreAccessToken(ctx, claims.ID, newAccessToken, 30*time.Minute)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov0" title="0">uc.log.Infof("为用户 %d 刷新 Token 成功", claims.ID)
+
+        return &amp;v1.TokenReply{
+                AccessToken:  newAccessToken,
+                RefreshToken: refreshToken,
+                ExpiredAt:    accessExpiry.Unix(),
+        }, nil</span>
+}
+
+// RevokeToken 撤销 Token（登出）
+func (uc *AuthUsecase) RevokeToken(ctx context.Context, userId int64) error <span class="cov8" title="1">{
+        // 删除 Redis 中的 Token
+        err := uc.repo.DeleteTokens(ctx, userId)
+        if err != nil </span><span class="cov0" title="0">{
+                uc.log.Errorf("删除用户 %d 的 Token 失败: %v", userId, err)
+        }</span>
+
+        // 加入黑名单（30分钟，与 Access Token 过期时间一致）
+        <span class="cov8" title="1">err = uc.repo.AddToBlacklist(ctx, userId, 30*time.Minute)
+        if err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+
+        <span class="cov8" title="1">uc.log.Infof("用户 %d 登出成功，已加入黑名单", userId)
+        return nil</span>
+}
+
+// CheckBlacklist 检查黑名单
+func (uc *AuthUsecase) CheckBlacklist(ctx context.Context, userId int64) (bool, error) <span class="cov8" title="1">{
+        return uc.repo.CheckBlacklist(ctx, userId)
+}</span>
+
+// AddToBlacklist 添加到黑名单
+func (uc *AuthUsecase) AddToBlacklist(ctx context.Context, userId int64, ttl int64) error <span class="cov8" title="1">{
+        duration := 30 * time.Minute // 默认 TTL
+        if ttl &gt; 0 </span><span class="cov8" title="1">{
+                duration = time.Duration(ttl) * time.Second
+        }</span>
+        <span class="cov8" title="1">return uc.repo.AddToBlacklist(ctx, userId, duration)</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package data
+
+import (
+        "context"
+        "fmt"
+        "time"
+
+        "userauth/internal/biz"
+
+        "github.com/go-kratos/kratos/v2/log"
+        "github.com/go-redis/redis/v8"
+)
+
+type authRepo struct {
+        data *Data
+        log  *log.Helper
+}
+
+func NewAuthRepo(data *Data, logger log.Logger) biz.AuthRepo <span class="cov8" title="1">{
+        return &amp;authRepo{
+                data: data,
+                log:  log.NewHelper(log.With(logger, "module", "repo/auth")),
+        }
+}</span>
+
+// 验证码
+func (r *authRepo) StoreCaptcha(ctx context.Context, captchaId, ans string, expiration time.Duration) error <span class="cov8" title="1">{
+        key := fmt.Sprintf("captcha:%s", captchaId)
+        return r.data.rdb.Set(ctx, key, ans, expiration).Err()
+}</span>
+
+func (r *authRepo) GetCaptcha(ctx context.Context, captchaId string) (string, error) <span class="cov8" title="1">{
+        key := fmt.Sprintf("captcha:%s", captchaId)
+        val, err := r.data.rdb.Get(ctx, key).Result()
+        if err == redis.Nil </span><span class="cov8" title="1">{
+                return "", nil
+        }</span>
+        <span class="cov8" title="1">return val, err</span>
+}
+
+// 短信
+func (r *authRepo) StoreSmsCode(ctx context.Context, mobile, code string, expiration time.Duration) error <span class="cov8" title="1">{
+        key := fmt.Sprintf("sms_code:%s", mobile)
+        return r.data.rdb.Set(ctx, key, code, expiration).Err()
+}</span>
+
+func (r *authRepo) GetSmsCode(ctx context.Context, mobile string) (string, error) <span class="cov8" title="1">{
+        key := fmt.Sprintf("sms_code:%s", mobile)
+        val, err := r.data.rdb.Get(ctx, key).Result()
+        if err == redis.Nil </span><span class="cov0" title="0">{
+                return "", nil
+        }</span>
+        <span class="cov8" title="1">return val, err</span>
+}
+
+func (r *authRepo) SetSmsCooldown(ctx context.Context, mobile string, expiration time.Duration) error <span class="cov8" title="1">{
+        key := fmt.Sprintf("sms_cooldown:%s", mobile)
+        return r.data.rdb.Set(ctx, key, "1", expiration).Err()
+}</span>
+
+func (r *authRepo) CheckSmsCooldown(ctx context.Context, mobile string) (bool, error) <span class="cov8" title="1">{
+        key := fmt.Sprintf("sms_cooldown:%s", mobile)
+        exists, err := r.data.rdb.Exists(ctx, key).Result()
+        if err != nil </span><span class="cov0" title="0">{
+                return false, err
+        }</span>
+        <span class="cov8" title="1">return exists &gt; 0, nil</span>
+}
+
+// Token
+func (r *authRepo) StoreAccessToken(ctx context.Context, userId int64, token string, expiration time.Duration) error <span class="cov8" title="1">{
+        key := fmt.Sprintf("user_access_token:%d", userId)
+        return r.data.rdb.Set(ctx, key, token, expiration).Err()
+}</span>
+
+func (r *authRepo) StoreRefreshToken(ctx context.Context, userId int64, token string, expiration time.Duration) error <span class="cov8" title="1">{
+        key := fmt.Sprintf("user_refresh_token:%d", userId)
+        return r.data.rdb.Set(ctx, key, token, expiration).Err()
+}</span>
+
+func (r *authRepo) GetRefreshToken(ctx context.Context, userId int64) (string, error) <span class="cov8" title="1">{
+        key := fmt.Sprintf("user_refresh_token:%d", userId)
+        val, err := r.data.rdb.Get(ctx, key).Result()
+        if err == redis.Nil </span><span class="cov8" title="1">{
+                return "", fmt.Errorf("refresh token not found")
+        }</span>
+        <span class="cov8" title="1">return val, err</span>
+}
+
+func (r *authRepo) DeleteTokens(ctx context.Context, userId int64) error <span class="cov8" title="1">{
+        accessKey := fmt.Sprintf("user_access_token:%d", userId)
+        refreshKey := fmt.Sprintf("user_refresh_token:%d", userId)
+        pipe := r.data.rdb.Pipeline()
+        pipe.Del(ctx, accessKey)
+        pipe.Del(ctx, refreshKey)
+        _, err := pipe.Exec(ctx)
+        return err
+}</span>
+
+// 黑名单
+func (r *authRepo) AddToBlacklist(ctx context.Context, userId int64, ttl time.Duration) error <span class="cov8" title="1">{
+        key := fmt.Sprintf("user_blacklist:%d", userId)
+        return r.data.rdb.Set(ctx, key, "1", ttl).Err()
+}</span>
+
+func (r *authRepo) CheckBlacklist(ctx context.Context, userId int64) (bool, error) <span class="cov8" title="1">{
+        key := fmt.Sprintf("user_blacklist:%d", userId)
+        exists, err := r.data.rdb.Exists(ctx, key).Result()
+        if err != nil </span><span class="cov0" title="0">{
+                return false, err
+        }</span>
+        <span class="cov8" title="1">return exists &gt; 0, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package data
+
+import (
+        "context"
+        "time"
+
+        "userauth/internal/conf"
+
+        "github.com/go-kratos/kratos/v2/log"
+        "github.com/go-redis/redis/extra/redisotel"
+        "github.com/go-redis/redis/v8"
+        "github.com/google/wire"
+)
+
+// ProviderSet is data providers.
+var ProviderSet = wire.NewSet(NewData, NewRedis, NewAuthRepo)
+
+// Data .
+type Data struct {
+        log *log.Helper
+        rdb *redis.Client
+}
+
+// NewData .
+func NewData(rdb *redis.Client, logger log.Logger) (*Data, func(), error) <span class="cov8" title="1">{
+        l := log.NewHelper(log.With(logger, "module", "data"))
+        cleanup := func() </span><span class="cov8" title="1">{
+                l.Info("closing the data resources")
+                if err := rdb.Close(); err != nil </span><span class="cov8" title="1">{
+                        l.Errorf("failed to close redis: %v", err)
+                }</span>
+        }
+        <span class="cov8" title="1">return &amp;Data{
+                log: l,
+                rdb: rdb,
+        }, cleanup, nil</span>
+}
+
+// NewRedis 创建 Redis 客户端
+func NewRedis(conf *conf.Data, logger log.Logger) *redis.Client <span class="cov0" title="0">{
+        l := log.NewHelper(log.With(logger, "module", "data/redis"))
+
+        rdb := redis.NewClient(&amp;redis.Options{
+                Addr:         conf.Redis.Addr,
+                Password:     conf.Redis.Password,
+                DB:           int(conf.Redis.Db),
+                DialTimeout:  conf.Redis.DialTimeout.AsDuration(),
+                ReadTimeout:  conf.Redis.ReadTimeout.AsDuration(),
+                WriteTimeout: conf.Redis.WriteTimeout.AsDuration(),
+        })
+
+        // 启用 OpenTelemetry 追踪
+        rdb.AddHook(redisotel.TracingHook{})
+
+        // 测试连接
+        ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+        defer cancel()
+
+        if err := rdb.Ping(ctx).Err(); err != nil </span><span class="cov0" title="0">{
+                l.Fatalf("failed to connect redis: %v", err)
+        }</span>
+
+        <span class="cov0" title="0">l.Info("redis connected successfully")
+        return rdb</span>
+}
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package service
+
+import (
+        "context"
+
+        v1 "userauth/api/userauth/v1"
+        "userauth/internal/biz"
+
+        "google.golang.org/protobuf/types/known/emptypb"
+)
+
+type UserAuthService struct {
+        v1.UnimplementedUserAuthServer
+
+        uc *biz.AuthUsecase
+}
+
+func NewUserAuthService(uc *biz.AuthUsecase) *UserAuthService <span class="cov8" title="1">{
+        return &amp;UserAuthService{uc: uc}
+}</span>
+
+func (s *UserAuthService) GetCaptcha(ctx context.Context, req *emptypb.Empty) (*v1.CaptchaReply, error) <span class="cov0" title="0">{
+        return s.uc.GetCaptcha(ctx)
+}</span>
+
+func (s *UserAuthService) VerifyCaptcha(ctx context.Context, req *v1.VerifyCaptchaReq) (*v1.VerifyCaptchaReply, error) <span class="cov8" title="1">{
+        success, err := s.uc.VerifyCaptcha(ctx, req.CaptchaId, req.Captcha)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">return &amp;v1.VerifyCaptchaReply{Success: success}, nil</span>
+}
+
+func (s *UserAuthService) SendSms(ctx context.Context, req *v1.SendSmsReq) (*v1.SendSmsReply, error) <span class="cov0" title="0">{
+        success, err := s.uc.SendSms(ctx, req.Mobile)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov0" title="0">return &amp;v1.SendSmsReply{Success: success}, nil</span>
+}
+
+func (s *UserAuthService) VerifySms(ctx context.Context, req *v1.VerifySmsReq) (*v1.VerifySmsReply, error) <span class="cov8" title="1">{
+        success, err := s.uc.VerifySms(ctx, req.Mobile, req.SmsCode)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">return &amp;v1.VerifySmsReply{Success: success}, nil</span>
+}
+
+func (s *UserAuthService) IssueToken(ctx context.Context, req *v1.IssueTokenReq) (*v1.TokenReply, error) <span class="cov8" title="1">{
+        return s.uc.IssueToken(ctx, req.UserId, req.NickName, req.Role)
+}</span>
+
+func (s *UserAuthService) RefreshToken(ctx context.Context, req *v1.RefreshTokenReq) (*v1.TokenReply, error) <span class="cov0" title="0">{
+        return s.uc.RefreshToken(ctx, req.RefreshToken)
+}</span>
+
+func (s *UserAuthService) RevokeToken(ctx context.Context, req *v1.RevokeTokenReq) (*emptypb.Empty, error) <span class="cov8" title="1">{
+        err := s.uc.RevokeToken(ctx, req.UserId)
+        return &amp;emptypb.Empty{}, err
+}</span>
+
+func (s *UserAuthService) AddToBlacklist(ctx context.Context, req *v1.AddToBlacklistReq) (*emptypb.Empty, error) <span class="cov8" title="1">{
+        err := s.uc.AddToBlacklist(ctx, req.UserId, req.TtlSeconds)
+        return &amp;emptypb.Empty{}, err
+}</span>
+
+func (s *UserAuthService) CheckBlacklist(ctx context.Context, req *v1.CheckBlacklistReq) (*v1.CheckBlacklistReply, error) <span class="cov8" title="1">{
+        isBlacklisted, err := s.uc.CheckBlacklist(ctx, req.UserId)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">return &amp;v1.CheckBlacklistReply{IsBlacklisted: isBlacklisted}, nil</span>
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

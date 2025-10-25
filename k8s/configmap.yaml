@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: lushop-config
+  namespace: lushop
+data:
+  MYSQL_HOST: "mysql-service"
+  MYSQL_PORT: "3306"
+  MYSQL_DATABASE: "lushop"
+  REDIS_HOST: "redis-service"
+  REDIS_PORT: "6379"
+  CONSUL_HOST: "consul-service"
+  CONSUL_PORT: "8500"
+  JAEGER_ENDPOINT: "http://jaeger-service:14268/api/traces"
+  ROCKETMQ_NAMESRV: "rocketmq-namesrv-service:9876"
+  TZ: "Asia/Shanghai"

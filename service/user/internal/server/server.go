@@ -19,7 +19,16 @@ var ProviderSet = wire.NewSet(NewGRPCServer, NewRegistrar)
 
 // NewRegistrar 引入 consul
 func NewRegistrar(conf *conf.Registry) registry.Registrar {
+	// 调试日志
+	log.Infof("🔍 Registry config received: conf=%v", conf != nil)
+	if conf != nil {
+		log.Infof("🔍 Consul config: %+v", conf.Consul)
+	} else {
+		log.Warnf("⚠️  Registry config is nil! Service will NOT register to Consul")
+	}
+	
 	if os.Getenv("REGISTRY_DISABLED") == "true" || conf == nil || conf.Consul == nil || conf.Consul.Address == "" {
+		log.Warnf("❌ Service registration DISABLED - using noOpRegistrar")
 		return noOpRegistrar{}
 	}
 
@@ -33,6 +42,7 @@ func NewRegistrar(conf *conf.Registry) registry.Registrar {
 		return noOpRegistrar{}
 	}
 	r := consul.New(cli, consul.WithHealthCheck(false))
+	log.Infof("✅ Consul registrar initialized successfully! Address: %s", conf.Consul.Address)
 	return r
 }
 

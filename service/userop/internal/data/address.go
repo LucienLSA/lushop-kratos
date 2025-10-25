@@ -18,27 +18,30 @@ const (
 
 type LeavingMessages struct {
 	BaseFields
-	User        int32  `gorm:"type:int;index;comment:用户ID"`
-	MessageType int32  `gorm:"type:int;comment:留言类型: 1(留言),2(投诉),3(询问),4(售后),5(求购)"`
-	Subject     string `gorm:"type:varchar(100);comment:主题"`
-
-	Message string `gorm:"comment:详细信息"`
-	File    string `gorm:"type:varchar(200);comment:附件url"`
+	User        int32  `gorm:"column:user_id;type:int;index;comment:用户ID"`
+	MessageType int32  `gorm:"column:message_type;type:int;comment:留言类型: 1(留言),2(投诉),3(询问),4(售后),5(求购)"`
+	Subject     string `gorm:"column:subject;type:varchar(100);comment:主题"`
+	Message     string `gorm:"column:message;comment:详细信息"`
+	File        string `gorm:"column:file;type:varchar(200);comment:附件url"`
 }
 
 func (LeavingMessages) TableName() string {
-	return "leavingmessages"
+	return "leaving_messages"
 }
 
 type Address struct {
 	BaseFields
-	User         int32  `gorm:"type:int;index;comment:用户id"`
-	Province     string `gorm:"type:varchar(10);comment:省"`
-	City         string `gorm:"type:varchar(10);comment:市"`
-	District     string `gorm:"type:varchar(20);comment:区域"`
-	Address      string `gorm:"type:varchar(100);comment:详细地址"`
-	SignerName   string `gorm:"type:varchar(20);comment:收货人名称"`
-	SignerMobile string `gorm:"type:varchar(11);comment:收货人手机号"`
+	User         int32  `gorm:"column:user_id;type:int;index;comment:用户id"`
+	Province     string `gorm:"column:province;type:varchar(10);comment:省"`
+	City         string `gorm:"column:city;type:varchar(10);comment:市"`
+	District     string `gorm:"column:district;type:varchar(20);comment:区域"`
+	Address      string `gorm:"column:address;type:varchar(100);comment:详细地址"`
+	SignerName   string `gorm:"column:signer_name;type:varchar(20);comment:收货人名称"`
+	SignerMobile string `gorm:"column:signer_mobile;type:varchar(11);comment:收货人手机号"`
+}
+
+func (Address) TableName() string {
+	return "addresses"
 }
 
 type addressRepo struct {
@@ -129,7 +132,7 @@ func (f *addressRepo) GetMessageList(ctx context.Context, filter domain.Message)
 		db = db.Where("id = ?", filter.ID)
 	}
 	if filter.UserID != 0 {
-		db = db.Where("user = ?", filter.UserID)
+		db = db.Where("user_id = ?", filter.UserID)
 	}
 	if filter.MessageType != 0 {
 		db = db.Where("message_type = ?", filter.MessageType)
