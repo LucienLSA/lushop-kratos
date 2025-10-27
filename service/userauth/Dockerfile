@@ -1,5 +1,5 @@
 # Build stage
-FROM golang:1.23-alpine AS builder
+FROM golang:1.25-alpine AS builder
 
 # 设置工作目录
 WORKDIR /src
@@ -8,7 +8,7 @@ WORKDIR /src
 COPY go.mod go.sum ./
 
 # 下载依赖
-RUN go mod download
+RUN GOPROXY=https://goproxy.cn go mod download
 
 # 复制源代码
 COPY . .

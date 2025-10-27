@@ -75,6 +75,9 @@ func (d *Data) DB(ctx context.Context) *gorm.DB {
 
 // NewDB .
 func NewDB(c *conf.Data) *gorm.DB {
+	if c == nil || c.Database == nil {
+		panic("database configuration is nil")
+	}
 	// 终端打印输入 sql 执行记录
 	newLogger := logger.New(
 		slog.New(os.Stdout, "\r\n", slog.LstdFlags), // io writer
@@ -118,10 +121,16 @@ func NewRedis(c *conf.Data) *redis.Client {
 }
 
 func NewElasticsearch(c *conf.Data) *elastic.Client {
+	if c == nil || c.Elastic == nil || c.Elastic.Addr == "" {
+		return nil
+	}
+
 	es, err := elastic.NewClient(elastic.SetURL(c.Elastic.Addr), elastic.SetSniff(false),
 		elastic.SetTraceLog(slog.New(os.Stdout, "lushop", slog.LstdFlags)))
 	if err != nil {
-		panic(err)
+		// 日志记录但不 panic，允许没有 ES
+		log.Warnf("Elasticsearch connection failed, continuing without it: %v", err)
+		return nil
 	}
 	return es
 }

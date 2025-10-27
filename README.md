@@ -505,6 +505,20 @@ func wireApp(server *conf.Server, data *conf.Data, logger log.Logger) (*kratos.A
 | Proto 定义 | 13+ 个 | ✅ 100% |
 | Wire 生成 | 7 个 | ✅ 100% |
 
+### 测试统计
+| 服务 | 测试文件 | 测试用例 | 覆盖率 | 状态 |
+|------|----------|----------|--------|------|
+| **Inventory** | 3 个 | 45+ | 70%+ | ✅ 100% |
+| **Order** | 3 个 | 57+ | 61%+ | ✅ 100% |
+| **User** | - | - | - | 🔄 进行中 |
+| **Goods** | - | - | - | 🔄 进行中 |
+| **UserOp** | - | - | - | 🔄 进行中 |
+| **UserAuth** | - | - | - | 🔄 进行中 |
+
+**测试脚本**: 
+- ✅ Inventory: `./run_tests.sh` (自动化测试)
+- ✅ Order: `./run_tests.sh` (自动化测试)
+
 ---
 
 核心功能完成度
@@ -711,6 +725,17 @@ GET    /metrics                    ✅
 - 事务回查机制
 - 降级方案
 
+### 7. ✅ 完整的测试体系
+- **单元测试**: Data/Biz/Service 三层测试
+- **集成测试**: 使用 sqlmock 模拟数据库
+- **并发测试**: 验证高并发场景
+- **自动化脚本**: 一键运行所有测试
+- **覆盖率报告**: 自动生成 HTML 报告
+
+**已完成服务**:
+- ✅ **Inventory 服务**: 45+ 测试用例，70%+ 覆盖率
+- ✅ **Order 服务**: 57+ 测试用例，61%+ 覆盖率
+
 ---
 
 ## 🚀 快速开始
@@ -783,6 +808,21 @@ curl http://localhost:8001/api/goods/list
 - **Consul UI**: http://localhost:8500
 - **Nacos UI**: http://localhost:8848/nacos (nacos/nacos)
 - **Jaeger UI**: http://localhost:16686
+
+### 7. 运行测试（可选）
+
+```bash
+# Inventory 服务测试
+cd service/inventory
+./run_tests.sh
+
+# Order 服务测试
+cd service/order
+./run_tests.sh
+
+# 查看覆盖率报告
+open coverage.html
+```
 
 ---
 

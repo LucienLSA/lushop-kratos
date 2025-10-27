@@ -24,6 +24,7 @@ import (
 
 // wireApp init kratos application.
 func wireApp(confServer *conf.Server, confData *conf.Data, registry *conf.Registry, logger log.Logger) (*kratos.App, func(), error) {
+	httpServer := server.NewHTTPServer(confServer, logger)
 	db := data.NewDB(confData)
 	client := data.NewRedis(confData)
 	elasticClient := data.NewElasticsearch(confData)
@@ -47,7 +48,7 @@ func wireApp(confServer *conf.Server, confData *conf.Data, registry *conf.Regist
 	goodsService := service.NewGoodsService(brandUsecase, categoryUsecase, goodsUsecase, esGoodsUsecase, categoryBrandUsecase, bannerUsecase, logger)
 	grpcServer := server.NewGRPCServer(confServer, goodsService, logger)
 	registrar := server.NewRegistrar(registry)
-	app := newApp(logger, grpcServer, registrar)
+	app := newApp(logger, httpServer, grpcServer, registrar)
 	return app, func() {
 		cleanup()
 	}, nil

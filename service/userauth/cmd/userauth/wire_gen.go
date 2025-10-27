@@ -24,6 +24,7 @@ import (
 
 // wireApp init kratos application.
 func wireApp(confServer *conf.Server, confData *conf.Data, auth *conf.Auth, sms *conf.Sms, registry *conf.Registry, logger log.Logger) (*kratos.App, func(), error) {
+	httpServer := server.NewHTTPServer(confServer, logger)
 	client := data.NewRedis(confData, logger)
 	dataData, cleanup, err := data.NewData(client, logger)
 	if err != nil {
@@ -34,7 +35,7 @@ func wireApp(confServer *conf.Server, confData *conf.Data, auth *conf.Auth, sms 
 	userAuthService := service.NewUserAuthService(authUsecase)
 	grpcServer := server.NewGRPCServer(confServer, userAuthService, logger)
 	registrar := server.NewRegistrar(registry, logger)
-	app := newApp(logger, grpcServer, registrar)
+	app := newApp(logger, httpServer, grpcServer, registrar)
 	return app, func() {
 		cleanup()
 	}, nil

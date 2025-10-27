@@ -25,6 +25,7 @@ import (
 
 // wireApp init kratos application.
 func wireApp(confServer *conf.Server, confData *conf.Data, registry *conf.Registry, confService *conf.Service, bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(), error) {
+	httpServer := server.NewHTTPServer(confServer, logger)
 	db := data.NewDB(confData)
 	client := data.NewRedis(confData)
 	producer := data.NewRocketMQProducer(bootstrap, logger)
@@ -41,7 +42,7 @@ func wireApp(confServer *conf.Server, confData *conf.Data, registry *conf.Regist
 	orderService := service.NewOrderService(orderUsecase, logger)
 	grpcServer := server.NewGRPCServer(confServer, orderService, logger)
 	registrar := server.NewRegistrar(registry)
-	app := newApp(logger, grpcServer, registrar)
+	app := newApp(logger, httpServer, grpcServer, registrar)
 	return app, func() {
 		cleanup()
 	}, nil

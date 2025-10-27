@@ -356,28 +356,98 @@ func (r *orderRepo) GetOrderDetail(ctx context.Context, req *v1.OrderRequest) (*
 }
 
 // UpdateOrderStatus 更新订单状态
+// 如果是取消订单（TRADE_CLOSED）且订单未支付，会自动归还库存
 func (r *orderRepo) UpdateOrderStatus(ctx context.Context, req *v1.OrderStatus) (*emptypb.Empty, error) {
-	var order OrderInfo
+	// 使用事务保证数据一致性
+	return &emptypb.Empty{}, r.data.ExecTx(ctx, func(ctx context.Context) error {
+		db := r.data.DB(ctx)
+		var order OrderInfo
 
-	// 查询订单
-	if err := r.data.DB(ctx).Where("order_sn = ?", req.OrderSn).First(&order).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
-			r.log.Errorf("order not found: order_sn=%s", req.OrderSn)
-			return nil, errors.NotFound("ORDER_NOT_FOUND", "order not found")
+		// 1. 查询订单
+		if err := db.Where("order_sn = ?", req.OrderSn).First(&order).Error; err != nil {
+			if err == gorm.ErrRecordNotFound {
+				r.log.Errorf("order not found: order_sn=%s", req.OrderSn)
+				return errors.NotFound("ORDER_NOT_FOUND", "order not found")
+			}
+			r.log.Errorf("failed to get order: %v", err)
+			return err
 		}
-		r.log.Errorf("failed to get order: %v", err)
-		return nil, err
-	}
 
-	// 更新订单状态
-	order.Status = req.Status
-	if err := r.data.DB(ctx).Save(&order).Error; err != nil {
-		r.log.Errorf("failed to update order status: %v", err)
-		return nil, err
-	}
+		// 2. 记录原始状态
+		oldStatus := order.Status
+		r.log.Infof("updating order status: order_sn=%s, old_status=%s, new_status=%s", 
+			req.OrderSn, oldStatus, req.Status)
 
-	r.log.Infof("order status updated: order_sn=%s, status=%s", req.OrderSn, req.Status)
-	return &emptypb.Empty{}, nil
+		// 3. 状态转换验证
+		if err := r.validateStatusTransition(oldStatus, req.Status); err != nil {
+			r.log.Errorf("invalid status transition: order_sn=%s, from=%s, to=%s, error=%v",
+				req.OrderSn, oldStatus, req.Status, err)
+			return err
+		}
+
+		// 4. 如果是取消订单（TRADE_CLOSED）且订单未支付，需要归还库存
+		if req.Status == "TRADE_CLOSED" && 
+		   (oldStatus == "WAIT_BUYER_PAY" || oldStatus == "PAYING") {
+			
+			r.log.Infof("用户取消未支付订单，准备归还库存: order_sn=%s", req.OrderSn)
+			
+			// 发送归还库存消息到 MQ
+			if r.data.producer != nil {
+				type RebackMessage struct {
+					OrderSn string `json:"order_sn"`
+				}
+				msg := RebackMessage{OrderSn: req.OrderSn}
+				
+				if err := r.data.producer.SendMessage(ctx, req.OrderSn, msg); err != nil {
+					r.log.Errorf("发送归还库存消息失败: order_sn=%s, error=%v", req.OrderSn, err)
+					return errors.InternalServer("SEND_REBACK_MESSAGE_ERROR", err.Error())
+				}
+				
+				r.log.Infof("✅ 用户取消订单，已发送归还库存消息: order_sn=%s", req.OrderSn)
+			} else {
+				r.log.Warnf("⚠️  RocketMQ producer is nil, 无法发送归还库存消息: order_sn=%s", req.OrderSn)
+			}
+		}
+
+		// 5. 更新订单状态
+		order.Status = req.Status
+		if err := db.Save(&order).Error; err != nil {
+			r.log.Errorf("failed to update order status: %v", err)
+			return err
+		}
+
+		r.log.Infof("✅ order status updated successfully: order_sn=%s, old_status=%s, new_status=%s", 
+			req.OrderSn, oldStatus, req.Status)
+		return nil
+	})
+}
+
+// validateStatusTransition 验证订单状态转换是否合法
+func (r *orderRepo) validateStatusTransition(currentStatus, newStatus string) error {
+	// 定义允许的状态转换规则
+	allowedTransitions := map[string][]string{
+		"WAIT_BUYER_PAY": {"PAYING", "TRADE_CLOSED"},           // 待支付 → 支付中/关闭
+		"PAYING":         {"TRADE_SUCCESS", "TRADE_CLOSED"},    // 支付中 → 成功/关闭
+		"TRADE_SUCCESS":  {"TRADE_FINISHED"},                   // 成功 → 完成
+		"TRADE_CLOSED":   {},                                   // 关闭 → 无法转换
+		"TRADE_FINISHED": {},                                   // 完成 → 无法转换
+	}
+	
+	// 检查当前状态是否存在
+	allowed, ok := allowedTransitions[currentStatus]
+	if !ok {
+		return errors.BadRequest("INVALID_STATUS", "invalid current status: "+currentStatus)
+	}
+	
+	// 检查是否允许转换到新状态
+	for _, s := range allowed {
+		if s == newStatus {
+			return nil
+		}
+	}
+	
+	return errors.BadRequest("INVALID_TRANSITION", 
+		"cannot transition from "+currentStatus+" to "+newStatus)
 }
 
 // HandleOrderTimeout 处理订单超时

@@ -81,6 +81,9 @@ func (d *Data) DB(ctx context.Context) *gorm.DB {
 
 // NewDB .
 func NewDB(c *conf.Data) *gorm.DB {
+	if c == nil || c.Database == nil {
+		panic("database configuration is nil")
+	}
 	// 终端打印输入 sql 执行记录
 	newLogger := logger.New(
 		slog.New(os.Stdout, "\r\n", slog.LstdFlags), // io writer
@@ -142,4 +145,3 @@ func NewRocketMQProducer(c *conf.Bootstrap, logger log.Logger) *rocketmq.Produce
 	log.NewHelper(logger).Info("RocketMQ producer created successfully")
 	return producer
 }
-
