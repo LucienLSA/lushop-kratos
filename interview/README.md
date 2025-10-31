@@ -2,7 +2,7 @@
 
 ## 📚 目录
 
-本目录包含 8 个核心面试问题的详细回答，每个问题都有独立的文档。
+本目录包含 9 个核心面试问题的详细回答，每个问题都有独立的文档。
 
 ### 问题列表
 
@@ -175,8 +175,9 @@
 ## 🔗 相关文档
 
 - [项目 README](../README.md) - 项目整体介绍
-- [面试指南](../INTERVIEW_GUIDE.md) - 面试速查手册
-- [Goroutine 排查指南](../GOROUTINE_TROUBLESHOOTING.md) - Go 并发问题排查
+- [面试指南](../docs/INTERVIEW_GUIDE.md) - 面试速查手册
+- [Docker 部署指南](../docs/DOCKER_DEPLOY.md) - 完整部署文档
+- [项目结构说明](../docs/PROJECT_STRUCTURE.md) - 项目目录结构
 
 ## 📞 反馈与建议
 

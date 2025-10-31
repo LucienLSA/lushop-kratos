@@ -1,6 +1,6 @@
 module userop
 
-go 1.25.0
+go 1.25.1
 
 require (
 	github.com/go-kratos/kratos/contrib/config/nacos/v2 v2.0.0-20251015020953-cdff24709025

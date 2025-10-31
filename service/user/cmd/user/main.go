@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"os"
-
 	"user/internal/conf/metrix"
 	nacosconfig "user/internal/conf/nacos"
 
@@ -29,12 +28,13 @@ var (
 	Version = "user.v1"
 	// flagconf is the config flag.
 	flagconf string
-
-	id, _ = os.Hostname()
+	mode     string // 新增配置加载模式
+	id, _    = os.Hostname()
 )
 
 func init() {
 	flag.StringVar(&flagconf, "conf", "../../configs", "config path, eg: -conf config.yaml")
+	flag.StringVar(&mode, "mode", "auto", "config mode: nacos | local | auto (default auto fallbacks to nacos->local)")
 }
 
 func newApp(logger log.Logger, hs *http.Server, gs *grpc.Server, rr registry.Registrar) *kratos.App {
@@ -85,28 +85,15 @@ func main() {
 		"trace.id", tracing.TraceID(),
 		"span.id", tracing.SpanID(),
 	)
-
-	// 创建配置加载器
 	configLoader := nacosconfig.NewNacosConfigLoader(logger)
-	// 首先加载本地配置获取 Nacos 连接信息
-	localConfig, err := configLoader.CreateLocalConfig(flagconf)
-	if err != nil {
-		panic(err)
-	}
-	defer localConfig.Close()
-	// 获取初始配置
-	bc, err := configLoader.LoadBootstrapConfig(localConfig)
-	if err != nil {
-		panic(err)
-	}
-	// 使用 Nacos 优先的配置加载策略
-	c, err := configLoader.LoadConfigWithNacosPriority(bc, flagconf)
+
+	// 单一逻辑: 始终优先读取本地配置
+	c, err := configLoader.CreateLocalConfig(flagconf)
 	if err != nil {
 		panic(err)
 	}
 	defer c.Close()
-	// 重新加载配置（可能来自 Nacos）
-	bc, err = configLoader.LoadBootstrapConfig(c)
+	bc, err := configLoader.LoadBootstrapConfig(c)
 	if err != nil {
 		panic(err)
 	}
@@ -129,16 +116,9 @@ func main() {
 		panic(err)
 	}
 	defer cleanup()
-	// servicename, err := nacos.GetConfig().Value("service.name").String()
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// log.Debugf("servicename:%s", servicename)
 	// 初始化 Prometheus metrics
 	metrix.Init()
 	logger.Log(log.LevelInfo, "msg", "Prometheus metrics initialized")
-
-	// start and wait for stop signal
 	if err := app.Run(); err != nil {
 		panic(err)
 	}

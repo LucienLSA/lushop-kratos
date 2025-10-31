@@ -40,6 +40,24 @@ func NewData(rdb *redis.Client, logger log.Logger) (*Data, func(), error) {
 func NewRedis(conf *conf.Data, logger log.Logger) *redis.Client {
 	l := log.NewHelper(log.With(logger, "module", "data/redis"))
 
+	// 检查配置是否存在
+	if conf == nil {
+		l.Fatalf("data configuration is nil")
+	}
+	if conf.Redis == nil {
+		l.Fatalf("redis configuration is nil")
+	}
+
+	// 输出实际配置值用于调试
+	l.Infof("Redis配置 - Addr: %s, Password: %s, DB: %d", conf.Redis.Addr, conf.Redis.Password, conf.Redis.Db)
+
+	// 检查 Addr 是否为空或使用了错误的地址
+	if conf.Redis.Addr == "" {
+		l.Fatalf("redis address is empty")
+	}
+	if conf.Redis.Addr == "127.0.0.1:6379" || conf.Redis.Addr == "localhost:6379" {
+		l.Fatalf("redis address is using localhost/127.0.0.1: %s, this is incorrect for Docker environment", conf.Redis.Addr)
+	}
 	rdb := redis.NewClient(&redis.Options{
 		Addr:         conf.Redis.Addr,
 		Password:     conf.Redis.Password,

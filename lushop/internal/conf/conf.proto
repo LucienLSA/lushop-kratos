@@ -22,11 +22,19 @@ message Server {
     string network = 1;
     string addr = 2;
     google.protobuf.Duration timeout = 3;
+    RateLimit rate_limit = 4; // 限流配置
   }
   message GRPC {
     string network = 1;
     string addr = 2;
     google.protobuf.Duration timeout = 3;
+  }
+  message RateLimit {
+    bool enabled = 1;              // 是否启用限流
+    int32 cpu_threshold = 2;       // CPU阈值（0-1000）
+    int32 window_seconds = 3;      // 滑动窗口大小（秒）
+    int32 bucket = 4;              // 桶数量
+    repeated string whitelist = 5; // 白名单端点（不限流）
   }
   HTTP http = 1;
   GRPC grpc = 2;

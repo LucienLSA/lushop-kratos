@@ -1,6 +1,6 @@
 module userauth
 
-go 1.25
+go 1.25.1
 
 require (
 	github.com/alibabacloud-go/darabonba-openapi/v2 v2.1.13

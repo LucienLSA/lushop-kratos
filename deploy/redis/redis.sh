@@ -1,0 +1,1 @@
+docker run --restart=always -p 6379:6379 --name redis -v /home/zzx/GoProject/data/redis/redis.conf:/etc/redis/redis.conf -d redis:7.2.0 redis-server /etc/redis/redis.conf

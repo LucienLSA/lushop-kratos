@@ -1,42 +1,6 @@
-# 使用本地配置
-# nacos:
-#   addr: 127.0.0.1
-#   port: 8848
-#   namespace_id: de9c6a0e-1fbc-425d-8d3b-09066fea6889
-#   data_id: user.yaml
-#   group_id: lushop_grpc
-
-server:
-  http:
-    addr: 0.0.0.0:8000
-    timeout: 30s
-  grpc:
-    addr: 0.0.0.0:50051
-    timeout: 1s
-
-service:
-  name: "lushop.user.service"
-
-data:
-  database:
-    driver: mysql
-    source: root:root123456@tcp(127.0.0.1:3306)/lushop_user?charset=utf8mb4&parseTime=True&loc=Local
-  redis:
-    addr: 127.0.0.1:6379
-    password: "123456"
-    db: 0
-    dial_timeout: 5s
-    read_timeout: 3s
-    write_timeout: 3s
-
-trace:
-  endpoint: http://127.0.0.1:14268/api/traces
-
-auth:
-  jwt_key: "lushop-jwt-secret-key-2024"
-
-registry:
-  consul:
-    address: 127.0.0.1:8500
-    scheme: http
-
+nacos:
+  addr: 127.0.0.1
+  port: 8848
+  namespaceId: de9c6a0e-1fbc-425d-8d3b-09066fea6889
+  dataId: user.yaml
+  groupId: lushop_grpc

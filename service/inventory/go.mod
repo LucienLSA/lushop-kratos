@@ -1,6 +1,6 @@
 module inventory
 
-go 1.25.0
+go 1.25.1
 
 require (
 	github.com/apache/rocketmq-client-go/v2 v2.1.2

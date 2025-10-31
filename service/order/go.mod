@@ -1,6 +1,6 @@
 module order
 
-go 1.25
+go 1.25.1
 
 replace goods => ../goods
 

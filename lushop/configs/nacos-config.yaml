@@ -1,12 +1,23 @@
-name: lushop.api
-id: "1"
-version: "1.0"
-environment: "dev"
+# name: lushop.api
+# id: "1"
+# version: "1.0"
+# environment: "dev"
 
 server:
   http:
     addr: 0.0.0.0:8001
     timeout: 1s
+    rate_limit:  # 限流配置
+      enabled: true  # 是否启用限流
+      cpu_threshold: 800  # CPU阈值（0-1000），当CPU超过80%时触发限流
+      window_seconds: 10  # 滑动窗口大小（秒）
+      bucket: 100  # 桶数量
+      whitelist:  # 白名单（不限流的端点）
+        - "/lushop.lushop.v1.User/Captcha"  # 验证码接口
+        - "/lushop.lushop.v1.User/Login"   # 登录接口
+        - "/lushop.lushop.v1.User/Register"  # 注册接口
+        - "/lushop.lushop.v1.Goods/GetGoodsList"  # 商品列表
+        - "/lushop.lushop.v1.Goods/GetGoodsDetail"  # 商品详情
   grpc:
     addr: 0.0.0.0:9001
     timeout: 1s

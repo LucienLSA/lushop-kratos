@@ -749,11 +749,17 @@ GET    /metrics                    ✅
 ### 1. 启动基础设施
 
 ```bash
-# 启动所有依赖服务
-docker-compose up -d
+# 使用分离式部署（推荐）
+cd /home/zzx/GoProject/lushop-kratos-main
 
-# 验证服务状态
-docker-compose ps
+# 一键部署所有服务
+./deploy.sh
+# 或
+./deploy/scripts/deploy-all.sh
+
+# 或分步部署
+./deploy/scripts/deploy-infrastructure.sh  # 基础设施
+./deploy/scripts/deploy-services.sh        # 应用服务
 ```
 
 包含服务：
