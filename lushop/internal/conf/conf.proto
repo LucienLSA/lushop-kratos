@@ -30,11 +30,30 @@ message Server {
     google.protobuf.Duration timeout = 3;
   }
   message RateLimit {
-    bool enabled = 1;              // 是否启用限流
-    int32 cpu_threshold = 2;       // CPU阈值（0-1000）
-    int32 window_seconds = 3;      // 滑动窗口大小（秒）
-    int32 bucket = 4;              // 桶数量
-    repeated string whitelist = 5; // 白名单端点（不限流）
+    bool enabled = 1;                        // 是否启用 Sentinel 限流
+    repeated string whitelist = 2;           // 白名单端点（不限流）
+    repeated FlowRule flow_rules = 3;        // Sentinel 限流规则
+    repeated CircuitBreakerRule cb_rules = 4; // Sentinel 熔断规则（可选）
+    repeated SystemRule system_rules = 5;    // Sentinel 系统规则（可选）
+  }
+  message FlowRule {
+    string resource = 1;          // 资源名（接口路径）
+    double threshold = 2;         // 阈值（QPS）
+    uint32 stat_interval_ms = 3;  // 统计间隔（毫秒），默认1000
+    int32 control_behavior = 4;    // 控制行为（0:Reject直接拒绝, 1:Throttling匀速排队）
+  }
+  message CircuitBreakerRule {
+    string resource = 1;          // 资源名（接口路径）
+    string strategy = 2;          // 策略（SlowRequestRatio慢调用比例/ErrorRatio错误率/ErrorCount错误数）
+    uint32 retry_timeout_ms = 3;  // 重试超时时间（毫秒）
+    uint64 min_request_amount = 4; // 最小请求数
+    uint32 stat_interval_ms = 5;  // 统计间隔（毫秒）
+    uint64 max_allowed_rt_ms = 6; // 最大允许响应时间（毫秒），仅用于SlowRequestRatio
+    double threshold = 7;         // 阈值（比例或数量）
+  }
+  message SystemRule {
+    int32 metric_type = 1;        // 指标类型（0:Load系统负载, 1:AvgRT平均响应时间, 2:Concurrency并发数, 3:InboundQPS入口QPS, 4:CpuUsage CPU使用率）
+    double trigger_count = 2;     // 触发阈值
   }
   HTTP http = 1;
   GRPC grpc = 2;

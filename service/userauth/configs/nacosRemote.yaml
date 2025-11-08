@@ -14,8 +14,8 @@ data:
     driver: mysql
     source: root:123456@tcp(127.0.0.1:3306)/lushop_userauth?charset=utf8mb4&parseTime=True&loc=Local
   redis:
-    addr: 127.0.0.1:6379
-    password: "123456"
+    addr: 192.168.185.128:6379
+    password: ""
     db: 0
     dial_timeout: 1s
     read_timeout: 0.2s

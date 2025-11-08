@@ -1,38 +1,28 @@
-package ratelimit
+package sentinel
 
 import (
 	"context"
 
-	"github.com/go-kratos/aegis/ratelimit"
-	"github.com/go-kratos/aegis/ratelimit/bbr"
+	"github.com/alibaba/sentinel-golang/api"
 	"github.com/go-kratos/kratos/v2/errors"
+	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware"
 	"github.com/go-kratos/kratos/v2/transport"
-
-	"github.com/go-kratos/kratos/v2/log"
 )
 
 // ErrRateLimitExceeded 限流错误
 var ErrRateLimitExceeded = errors.New(429, "RATE_LIMIT_EXCEEDED", "请求过于频繁，请稍后再试")
 
-// Option 限流配置选项
+// Option 配置选项
 type Option func(*options)
 
 type options struct {
-	limiter   ratelimit.Limiter
 	enabled   bool
 	whitelist map[string]bool
 	logger    log.Logger
 }
 
-// WithLimiter 使用自定义限流器
-func WithLimiter(limiter ratelimit.Limiter) Option {
-	return func(o *options) {
-		o.limiter = limiter
-	}
-}
-
-// WithEnabled 是否启用限流
+// WithEnabled 是否启用 Sentinel
 func WithEnabled(enabled bool) Option {
 	return func(o *options) {
 		o.enabled = enabled
@@ -56,7 +46,7 @@ func WithLogger(logger log.Logger) Option {
 	}
 }
 
-// Server 限流中间件
+// Server Sentinel 限流中间件
 func Server(opts ...Option) middleware.Middleware {
 	o := &options{
 		enabled:   true,
@@ -68,14 +58,9 @@ func Server(opts ...Option) middleware.Middleware {
 		opt(o)
 	}
 
-	// 如果没有自定义限流器，使用默认BBR限流器
-	if o.limiter == nil {
-		o.limiter = bbr.NewLimiter()
-	}
-
 	return func(handler middleware.Handler) middleware.Handler {
-		return func(ctx context.Context, req any) (reply any, err error) {
-			// 如果不启用限流，直接通过
+		return func(ctx context.Context, req interface{}) (reply interface{}, err error) {
+			// 如果不启用，直接通过
 			if !o.enabled {
 				return handler(ctx, req)
 			}
@@ -93,14 +78,18 @@ func Server(opts ...Option) middleware.Middleware {
 				return handler(ctx, req)
 			}
 
-			// 使用限流器
-			done, e := o.limiter.Allow()
-			if e != nil {
-				// 限流拒绝
-				log.Log(log.LevelWarn,
+			// 使用接口路径作为资源名
+			resource := endpoint
+
+			// Sentinel 限流检查
+			entry, blockErr := api.Entry(resource)
+			if blockErr != nil {
+				// 限流被触发
+				log.NewHelper(o.logger).Warnw(
 					"msg", "Rate limit exceeded",
 					"endpoint", endpoint,
-					"error", e,
+					"resource", resource,
+					"blockType", blockErr.BlockType().String(),
 				)
 				return nil, ErrRateLimitExceeded
 			}
@@ -108,10 +97,13 @@ func Server(opts ...Option) middleware.Middleware {
 			// 执行处理
 			reply, err = handler(ctx, req)
 
-			// 报告限流结果
-			done(ratelimit.DoneInfo{
-				Err: err,
-			})
+			// 记录错误（用于后续的熔断等功能）
+			if err != nil {
+				entry.SetError(err)
+			}
+
+			// 退出 Sentinel 资源
+			entry.Exit()
 
 			return reply, err
 		}

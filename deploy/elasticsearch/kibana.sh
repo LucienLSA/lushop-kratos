@@ -1,0 +1,1 @@
+ docker run -d --name kibana -e ELASTICSEARCH_HOSTS="http://192.168.185.128:9200" -p 5601:5601 kibana:7.10.1

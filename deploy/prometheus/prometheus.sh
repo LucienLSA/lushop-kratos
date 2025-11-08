@@ -1,7 +1,7 @@
 #创建conf文件夹
-mkdir /home/zzx/GoProject/prometheus/conf
+mkdir /home/lucien/data/prometheus/conf
 #进入到conf文件夹
-cd /home/zzx/GoProject/prometheus/conf
+cd /home/lucien/data/prometheus/conf
 #创建prometheus.yml文件
 touch prometheus.yaml
 #把如下的内容保存到prometheus.yaml文件中
@@ -10,7 +10,7 @@ touch prometheus.yaml
 docker run --name prometheus -d --privileged=true -u=root \
     -p 9090:9090 \
     -v /etc/localtime:/etc/localtime:ro \
-    -v /home/zzx/GoProject/prometheus/data:/prometheus/data \
-    -v /home/zzx/GoProject/prometheus/conf:/prometheus/config \
-    -v /home/zzx/GoProject/prometheus/rules:/prometheus/rules \
-    prom/prometheus --config.file=/prometheus/config/prometheus.yaml --web.enable-lifecycle
+    -v /home/lucien/data/prometheus/data:/prometheus/data \
+    -v /home/lucien/data/prometheus/conf:/prometheus/conf \
+    -v /home/lucien/data/prometheus/rules:/prometheus/rules \
+    prom/prometheus --config.file=/prometheus/conf/prometheus.yaml --web.enable-lifecycle

@@ -423,7 +423,50 @@ func InitTracer() {
 - ✅ 错误快速定位
 - ✅ 服务依赖关系图
 
-### 6. 依赖注入（Wire） ⭐⭐⭐
+### 6. Sentinel 限流降级 ⭐⭐⭐⭐
+
+**场景**：如何防止系统过载？如何保护核心服务？
+
+**解决方案**：Sentinel 限流降级
+
+```go
+// 1. 初始化 Sentinel
+err := sentinel.Init(logger)
+
+// 2. 加载限流规则
+flowRules := []*sentinel.FlowRuleConfig{
+    {
+        Resource:         "/lushop.lushop.v1.Order/CreateOrder",
+        Threshold:        1000,  // QPS 1000
+        ControlBehavior:  0,     // Reject
+        StatIntervalInMs: 1000,
+    },
+}
+sentinel.LoadFlowRules(flowRules)
+
+// 3. 中间件自动限流检查
+entry, blockErr := api.Entry(resource)
+if blockErr != nil {
+    return ErrRateLimitExceeded  // HTTP 429
+}
+defer entry.Exit()
+```
+
+**功能**：
+- ✅ **API 限流**：QPS 限制，防止接口过载
+- ✅ **熔断降级**：慢调用、错误率、错误数三种策略
+- ✅ **系统保护**：基于 CPU、响应时间、并发数等指标
+- ✅ **白名单机制**：公开接口不受限流影响
+
+**优势**：
+- ✅ 防止系统过载
+- ✅ 快速失败，避免雪崩
+- ✅ 保护核心服务
+- ✅ 灵活的规则配置
+
+**详细文档**：参考 [Sentinel 调用流程](lushop/docs/SENTINEL_CALL_FLOW.md)
+
+### 7. 依赖注入（Wire） ⭐⭐⭐
 
 **场景**：如何优雅地管理服务依赖？
 
@@ -832,219 +875,50 @@ open coverage.html
 
 ---
 
-## 💼 面试准备指南
+## 💼 面试准备
 
-### 项目介绍模板（1-2分钟）
+本项目提供完整的面试准备材料，包括项目介绍模板、常见面试问题详解、技术点总结等。
 
-> "我做过一个基于 Go 语言和 Kratos 框架的**微服务电商平台**项目。这个项目采用了**领域驱动设计（DDD）**，将系统拆分为 6 个独立的微服务，包括用户、商品、订单、库存等核心模块，通过 **gRPC** 进行服务间通信。
->
-> 在技术选型上，我们使用了 **Consul** 做服务注册与发现，**Nacos** 作为配置中心，**Jaeger** 实现分布式链路追踪，**RocketMQ** 处理分布式事务和异步消息。
->
-> 项目中我主要负责订单和库存模块，解决了几个关键问题：
-> 1. 使用 **RocketMQ 事务消息**保证订单创建和库存扣减的最终一致性
-> 2. 通过 **Redis 分布式锁**防止高并发下的库存超卖
-> 3. 实现了基于 **Consul** 的服务注册发现和客户端负载均衡
->
-> 整个项目采用四层架构，代码结构清晰，使用 **Wire** 进行依赖注入，大大提高了开发效率和代码可维护性。"
+### 快速导航
 
-### 常见面试问题及答案
+- 📖 **[面试指南](docs/INTERVIEW_GUIDE.md)** - 面试速查手册（30秒电梯演讲、核心亮点、问题速查）
+- 📝 **[面试问题详解](interview/README.md)** - 9个核心面试问题的详细解答
+- 📊 **[项目分析总结](docs/PROJECT_ANALYSIS.md)** - 项目优势、存在的问题、改进方向
 
-#### Q1: 如何保证分布式事务的一致性？
+### 项目介绍模板（30秒）
 
-**答**：
-我们使用 **RocketMQ 事务消息**来保证最终一致性。具体流程是：
+> "这是一个**微服务电商平台**，使用 Go 和 Kratos 框架开发。系统拆分为 6 个微服务，通过 gRPC 通信。我主要负责订单和库存模块，使用 **RocketMQ 事务消息**保证分布式一致性，用 **Redis 分布式锁**防止超卖。整个项目采用 Consul 服务发现、Nacos 配置中心、Jaeger 链路追踪，代码结构清晰，易于维护。"
 
-1. **发送半消息**：先向 RocketMQ 发送一个半消息（Half Message）
-2. **执行本地事务**：创建订单到本地数据库
-3. **提交/回滚消息**：根据本地事务结果决定提交或回滚消息
-4. **消费消息**：库存服务消费消息，执行库存扣减
-5. **事务回查**：如果 RocketMQ 长时间未收到确认，会回查本地事务状态
+### 核心面试问题
 
-这种方案的优势是：
-- ✅ 保证最终一致性
-- ✅ 支持事务回查，高可用
-- ✅ 服务解耦，异步处理
+详细的面试问题解答请查看 [interview/](interview/) 文件夹：
 
-#### Q2: 如何防止库存超卖？
+- [Q1: 为什么选择微服务？](interview/Q1_为什么选择微服务.md)
+- [Q2: 如何拆分服务？](interview/Q2_如何拆分服务.md)
+- [Q3: 如何保证数据一致性？](interview/Q3_如何保证数据一致性.md)
+- [Q4: 如何防止超卖？](interview/Q4_如何防止超卖.md)
+- [Q5: 如何实现负载均衡？](interview/Q5_如何实现负载均衡.md)
+- [Q6: 如何排查问题？](interview/Q6_如何排查问题.md)
+- [Q7: 遇到的最大挑战？](interview/Q7_遇到的最大挑战.md)
+- [Q8: 如果重新设计会怎么做？](interview/Q8_如果重新设计会怎么做.md)
+- [Q9: 如何保证代码质量？](interview/Q9_如何保证代码质量.md)
 
-**答**：
-我们采用了**两种方案**：
+更多面试技巧和常见追问，请查看 [面试指南](docs/INTERVIEW_GUIDE.md)。
 
-**方案1：Redis 分布式锁**（高并发场景）
-- 在扣减库存前，先获取 Redis 分布式锁
-- 锁的 key 为 `lock:inventory:{goodsId}`
-- 获取锁后查询库存，判断是否足够
-- 扣减成功后释放锁
+---
 
-**方案2：数据库乐观锁**（中低并发）
-- 在 inventory 表增加 version 字段
-- 更新时使用 `WHERE version = #{oldVersion}` 条件
-- 如果 version 不匹配，说明有并发修改，需要重试
+## 📚 相关文档
 
-实际项目中，我们在高并发场景使用 Redis 锁，因为性能更好。
+### 📖 项目文档
+- [📊 项目分析总结](docs/PROJECT_ANALYSIS.md) - **项目优势、存在的问题、改进方向** ⭐
+- [🐳 Docker 部署指南](docs/DOCKER_DEPLOY.md) - 完整部署文档
+- [📂 项目结构说明](docs/PROJECT_STRUCTURE.md) - 项目目录结构
+- [🧪 测试计划](docs/LUSHOP_TESTING_PLAN.md) - 测试策略和计划
+- [🛡️ Sentinel 限流调用流程](lushop/docs/SENTINEL_CALL_FLOW.md) - **Sentinel 限流实现详解** ⭐
 
-#### Q3: 微服务之间如何调用？
-
-**答**：
-我们使用 **gRPC + Consul** 实现服务间调用：
-
-1. **服务注册**：每个服务启动时向 Consul 注册自己的地址和端口
-2. **健康检查**：Consul 定期检查服务健康状态，自动剔除故障节点
-3. **服务发现**：客户端通过 Consul 发现服务实例列表
-4. **负载均衡**：gRPC 客户端自动实现负载均衡（Round Robin）
-
-优势：
-- ✅ 自动服务发现，无需硬编码地址
-- ✅ 健康检查，自动故障转移
-- ✅ 客户端负载均衡，性能更好
-- ✅ 支持动态扩缩容
-
-#### Q4: 如何实现配置热更新？
-
-**答**：
-我们使用 **Nacos 配置中心**：
-
-1. **集中管理**：所有服务的配置都存储在 Nacos
-2. **监听变更**：服务启动时注册配置监听器
-3. **动态更新**：配置变更时，Nacos 推送通知给服务
-4. **热重载**：服务接收通知后重新加载配置，无需重启
-
-这样做的好处：
-- ✅ 配置集中管理，避免配置分散
-- ✅ 支持多环境（dev/test/prod）
-- ✅ 配置变更无需重启服务
-- ✅ 配置版本管理，可回滚
-
-#### Q5: 如何排查微服务调用链路问题？
-
-**答**：
-我们使用 **Jaeger 分布式链路追踪**：
-
-1. **自动埋点**：Kratos 框架自动为每个 gRPC 调用生成 Trace
-2. **TraceID 传递**：通过 gRPC Metadata 传递 TraceID
-3. **可视化展示**：Jaeger UI 展示完整调用链路
-4. **性能分析**：可以看到每个服务的耗时，快速定位瓶颈
-
-实际使用中，当出现接口慢或报错时，我们可以：
-- 🔍 通过 TraceID 查找完整调用链
-- 📊 分析每个服务的耗时占比
-- 🐛 定位具体哪个服务出问题
-- 📈 查看服务依赖关系图
-
-#### Q6: 项目中遇到的最大挑战是什么？
-
-**答**：
-最大的挑战是**订单超时自动取消**功能的实现。
-
-**问题**：
-- 用户下单后30分钟未支付，需要自动取消订单并归还库存
-- 不能用定时任务轮询（性能差，延迟高）
-
-**解决方案**：
-使用 **RocketMQ 延迟消息**：
-
-1. 创建订单时，发送一条 30 分钟延迟的消息
-2. 30 分钟后消息被消费，检查订单状态
-3. 如果仍未支付，取消订单并发送库存归还消息
-4. 库存服务消费消息，归还库存
-
-**优势**：
-- ✅ 精准定时，延迟低
-- ✅ 高性能，无需轮询
-- ✅ 可靠性高，消息持久化
-
-#### Q7: 为什么选择 Kratos 框架？
-
-**答**：
-选择 Kratos 主要基于以下考虑：
-
-1. **成熟稳定**：B站开源，经过大规模生产环境验证
-2. **完整生态**：内置服务注册、配置管理、链路追踪等
-3. **代码生成**：通过 Proto 自动生成 HTTP/gRPC 代码
-4. **最佳实践**：强制四层架构，代码结构清晰
-5. **社区活跃**：文档完善，问题能快速解决
-
-对比其他框架：
-- vs **Go-Zero**：Kratos 更注重 DDD 设计
-- vs **Go-Micro**：Kratos 生态更完整
-- vs **原生 gRPC**：Kratos 提供了更多开箱即用的功能
-
-#### Q8: 运行过程中遇到过 goroutine 泄漏或 panic 吗？如何排查和解决？
-
-**答**：
-是的，在项目开发中遇到过这两类问题，这让我对 Go 并发编程有了更深的理解。
-
-**Goroutine 泄漏案例**：
-
-在实现订单超时检查时，发现内存持续增长。通过 `pprof` 分析发现 goroutine 泄漏。
-
-问题代码：
-```go
-// ❌ ticker 没有 stop，context 没有监听
-func CheckTimeout(ctx context.Context, orderId int64) {
-    go func() {
-        ticker := time.NewTicker(30 * time.Minute)
-        for {
-            select {
-            case <-ticker.C:
-                checkAndCancelOrder(orderId)
-            }
-        }
-    }()
-}
-```
-
-解决方案：
-```go
-// ✅ 正确处理 ticker 和 context
-func CheckTimeout(ctx context.Context, orderId int64) error {
-    ticker := time.NewTicker(30 * time.Minute)
-    defer ticker.Stop()
-    
-    go func() {
-        defer func() {
-            if r := recover(); r != nil {
-                log.Errorf("panic: %v", r)
-            }
-        }()
-        
-        for {
-            select {
-            case <-ticker.C:
-                checkAndCancelOrder(orderId)
-            case <-ctx.Done():
-                return
-            }
-        }
-    }()
-    return nil
-}
-```
-
-**Panic 案例**：
-
-1. **空指针引用**：gRPC 请求参数未校验
-2. **并发写 map**：使用 `sync.Map` 或 `sync.RWMutex` 解决
-
-**排查工具**：
-```bash
-# 1. 查看 goroutine 数量
-curl http://localhost:6060/debug/pprof/goroutine?debug=1
-
-# 2. 分析 goroutine profile
-go tool pprof http://localhost:6060/debug/pprof/goroutine
-
-# 3. 数据竞争检测
-go test -race ./...
-```
-
-**预防措施**：
-- ✅ 使用 `context.Context` 控制 goroutine 生命周期
-- ✅ 及时调用 `ticker.Stop()` 和 `cancel()`
-- ✅ 使用 `defer recover()` 捕获 panic
-- ✅ 并发访问共享资源时使用锁
-- ✅ 监控 goroutine 数量（Prometheus）
-- ✅ 定期 pprof 分析
+### 💼 面试准备
+- [📝 面试问题详解](interview/README.md) - 9个核心面试问题详细解答
+- [🎯 面试指南](docs/INTERVIEW_GUIDE.md) - 面试速查手册（30秒电梯演讲、核心亮点、问题速查）
 
 ---
 
@@ -1077,7 +951,7 @@ go test -race ./...
 2. **熔断机制**
    - gRPC 重试策略
    - 熔断器模式
-   - 限流保护
+   - **Sentinel 限流保护**（✅ 已实现）
 
 3. **容灾方案**
    - 多副本部署

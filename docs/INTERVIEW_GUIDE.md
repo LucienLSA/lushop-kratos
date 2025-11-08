@@ -54,84 +54,49 @@
 
 ## 🔥 高频面试问题速查
 
+> 💡 **提示**：以下为问题速查，详细解答请查看 [interview/](../interview/) 文件夹
+
 ### Q1: 分布式事务如何保证一致性？
 
-**关键点**：
-- RocketMQ 事务消息（半消息机制）
-- 本地事务表
-- 事务回查机制
-- 最终一致性 vs 强一致性
+**关键点**：RocketMQ 事务消息、半消息机制、事务回查、最终一致性
 
-**回答框架**：
-1. 说明场景（订单+库存）
-2. 介绍方案（事务消息）
-3. 详细流程（4步骤）
-4. 优势总结（3点）
+**详细解答**：[Q3: 如何保证数据一致性？](../interview/Q3_如何保证数据一致性.md)
 
 ### Q2: 如何防止库存超卖？
 
-**关键点**：
-- Redis 分布式锁（高并发）
-- 数据库乐观锁（中低并发）
-- 两种方案对比
+**关键点**：Redis 分布式锁、数据库乐观锁、两种方案对比
 
-**回答框架**：
-1. 问题分析（并发扣减）
-2. 方案1（Redis锁+代码）
-3. 方案2（乐观锁+SQL）
-4. 方案选择（场景对比）
+**详细解答**：[Q4: 如何防止超卖？](../interview/Q4_如何防止超卖.md)
 
 ### Q3: 微服务如何调用？
 
-**关键点**：
-- gRPC 协议
-- Consul 服务发现
-- 客户端负载均衡
-- 健康检查
+**关键点**：gRPC 协议、Consul 服务发现、客户端负载均衡
 
-**回答框架**：
-1. 注册流程
-2. 发现流程
-3. 调用流程
-4. 优势说明
+**详细解答**：[Q5: 如何实现负载均衡？](../interview/Q5_如何实现负载均衡.md)
 
 ### Q4: 如何排查微服务问题？
 
-**关键点**：
-- Jaeger 链路追踪
-- TraceID 传递
-- 可视化分析
-- 性能定位
+**关键点**：Jaeger 链路追踪、TraceID 传递、可视化分析
 
-**回答框架**：
-1. 工具介绍（Jaeger）
-2. 使用方式（TraceID查询）
-3. 实际案例（定位慢接口）
-4. 效果说明
+**详细解答**：[Q6: 如何排查问题？](../interview/Q6_如何排查问题.md)
 
 ### Q5: 项目最大挑战？
 
 **推荐回答**：订单超时自动取消
 
-**关键点**：
-- 业务场景（30分钟未支付）
-- 技术难点（不能轮询）
-- 解决方案（延迟消息）
-- 实现细节（RocketMQ）
+**详细解答**：[Q7: 遇到的最大挑战？](../interview/Q7_遇到的最大挑战.md)
 
 ### Q6: 如何保证代码质量？
 
-**关键点**：
-- 单元测试（三层测试）
-- 测试覆盖率（60%+）
-- 并发测试（验证线程安全）
-- 自动化测试脚本
+**关键点**：单元测试、测试覆盖率、并发测试、自动化测试
 
-**回答框架**：
-1. 测试策略（三层测试）
-2. 测试工具（sqlmock/testify）
-3. 测试场景（单元/并发/集成）
-4. 测试结果（覆盖率/用例数）
+**详细解答**：[Q9: 如何保证代码质量？](../interview/Q9_如何保证代码质量.md)
+
+### 其他核心问题
+
+- [Q1: 为什么选择微服务？](../interview/Q1_为什么选择微服务.md)
+- [Q2: 如何拆分服务？](../interview/Q2_如何拆分服务.md)
+- [Q8: 如果重新设计会怎么做？](../interview/Q8_如果重新设计会怎么做.md)
 
 ---
 
@@ -208,6 +173,8 @@ API Gateway (8001)
 
 ## 🎯 面试准备 Checklist
 
+> 💡 **详细内容请查看** [interview/README.md](../interview/README.md)
+
 ### 必须能画出的图
 
 - [ ] 系统架构图
@@ -228,14 +195,17 @@ API Gateway (8001)
 
 ### 必须能回答的问题
 
-- [ ] 为什么选择微服务？
-- [ ] 如何拆分服务？
-- [ ] 如何保证数据一致性？
-- [ ] 如何防止超卖？
-- [ ] 如何实现负载均衡？
-- [ ] 如何排查问题？
-- [ ] 遇到的最大挑战？
-- [ ] 如果重新设计会怎么做？
+详细解答请查看 [interview/](../interview/) 文件夹：
+
+- [ ] [为什么选择微服务？](../interview/Q1_为什么选择微服务.md)
+- [ ] [如何拆分服务？](../interview/Q2_如何拆分服务.md)
+- [ ] [如何保证数据一致性？](../interview/Q3_如何保证数据一致性.md)
+- [ ] [如何防止超卖？](../interview/Q4_如何防止超卖.md)
+- [ ] [如何实现负载均衡？](../interview/Q5_如何实现负载均衡.md)
+- [ ] [如何排查问题？](../interview/Q6_如何排查问题.md)
+- [ ] [遇到的最大挑战？](../interview/Q7_遇到的最大挑战.md)
+- [ ] [如果重新设计会怎么做？](../interview/Q8_如果重新设计会怎么做.md)
+- [ ] [如何保证代码质量？](../interview/Q9_如何保证代码质量.md)
 
 ### 必须准备的代码
 
@@ -267,19 +237,19 @@ API Gateway (8001)
 ### 2. 高可用设计
 - 服务降级
 - 熔断机制
-- 限流保护
+- **Sentinel 限流保护**（✅ 已实现，参考 [Sentinel 调用流程](../lushop/docs/SENTINEL_CALL_FLOW.md)）
 - 容灾方案
 
 ### 3. 监控告警
-- Prometheus 指标
-- Grafana 可视化
-- 告警规则配置
+- Prometheus 指标（✅ 已实现）
+- Grafana 可视化（✅ 已实现）
+- 告警规则配置（**项目待改进项**，参考 [项目分析](../docs/PROJECT_ANALYSIS.md)）
 
 ### 4. DevOps 实践
-- Docker 容器化
-- Kubernetes 部署
-- CI/CD 流程
-- 自动化测试
+- Docker 容器化（✅ 已实现）
+- Kubernetes 部署（**项目待改进项**，参考 [项目分析](../docs/PROJECT_ANALYSIS.md)）
+- CI/CD 流程（**项目待改进项**，参考 [项目分析](../docs/PROJECT_ANALYSIS.md)）
+- 自动化测试（✅ 部分实现，参考 [测试计划](../docs/LUSHOP_TESTING_PLAN.md)）
 
 ---
 
@@ -292,6 +262,8 @@ API Gateway (8001)
 - 我们的业务允许短暂不一致，最终一致性即可
 - RocketMQ 事务消息性能更好，可用性更高
 
+**详细解答**：参考 [Q3: 如何保证数据一致性？](../interview/Q3_如何保证数据一致性.md)
+
 ### Q: Redis 锁如果宕机怎么办？
 
 **答**：
@@ -299,6 +271,8 @@ API Gateway (8001)
 - 设置合理的锁超时时间，避免死锁
 - 也可以用 Redlock 算法（多个 Redis 实例）
 - 极端情况可以降级到数据库乐观锁
+
+**详细解答**：参考 [Q4: 如何防止超卖？](../interview/Q4_如何防止超卖.md)
 
 ### Q: 如何保证消息不丢失？
 
@@ -308,6 +282,8 @@ API Gateway (8001)
 - 消费者：手动 ACK，消费成功后确认
 - 还可以配置消息备份（主从同步）
 
+**详细解答**：参考 [Q3: 如何保证数据一致性？](../interview/Q3_如何保证数据一致性.md)
+
 ### Q: 服务拆分的原则是什么？
 
 **答**：
@@ -316,218 +292,21 @@ API Gateway (8001)
 - 高内聚低耦合
 - 考虑团队规模和能力
 
+**详细解答**：参考 [Q2: 如何拆分服务？](../interview/Q2_如何拆分服务.md)
+
 ### Q: 运行过程中遇到过 goroutine 泄漏或 panic 吗？
 
-**答**：
-是的，在开发和测试过程中确实遇到过这两类问题，这也让我对 Go 的并发编程有了更深的理解。
+**答**：是的，在开发和测试过程中遇到过这两类问题。
 
-#### 1. Goroutine 泄漏案例
+**详细解答**：参考 [面试问题详解](../interview/README.md) 和具体问题文档，每个问题都包含了常见追问和回答建议。
 
-**问题场景**：
-在实现订单超时检查功能时，我发现服务运行一段时间后内存持续增长，通过 `pprof` 分析发现有大量 goroutine 没有正常退出。
-
-**原因分析**：
-```go
-// ❌ 错误代码
-func (s *OrderService) CheckTimeout(ctx context.Context, orderId int64) {
-    go func() {
-        ticker := time.NewTicker(30 * time.Minute)
-        for {
-            select {
-            case <-ticker.C:
-                // 检查订单状态
-                s.checkAndCancelOrder(orderId)
-            }
-        }
-    }()
-}
-```
-
-问题：
-- ticker 没有 stop，导致 goroutine 永远不会退出
-- 没有监听 context 的 Done 信号
-- 每次调用都会创建新的 goroutine
-
-**解决方案**：
-```go
-// ✅ 正确代码
-func (s *OrderService) CheckTimeout(ctx context.Context, orderId int64) error {
-    ticker := time.NewTicker(30 * time.Minute)
-    defer ticker.Stop()  // 确保 ticker 被停止
-    
-    go func() {
-        defer func() {
-            if r := recover(); r != nil {
-                log.Errorf("panic in CheckTimeout: %v", r)
-            }
-        }()
-        
-        for {
-            select {
-            case <-ticker.C:
-                s.checkAndCancelOrder(orderId)
-            case <-ctx.Done():  // 监听 context 取消
-                log.Info("CheckTimeout stopped")
-                return
-            }
-        }
-    }()
-    
-    return nil
-}
-```
-
-**排查工具**：
-```bash
-# 1. 使用 pprof 查看 goroutine 数量
-curl http://localhost:6060/debug/pprof/goroutine?debug=1
-
-# 2. 生成 goroutine profile
-go tool pprof http://localhost:6060/debug/pprof/goroutine
-
-# 3. 查看具体泄漏位置
-(pprof) top
-(pprof) list CheckTimeout
-```
-
-#### 2. Panic 异常案例
-
-**问题场景 1：空指针引用**
-
-在处理 gRPC 请求时，没有判断请求参数是否为 nil：
-
-```go
-// ❌ 错误代码
-func (s *GoodsService) GetGoodsDetail(ctx context.Context, req *pb.GoodsRequest) (*pb.GoodsResponse, error) {
-    // 如果 req 为 nil，这里会 panic
-    goods, err := s.uc.GetGoods(ctx, req.Id)
-    return &pb.GoodsResponse{Data: goods}, err
-}
-```
-
-**解决方案**：
-```go
-// ✅ 正确代码
-func (s *GoodsService) GetGoodsDetail(ctx context.Context, req *pb.GoodsRequest) (*pb.GoodsResponse, error) {
-    // 1. 参数校验
-    if req == nil {
-        return nil, errors.New("request is nil")
-    }
-    
-    // 2. 使用 defer recover 捕获 panic
-    defer func() {
-        if r := recover(); r != nil {
-            log.Errorf("panic in GetGoodsDetail: %v, stack: %s", r, debug.Stack())
-        }
-    }()
-    
-    goods, err := s.uc.GetGoods(ctx, req.Id)
-    if err != nil {
-        return nil, err
-    }
-    
-    return &pb.GoodsResponse{Data: goods}, nil
-}
-```
-
-**问题场景 2：并发写 map**
-
-在缓存实现中，多个 goroutine 同时写 map 导致 panic：
-
-```go
-// ❌ 错误代码
-type Cache struct {
-    data map[string]interface{}
-}
-
-func (c *Cache) Set(key string, value interface{}) {
-    c.data[key] = value  // concurrent map writes panic
-}
-```
-
-**解决方案**：
-```go
-// ✅ 正确代码 - 方案1：使用 sync.Map
-type Cache struct {
-    data sync.Map
-}
-
-func (c *Cache) Set(key string, value interface{}) {
-    c.data.Store(key, value)
-}
-
-// ✅ 正确代码 - 方案2：使用互斥锁
-type Cache struct {
-    mu   sync.RWMutex
-    data map[string]interface{}
-}
-
-func (c *Cache) Set(key string, value interface{}) {
-    c.mu.Lock()
-    defer c.mu.Unlock()
-    c.data[key] = value
-}
-```
-
-#### 3. 预防措施
-
-**开发阶段**：
-1. **代码审查**：重点关注 goroutine 的生命周期管理
-2. **单元测试**：使用 `-race` 标志检测数据竞争
-   ```bash
-   go test -race ./...
-   ```
-3. **静态分析**：使用 `golangci-lint` 检查潜在问题
-   ```bash
-   golangci-lint run --enable=govet,errcheck,staticcheck
-   ```
-
-**运行时监控**：
-1. **Prometheus 指标**：
-   ```go
-   // 监控 goroutine 数量
-   prometheus.NewGaugeFunc(prometheus.GaugeOpts{
-       Name: "go_goroutines",
-       Help: "Number of goroutines",
-   }, func() float64 {
-       return float64(runtime.NumGoroutine())
-   })
-   ```
-
-2. **告警规则**：
-   ```yaml
-   # Prometheus 告警
-   - alert: GoroutineLeaking
-     expr: go_goroutines > 10000
-     for: 5m
-     annotations:
-       summary: "Goroutine 泄漏告警"
-   ```
-
-3. **定期 pprof 分析**：
-   ```go
-   // 启用 pprof
-   import _ "net/http/pprof"
-   
-   go func() {
-       log.Println(http.ListenAndServe("localhost:6060", nil))
-   }()
-   ```
-
-**最佳实践**：
-1. ✅ 总是使用 `context.Context` 控制 goroutine 生命周期
-2. ✅ 及时调用 `ticker.Stop()` 和 `cancel()`
-3. ✅ 使用 `defer recover()` 捕获 panic
-4. ✅ 并发访问共享资源时使用锁或 channel
-5. ✅ 使用 `errgroup` 管理多个 goroutine
-6. ✅ 定期使用 pprof 分析内存和 goroutine
-
-**经验总结**：
-通过这些问题，我学会了：
-- 🎯 Go 并发编程的最佳实践
-- 🎯 使用 pprof 等工具排查问题
-- 🎯 建立完善的监控告警机制
-- 🎯 编写更健壮的代码
+**关键点**：
+- 使用 `context.Context` 控制 goroutine 生命周期
+- 及时调用 `ticker.Stop()` 和 `cancel()`
+- 使用 `defer recover()` 捕获 panic
+- 并发访问共享资源时使用锁
+- 使用 `go test -race` 检测数据竞争
+- 使用 pprof 分析 goroutine 泄漏
 
 ---
 

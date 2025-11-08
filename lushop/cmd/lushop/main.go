@@ -2,7 +2,9 @@ package main
 
 import (
 	"flag"
+	"lushop/internal/conf"
 	nacosconfig "lushop/internal/conf/nacos"
+	"lushop/internal/pkg/sentinel"
 	"lushop/internal/task"
 	"os"
 
@@ -76,6 +78,103 @@ func setTracerProvider(url string) error {
 	return nil
 }
 
+// initSentinel 初始化 Sentinel
+func initSentinel(c *conf.Server, logger log.Logger) error {
+	log.NewHelper(logger).Info("Initializing Sentinel...")
+
+	// 初始化 Sentinel
+	err := sentinel.Init(logger)
+	if err != nil {
+		return err
+	}
+
+	// 从配置文件加载规则（如果配置了）
+	if c.Http != nil && c.Http.RateLimit != nil {
+		rlConfig := c.Http.RateLimit
+
+		// 加载限流规则
+		if len(rlConfig.FlowRules) > 0 {
+			flowRules := make([]*sentinel.FlowRuleConfig, 0, len(rlConfig.FlowRules))
+			for _, rule := range rlConfig.FlowRules {
+				statIntervalMs := rule.StatIntervalMs
+				if statIntervalMs == 0 {
+					statIntervalMs = 1000 // 默认1秒
+				}
+				flowRules = append(flowRules, &sentinel.FlowRuleConfig{
+					Resource:         rule.Resource,
+					Threshold:        rule.Threshold,
+					ControlBehavior:  rule.ControlBehavior,
+					StatIntervalInMs: statIntervalMs,
+				})
+			}
+			err = sentinel.LoadFlowRules(flowRules)
+			if err != nil {
+				log.NewHelper(logger).Warnw("msg", "Failed to load flow rules from config", "error", err)
+			} else {
+				log.NewHelper(logger).Infow("msg", "Flow rules loaded from config", "count", len(flowRules))
+			}
+		} else {
+			// 如果没有配置规则，加载默认规则
+			err = sentinel.LoadDefaultRules()
+			if err != nil {
+				log.NewHelper(logger).Warnw("msg", "Failed to load default rules", "error", err)
+			} else {
+				log.NewHelper(logger).Info("Default flow rules loaded")
+			}
+		}
+
+		// 加载熔断规则（可选）
+		if len(rlConfig.CbRules) > 0 {
+			cbRules := make([]*sentinel.CircuitBreakerRuleConfig, 0, len(rlConfig.CbRules))
+			for _, rule := range rlConfig.CbRules {
+				cbRules = append(cbRules, &sentinel.CircuitBreakerRuleConfig{
+					Resource:         rule.Resource,
+					Strategy:         rule.Strategy,
+					RetryTimeoutMs:   rule.RetryTimeoutMs,
+					MinRequestAmount: rule.MinRequestAmount,
+					StatIntervalMs:   rule.StatIntervalMs,
+					MaxAllowedRtMs:   rule.MaxAllowedRtMs,
+					Threshold:        rule.Threshold,
+				})
+			}
+			err = sentinel.LoadCircuitBreakerRules(cbRules)
+			if err != nil {
+				log.NewHelper(logger).Warnw("msg", "Failed to load circuit breaker rules from config", "error", err)
+			} else {
+				log.NewHelper(logger).Infow("msg", "Circuit breaker rules loaded from config", "count", len(cbRules))
+			}
+		}
+
+		// 加载系统规则（可选）
+		if len(rlConfig.SystemRules) > 0 {
+			systemRules := make([]*sentinel.SystemRuleConfig, 0, len(rlConfig.SystemRules))
+			for _, rule := range rlConfig.SystemRules {
+				systemRules = append(systemRules, &sentinel.SystemRuleConfig{
+					MetricType:   rule.MetricType,
+					TriggerCount: rule.TriggerCount,
+				})
+			}
+			err = sentinel.LoadSystemRules(systemRules)
+			if err != nil {
+				log.NewHelper(logger).Warnw("msg", "Failed to load system rules from config", "error", err)
+			} else {
+				log.NewHelper(logger).Infow("msg", "System rules loaded from config", "count", len(systemRules))
+			}
+		}
+	} else {
+		// 如果没有配置，加载默认规则
+		err = sentinel.LoadDefaultRules()
+		if err != nil {
+			log.NewHelper(logger).Warnw("msg", "Failed to load default rules", "error", err)
+		} else {
+			log.NewHelper(logger).Info("Default flow rules loaded")
+		}
+	}
+
+	log.NewHelper(logger).Info("Sentinel initialized successfully")
+	return nil
+}
+
 func main() {
 	flag.Parse()
 	logger := log.With(log.NewStdLogger(os.Stdout),
@@ -120,6 +219,11 @@ func main() {
 	err = setTracerProvider(bc.Trace.Endpoint)
 	if err != nil {
 		panic(err)
+	}
+	// 初始化 Sentinel
+	err = initSentinel(bc.Server, logger)
+	if err != nil {
+		log.NewHelper(logger).Warnw("msg", "Failed to init Sentinel, will continue without it", "error", err)
 	}
 	// 通过 wireApp 函数（由 Wire 生成）构建应用实例，并获取清理函数
 	app, cleanup, err := wireApp(bc.Server, bc.Data,

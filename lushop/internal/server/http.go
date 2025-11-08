@@ -10,7 +10,7 @@ import (
 	"lushop/internal/conf/metrix"
 	"lushop/internal/pkg/middleware/auth"
 	casbinmw "lushop/internal/pkg/middleware/casbin"
-	ratelimitmw "lushop/internal/pkg/middleware/ratelimit"
+	sentinelmw "lushop/internal/pkg/middleware/sentinel"
 	"lushop/internal/service"
 	httpNet "net/http"
 
@@ -46,8 +46,8 @@ func NewHTTPServer(c *conf.Server, ac *conf.Auth,
 		}),
 		http.Middleware(
 			recovery.Recovery(),
-			// 限流中间件 - 使用BBR自适应限流算法
-			initRateLimitMiddleware(c, logger),
+			// 限流中间件 - 使用 Sentinel
+			initSentinelMiddleware(c, logger),
 			// i18n.Translator(),
 			validate.Validator(), // 接口访问的参数校验
 			tracing.Server(),     // 链路追踪
@@ -182,22 +182,27 @@ type ErrorMessage struct {
 	Message string `json:"message"`
 }
 
-// initRateLimitMiddleware 初始化限流中间件
-func initRateLimitMiddleware(c *conf.Server, logger log.Logger) middleware.Middleware {
-	// 如果配置中有限流配置
-	if c.Http != nil && c.Http.RateLimit != nil && c.Http.RateLimit.Enabled {
-		rlConfig := c.Http.RateLimit
+// initSentinelMiddleware 初始化 Sentinel 限流中间件
+func initSentinelMiddleware(c *conf.Server, logger log.Logger) middleware.Middleware {
+	// 检查是否启用限流（通过配置控制）
+	enabled := true
+	whitelist := []string{}
 
-		// 创建限流中间件，使用默认BBR限流器
-		return ratelimitmw.Server(
-			ratelimitmw.WithEnabled(true),
-			ratelimitmw.WithWhitelist(rlConfig.Whitelist),
-			ratelimitmw.WithLogger(logger),
-		)
+	if c.Http != nil && c.Http.RateLimit != nil {
+		// 从原有配置中读取启用状态和白名单（兼容现有配置）
+		enabled = c.Http.RateLimit.Enabled
+		whitelist = c.Http.RateLimit.Whitelist
 	}
 
-	// 如果没有配置或未启用，返回禁用状态
-	return ratelimitmw.Server(
-		ratelimitmw.WithEnabled(false),
+	if enabled {
+		log.NewHelper(logger).Info("Using Sentinel for rate limiting and circuit breaking")
+	} else {
+		log.NewHelper(logger).Info("Rate limiting is disabled")
+	}
+
+	return sentinelmw.Server(
+		sentinelmw.WithEnabled(enabled),
+		sentinelmw.WithWhitelist(whitelist),
+		sentinelmw.WithLogger(logger),
 	)
 }

@@ -1,0 +1,71 @@
+services:
+  namesrv:
+    image: apache/rocketmq:5.3.3
+    container_name: rmqnamesrv
+    ports:
+      - 9876:9876
+    networks:
+      - rocketmq
+    restart: always
+    environment:
+      - TZ=Asia/Shanghai
+    command: sh mqnamesrv
+  broker:
+    image: apache/rocketmq:5.3.3
+    container_name: rmqbroker
+    ports:
+      - 10909:10909
+      - 10911:10911
+      - 10912:10912
+    restart: always
+    environment:
+      - TZ=Asia/Shanghai
+      - NAMESRV_ADDR=rmqnamesrv:9876
+    volumes:
+      - /home/lucien/data/rocketmq5.3.3/broker/conf/broker.conf:/home/rocketmq/rocketmq-5.3.3/conf/broker.conf
+      - /home/lucien/data/rocketmq5.3.3/broker/conf/tools.yml:/home/rocketmq/rocketmq-5.3.3/conf/tools.yml
+      - /home/lucien/data/rocketmq5.3.3/broker/logs/:/home/rocketmq/logs/rocketmqlogs/
+      - /home/lucien/data/rocketmq5.3.3/broker/store:/home/rocketmq/store
+    depends_on:
+      - namesrv
+    networks:
+      - rocketmq
+    command: sh mqbroker -c /home/rocketmq/rocketmq-5.3.3/conf/broker.conf 
+  proxy:
+    image: apache/rocketmq:5.3.3
+    container_name: rmqproxy
+    networks:
+      - rocketmq
+    depends_on:
+      - broker
+      - namesrv
+    ports:
+      - 18680:18680
+      - 18681:18681
+    restart: on-failure
+    volumes:
+      - /home/lucien/data/rocketmq5.3.3/proxy/conf/rmq-proxy.json:/home/rocketmq/rocketmq-5.3.3/conf/rmq-proxy.json
+      - /home/lucien/data/rocketmq5.3.3/broker/conf/tools.yml:/home/rocketmq/rocketmq-5.3.3/conf/tools.yml
+      - /home/lucien/data/rocketmq5.3.3/proxy/logs/:/home/rocketmq/logs/rocketmqlogs
+    environment:
+      - NAMESRV_ADDR=rmqnamesrv:9876
+    command: sh mqproxy -pc /home/rocketmq/rocketmq-5.3.3/conf/rmq-proxy.json
+  dashboard:
+    image: apacherocketmq/rocketmq-dashboard:2.0.1
+    container_name: rmqdashboard
+    networks:
+      - rocketmq
+    ports:
+      - 8682:8080
+    volumes:
+      - /home/lucien/data/rocketmq5.3.3/dashboard/conf/users.properties:/tmp/rocketmq-console/data/users.properties
+    environment:
+      - TZ=Asia/Shanghai
+      - JAVA_OPTS=-Drocketmq.config.namesrvAddrs=rmqnamesrv:9876 -Drocketmq.config.proxyAddrs=rmqproxy:18680 -Drocketmq.config.accessKey=woodwhales -Drocketmq.config.secretKey=woodwhales -Drocketmq.config.loginRequired=true
+    restart: always
+    depends_on:
+      - broker
+      - namesrv 
+networks:
+  rocketmq:
+    driver: bridge

@@ -39,7 +39,7 @@
 
 #### 项目经验
 - [Q7: 遇到的最大挑战？](./Q7_遇到的最大挑战.md)
-- [Q8: 如果重新设计会怎么做？](./Q8_如何重新设计会怎么做.md)
+- [Q8: 如果重新设计会怎么做？](./Q8_如果重新设计会怎么做.md)
 
 ### 按难度分类
 
@@ -175,9 +175,10 @@
 ## 🔗 相关文档
 
 - [项目 README](../README.md) - 项目整体介绍
-- [面试指南](../docs/INTERVIEW_GUIDE.md) - 面试速查手册
-- [Docker 部署指南](../docs/DOCKER_DEPLOY.md) - 完整部署文档
-- [项目结构说明](../docs/PROJECT_STRUCTURE.md) - 项目目录结构
+- [📊 项目分析总结](../docs/PROJECT_ANALYSIS.md) - **项目优势、存在的问题、改进方向** ⭐
+- [🎯 面试指南](../docs/INTERVIEW_GUIDE.md) - 面试速查手册（30秒电梯演讲、核心亮点、问题速查）
+- [🐳 Docker 部署指南](../docs/DOCKER_DEPLOY.md) - 完整部署文档
+- [📂 项目结构说明](../docs/PROJECT_STRUCTURE.md) - 项目目录结构
 
 ## 📞 反馈与建议
 
