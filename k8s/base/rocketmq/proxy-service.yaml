@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rocketmq-proxy
+spec:
+  ports:
+    - name: proxy
+      port: 18680
+      targetPort: 18680
+    - name: proxy-grpc
+      port: 18681
+      targetPort: 18681
+  selector:
+    app.kubernetes.io/name: rocketmq-proxy
+

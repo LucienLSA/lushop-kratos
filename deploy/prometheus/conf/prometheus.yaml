@@ -7,10 +7,10 @@ scrape_configs:
       - targets: ['localhost:9090']
   - job_name: 'lushop-goods-service'
     static_configs:
-      - targets: ['192.168.185.128:8012']
+      - targets: ['localhost:8012']
   - job_name: 'lushop-inventory-service'
     static_configs:
-      - targets: ['192.168.185.128:8014']
+      - targets: ['localhost:8014']
   - job_name: 'lushop-api-gateway-service'
     static_configs:
-      - targets: ['192.168.185.128:8001']
+      - targets: ['localhost:8001']

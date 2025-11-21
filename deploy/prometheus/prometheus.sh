@@ -1,16 +1,32 @@
-#创建conf文件夹
-mkdir /home/lucien/data/prometheus/conf
-#进入到conf文件夹
-cd /home/lucien/data/prometheus/conf
-#创建prometheus.yml文件
-touch prometheus.yaml
-#把如下的内容保存到prometheus.yaml文件中
+#!/usr/bin/env bash
+set -euo pipefail
 
+SCRIPT_DIR="$(cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DATA_ROOT="${DATA_DIR:-$HOME/lushop-data}"
+PROM_DATA="${DATA_ROOT}/prometheus"
+PROM_CONF_DIR="${PROM_DATA}/conf"
+PROM_RULES_DIR="${PROM_DATA}/rules"
+PROM_STORAGE_DIR="${PROM_DATA}/data"
+mkdir -p "${PROM_CONF_DIR}" "${PROM_RULES_DIR}" "${PROM_STORAGE_DIR}"
 
-docker run --name prometheus -d --privileged=true -u=root \
-    -p 9090:9090 \
-    -v /etc/localtime:/etc/localtime:ro \
-    -v /home/lucien/data/prometheus/data:/prometheus/data \
-    -v /home/lucien/data/prometheus/conf:/prometheus/conf \
-    -v /home/lucien/data/prometheus/rules:/prometheus/rules \
-    prom/prometheus --config.file=/prometheus/conf/prometheus.yaml --web.enable-lifecycle
+DEFAULT_CONF_SOURCE="${PROMETHEUS_CONFIG:-${SCRIPT_DIR}/conf/prometheus.yaml}"
+if [ ! -f "${DEFAULT_CONF_SOURCE}" ]; then
+  echo "Prometheus config not found: ${DEFAULT_CONF_SOURCE}" >&2
+  exit 1
+fi
+cp "${DEFAULT_CONF_SOURCE}" "${PROM_CONF_DIR}/prometheus.yaml"
+
+docker run -d \
+  --name "${PROMETHEUS_CONTAINER_NAME:-lushop-prometheus}" \
+  --restart unless-stopped \
+  --privileged=true \
+  -u root \
+  -p "${PROMETHEUS_PORT:-9090}:9090" \
+  -v /etc/localtime:/etc/localtime:ro \
+  -v "${PROM_STORAGE_DIR}":/prometheus/data \
+  -v "${PROM_CONF_DIR}":/prometheus/conf \
+  -v "${PROM_RULES_DIR}":/prometheus/rules \
+  prom/prometheus:${PROMETHEUS_VERSION:-v2.52.0} \
+  --config.file=/prometheus/conf/prometheus.yaml \
+  --storage.tsdb.path=/prometheus/data \
+  --web.enable-lifecycle

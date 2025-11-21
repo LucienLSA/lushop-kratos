@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
   namesrv:
     image: apache/rocketmq:5.3.3
@@ -22,10 +24,10 @@ services:
       - TZ=Asia/Shanghai
       - NAMESRV_ADDR=rmqnamesrv:9876
     volumes:
-      - /home/lucien/data/rocketmq5.3.3/broker/conf/broker.conf:/home/rocketmq/rocketmq-5.3.3/conf/broker.conf
-      - /home/lucien/data/rocketmq5.3.3/broker/conf/tools.yml:/home/rocketmq/rocketmq-5.3.3/conf/tools.yml
-      - /home/lucien/data/rocketmq5.3.3/broker/logs/:/home/rocketmq/logs/rocketmqlogs/
-      - /home/lucien/data/rocketmq5.3.3/broker/store:/home/rocketmq/store
+      - ${ROCKETMQ_DATA_DIR:-./data}/broker/conf/broker.conf:/home/rocketmq/rocketmq-5.3.3/conf/broker.conf
+      - ${ROCKETMQ_DATA_DIR:-./data}/broker/conf/tools.yml:/home/rocketmq/rocketmq-5.3.3/conf/tools.yml
+      - ${ROCKETMQ_DATA_DIR:-./data}/broker/logs:/home/rocketmq/logs/rocketmqlogs
+      - ${ROCKETMQ_DATA_DIR:-./data}/broker/store:/home/rocketmq/store
     depends_on:
       - namesrv
     networks:
@@ -44,9 +46,9 @@ services:
       - 18681:18681
     restart: on-failure
     volumes:
-      - /home/lucien/data/rocketmq5.3.3/proxy/conf/rmq-proxy.json:/home/rocketmq/rocketmq-5.3.3/conf/rmq-proxy.json
-      - /home/lucien/data/rocketmq5.3.3/broker/conf/tools.yml:/home/rocketmq/rocketmq-5.3.3/conf/tools.yml
-      - /home/lucien/data/rocketmq5.3.3/proxy/logs/:/home/rocketmq/logs/rocketmqlogs
+      - ${ROCKETMQ_DATA_DIR:-./data}/proxy/conf/rmq-proxy.json:/home/rocketmq/rocketmq-5.3.3/conf/rmq-proxy.json
+      - ${ROCKETMQ_DATA_DIR:-./data}/broker/conf/tools.yml:/home/rocketmq/rocketmq-5.3.3/conf/tools.yml
+      - ${ROCKETMQ_DATA_DIR:-./data}/proxy/logs:/home/rocketmq/logs/rocketmqlogs
     environment:
       - NAMESRV_ADDR=rmqnamesrv:9876
     command: sh mqproxy -pc /home/rocketmq/rocketmq-5.3.3/conf/rmq-proxy.json
@@ -58,10 +60,10 @@ services:
     ports:
       - 8682:8080
     volumes:
-      - /home/lucien/data/rocketmq5.3.3/dashboard/conf/users.properties:/tmp/rocketmq-console/data/users.properties
+      - ${ROCKETMQ_DATA_DIR:-./data}/dashboard/conf/users.properties:/tmp/rocketmq-console/data/users.properties
     environment:
       - TZ=Asia/Shanghai
-      - JAVA_OPTS=-Drocketmq.config.namesrvAddrs=rmqnamesrv:9876 -Drocketmq.config.proxyAddrs=rmqproxy:18680 -Drocketmq.config.accessKey=woodwhales -Drocketmq.config.secretKey=woodwhales -Drocketmq.config.loginRequired=true
+      - JAVA_OPTS=-Drocketmq.config.namesrvAddrs=rmqnamesrv:9876 -Drocketmq.config.proxyAddrs=rmqproxy:18680 -Drocketmq.config.accessKey=${ROCKETMQ_ACCESS_KEY:-lushop} -Drocketmq.config.secretKey=${ROCKETMQ_SECRET_KEY:-lushop123456} -Drocketmq.config.loginRequired=true
     restart: always
     depends_on:
       - broker

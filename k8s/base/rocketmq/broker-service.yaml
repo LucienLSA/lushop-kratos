@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rocketmq-broker
+spec:
+  ports:
+    - name: broker-main
+      port: 10911
+      targetPort: 10911
+    - name: broker-ha
+      port: 10912
+      targetPort: 10912
+    - name: broker-fast
+      port: 10909
+      targetPort: 10909
+  selector:
+    app.kubernetes.io/name: rocketmq-broker
+

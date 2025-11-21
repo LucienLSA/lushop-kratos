@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rocketmq-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: rocketmq-proxy
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: rocketmq-proxy
+    spec:
+      containers:
+        - name: proxy
+          image: apache/rocketmq:5.3.3
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: NAMESRV_ADDR
+              value: rocketmq-namesrv:9876
+          command:
+            - /bin/sh
+            - -c
+            - mqproxy -pc /etc/rocketmq/rmq-proxy.json
+          ports:
+            - containerPort: 18680
+              name: proxy
+            - containerPort: 18681
+              name: proxy-grpc
+          readinessProbe:
+            tcpSocket:
+              port: 18680
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 18680
+            initialDelaySeconds: 40
+            periodSeconds: 10
+          volumeMounts:
+            - name: rocketmq-config
+              mountPath: /etc/rocketmq
+            - name: rocketmq-secret
+              mountPath: /etc/rocketmq-secret
+      volumes:
+        - name: rocketmq-config
+          configMap:
+            name: rocketmq-config
+            items:
+              - key: rmq-proxy.json
+                path: rmq-proxy.json
+        - name: rocketmq-secret
+          secret:
+            secretName: rocketmq-credentials
+            items:
+              - key: tools.yml
+                path: tools.yml
+

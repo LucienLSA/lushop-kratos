@@ -1,72 +1,70 @@
-mkdir -p /home/lucien/data/rocketmq5.3.3/broker/{logs,store,conf}
-mkdir -p /home/lucien/data/rocketmq5.3.3/proxy/{logs,conf}
-mkdir -p /home/lucien/data/rocketmq5.3.3/dashboard/conf
+#!/usr/bin/env bash
+set -euo pipefail
 
-touch /home/lucien/data/rocketmq5.3.3/broker/conf/broker.conf
-touch /home/lucien/data/rocketmq5.3.3/broker/conf/tools.yml
+ROCKETMQ_VERSION="${ROCKETMQ_VERSION:-5.3.3}"
+DATA_ROOT="${DATA_DIR:-$HOME/lushop-data}"
+ROCKETMQ_BASE="${DATA_ROOT}/rocketmq/${ROCKETMQ_VERSION}"
+BROKER_DIR="${ROCKETMQ_BASE}/broker"
+PROXY_DIR="${ROCKETMQ_BASE}/proxy"
+DASHBOARD_DIR="${ROCKETMQ_BASE}/dashboard"
+BROKER_CONF_DIR="${BROKER_DIR}/conf"
+PROXY_CONF_DIR="${PROXY_DIR}/conf"
+DASHBOARD_CONF_DIR="${DASHBOARD_DIR}/conf"
 
-touch /home/lucien/data/rocketmq5.3.3/proxy/conf/rmq-proxy.json
+mkdir -p \
+  "${BROKER_CONF_DIR}" "${BROKER_DIR}/logs" "${BROKER_DIR}/store" \
+  "${PROXY_CONF_DIR}" "${PROXY_DIR}/logs" \
+  "${DASHBOARD_CONF_DIR}"
 
-touch /home/lucien/data/rocketmq5.3.3/dashboard/conf/users.properties
+ACCESS_KEY="${ROCKETMQ_ACCESS_KEY:-lushop}"
+SECRET_KEY="${ROCKETMQ_SECRET_KEY:-lushop123456}"
+BROKER_IP="${ROCKETMQ_BROKER_IP:-127.0.0.1}"
+BROKER_CLUSTER="${ROCKETMQ_CLUSTER_NAME:-DefaultCluster}"
+BROKER_NAME="${ROCKETMQ_BROKER_NAME:-broker-a}"
 
-touch /home/lucien/data/rocketmq5.3.3/docker-compose.yaml
-
-chown -R 3000:3000 /home/lucien/data/rocketmq5.3.3/
-
-
-vim /home/lucien/data/rocketmq5.3.3/broker/conf/broker.conf
-
-
-brokerClusterName=DefaultCluster
-brokerName=broker-a
+cat > "${BROKER_CONF_DIR}/broker.conf" <<EOF
+brokerClusterName=${BROKER_CLUSTER}
+brokerName=${BROKER_NAME}
 brokerId=0
 deleteWhen=04
 fileReservedTime=48
 brokerRole=ASYNC_MASTER
 flushDiskType=ASYNC_FLUSH
-# broker 暴露的IP地址
-brokerIP1=192.168.185.128
-# 开启认证功能
-authenticationEnabled=true
-authenticationProvider=org.apache.rocketmq.auth.authentication.provider.DefaultAuthenticationProvider
-initAuthenticationUser={"username":"lucien","password":"lucien"}
-innerClientAuthenticationCredentials={"accessKey":"lucien","secretKey":"lucien"}
-authenticationMetadataProvider=org.apache.rocketmq.auth.authentication.provider.LocalAuthenticationMetadataProvider
-# 开启授权功能
-authorizationEnabled=true
-authorizationProvider=org.apache.rocketmq.auth.authorization.provider.DefaultAuthorizationProvider
-authorizationMetadataProvider=org.apache.rocketmq.auth.authorization.provider.LocalAuthorizationMetadataProvider
-# 兼容 ACL 1.0 的 plain_acl.yml 文件
-migrateAuthFromV1Enabled=true
+brokerIP1=${BROKER_IP}
+listenPort=10911
+autoCreateTopicEnable=true
+aclEnable=${ROCKETMQ_ACL_ENABLE:-true}
+EOF
 
+cat > "${BROKER_CONF_DIR}/tools.yml" <<EOF
+accessKey: ${ACCESS_KEY}
+secretKey: ${SECRET_KEY}
+EOF
 
-
-vim /home/lucien/data/rocketmq5.3.3/broker/conf/tools.yml
-
-accessKey: lucien
-secretKey: lucien
-
-vim /home/lucien/data/rocketmq5.3.3/proxy/conf/rmq-proxy.json
-
+cat > "${PROXY_CONF_DIR}/rmq-proxy.json" <<EOF
 {
-    "rocketMQClusterName": "DefaultCluster",
-    "remotingListenPort": 18680,
-    "grpcServerPort": 18681,
-    "enableACL": true,
-    "authenticationEnabled": true,
-    "authenticationProvider": "org.apache.rocketmq.auth.authentication.provider.DefaultAuthenticationProvider",
-    "authenticationMetadataProvider": "org.apache.rocketmq.proxy.auth.ProxyAuthenticationMetadataProvider",
-    "innerClientAuthenticationCredentials": "{\"accessKey\":\"lucien\", \"secretKey\":\"lucien\"}",
-    "enableAclRpcHookForClusterMode": true,
-    "authorizationEnabled": true,
-    "authorizationProvider": "org.apache.rocketmq.auth.authorization.provider.DefaultAuthorizationProvider",
-    "authorizationMetadataProvider": "org.apache.rocketmq.proxy.auth.ProxyAuthorizationMetadataProvider",
-    "migrateAuthFromV1Enabled": true
+  "rocketMQClusterName": "${BROKER_CLUSTER}",
+  "remotingListenPort": 18680,
+  "grpcServerPort": 18681,
+  "enableACL": ${ROCKETMQ_ACL_ENABLE:-true},
+  "authenticationEnabled": ${ROCKETMQ_AUTH_ENABLE:-true},
+  "innerClientAuthenticationCredentials": "{\"accessKey\":\"${ACCESS_KEY}\", \"secretKey\":\"${SECRET_KEY}\"}",
+  "enableAclRpcHookForClusterMode": true,
+  "authorizationEnabled": ${ROCKETMQ_AUTHZ_ENABLE:-true}
 }
+EOF
 
+cat > "${DASHBOARD_CONF_DIR}/users.properties" <<EOF
+admin=${ROCKETMQ_DASHBOARD_PASSWORD:-admin123}
+EOF
 
-vim /home/lucien/data/rocketmq5.3.3/dashboard/conf/users.properties
+chown -R 3000:3000 "${ROCKETMQ_BASE}" || true
 
-# 配置 dashboard 登录账号密码
-admin=lucien
+cat <<EOF
+RocketMQ data prepared under: ${ROCKETMQ_BASE}
 
+Update the following defaults as needed before starting docker-compose:
+  ACCESS_KEY=${ACCESS_KEY}
+  SECRET_KEY=${SECRET_KEY}
+  DASHBOARD_PASSWORD=$(cat "${DASHBOARD_CONF_DIR}/users.properties" | cut -d'=' -f2)
+EOF

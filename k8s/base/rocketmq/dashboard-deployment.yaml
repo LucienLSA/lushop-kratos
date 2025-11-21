@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rocketmq-dashboard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: rocketmq-dashboard
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: rocketmq-dashboard
+    spec:
+      containers:
+        - name: dashboard
+          image: apacherocketmq/rocketmq-dashboard:2.0.1
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                secretKeyRef:
+                  name: rocketmq-credentials
+                  key: dashboard-java-opts
+          ports:
+            - containerPort: 8080
+              name: http
+          volumeMounts:
+            - name: dashboard-users
+              mountPath: /tmp/rocketmq-console/data/users.properties
+              subPath: users.properties
+          readinessProbe:
+            httpGet:
+              path: /login
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 40
+            periodSeconds: 10
+      volumes:
+        - name: dashboard-users
+          secret:
+            secretName: rocketmq-credentials
+            items:
+              - key: users.properties
+                path: users.properties
+
