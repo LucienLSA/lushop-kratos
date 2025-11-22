@@ -31,8 +31,8 @@ WORKDIR /app
 # 从构建阶段复制二进制文件
 COPY --from=builder /app/userauth .
 
-# 复制配置文件
-COPY configs /app/configs
+# 从构建阶段复制配置文件
+COPY --from=builder /src/configs /app/configs
 
 # 暴露端口
 EXPOSE 50056

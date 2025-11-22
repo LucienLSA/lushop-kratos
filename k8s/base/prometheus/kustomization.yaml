@@ -3,7 +3,7 @@ kind: Kustomization
 configMapGenerator:
   - name: prometheus-config
     files:
-      - prometheus.yaml=../../../deploy/prometheus/conf/prometheus.yaml
+      - prometheus.yaml
 generatorOptions:
   disableNameSuffixHash: true
 resources:
