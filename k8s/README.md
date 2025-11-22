@@ -1,151 +1,370 @@
 # Kubernetes 部署指引
 
-该目录提供了将 `lushop` 项目部署到 Kubernetes 集群的基础清单。整体结构：
+该目录提供了将 `lushop` 项目部署到 Kubernetes 集群的完整清单，支持单机部署和生产环境部署。
+
+## 📁 目录结构
 
 ```
 k8s/
-├── base/            # 组件基础清单，可直接 kubectl apply
-│   ├── namespace.yaml
-│   ├── redis/
-│   ├── mysql/
-│   ├── rocketmq/
-│   ├── prometheus/
-│   └── grafana/
-└── overlays/
-    └── dev/         # 示例环境，可在此叠加镜像、资源等差异
+├── base/                    # 基础清单，可直接 kubectl apply
+│   ├── namespace.yaml       # 命名空间
+│   ├── redis/              # Redis 配置
+│   ├── mysql/              # MySQL 配置
+│   ├── nacos/              # Nacos 配置中心
+│   ├── consul/             # Consul 服务注册发现
+│   ├── jaeger/             # Jaeger 链路追踪
+│   ├── rocketmq/           # RocketMQ 消息队列
+│   ├── prometheus/         # Prometheus 监控
+│   ├── grafana/            # Grafana 可视化
+│   └── services/           # 业务服务
+│       ├── user/           # 用户服务
+│       ├── goods/          # 商品服务
+│       ├── order/          # 订单服务
+│       ├── inventory/      # 库存服务
+│       ├── userop/         # 用户操作服务
+│       ├── userauth/       # 认证服务
+│       └── gateway/        # API 网关
+├── overlays/                # 环境覆盖配置（可选）
+│   └── dev/                # 开发环境示例
+├── deploy.sh               # 一键部署脚本
+└── DEPLOY.md               # 详细部署文档
 ```
 
-## 部署步骤（详细）
+## 🚀 快速开始
 
-1. **准备命名空间与存储**
-   - 所有清单默认部署到 `lushop` 命名空间，若需修改请调整 `k8s/base/namespace.yaml` 并在 overlay 中覆盖。
-   - Redis、MySQL、RocketMQ、Prometheus、Grafana 的 PVC/`volumeClaimTemplates` 默认使用集群 `default` StorageClass。如需指定（例如 `local-path`、`rook-ceph`），请在各 YAML 中显式设置 `storageClassName`。
+### 前置要求
 
-2. **准备 Secret 与配置**
-   - 仓库中的 Secret 仅为演示值，部署前务必替换，可通过：
-     - `kustomize edit set secret` 在 base/overlay 中更新；
-     - SealedSecret、External Secrets 或 CI/CD 管道注入真实凭据。
-   - 需要重点替换的 Secret 文件：
-     - `redis-auth`（`k8s/base/redis/secret.yaml`）：Redis 密码。
-     - `mysql-auth`（`k8s/base/mysql/secret.yaml`）：MySQL root/业务账号。
-     - `rocketmq-credentials`（`k8s/base/rocketmq/secret.yaml`）：ACL access/secret key 及 dashboard 登录。
-     - `grafana-admin`（`k8s/base/grafana/secret.yaml`）：Grafana 管理员账号。
-   - Prometheus ConfigMap 来自 `deploy/prometheus/conf/prometheus.yaml`；若需要追加抓取目标，请直接修改该文件或在 overlay 中覆盖。
+- Kubernetes 集群（k3s、minikube、kind 或标准 k8s）
+- kubectl 已配置
+- Docker 已安装并运行（用于构建镜像）
+- 服务镜像已构建（或使用预构建镜像）
 
-3. **应用基础设施组件**
-   ```bash
-   kubectl apply -k k8s/base
-   ```
-   - 使用 `kubectl get pods -n lushop` 观察 Redis、MySQL、RocketMQ（namesrv/broker/proxy/dashboard）、Prometheus、Grafana 均进入 `Ready`。
-   - 也可以在 `k8s/base/<component>` 目录中按组件分步 `kubectl apply -k`。
+### 构建镜像
 
-4. **部署业务服务**
-   - 建议在 `k8s/base` 下新增 `services/` 目录或在 overlay 中维护所有微服务的 `Deployment + Service`。
-   - 通过 ConfigMap/Secret 注入数据库、Redis、RocketMQ 等连接信息；将 `deploy/` 目录中的环境变量迁移到 Kubernetes 配置中以保持一致。
+在部署之前，需要先构建服务镜像：
 
-5. **使用 overlays（可选）**
-   - `k8s/overlays/dev` 为示例，可复制成 `stage`、`prod`。利用 overlay patches 覆盖镜像 tag、副本数、资源限制、Service 类型、NodeSelector 等。
-   - 渲染并部署 overlay：
-     ```bash
-     kustomize build k8s/overlays/dev | kubectl apply -f -
-     ```
+```bash
+cd k8s
 
-6. **监控、可观测与网络暴露**
-   - Prometheus 已挂载抓取配置，可在 ConfigMap 中扩展 ServiceMonitor 或静态 targets。
-   - Grafana 仅提供基础 Deployment 与存储卷，建议引入 ConfigMap/provisioning 目录自动导入数据源与仪表盘。
-   - 所有 Service 默认为 `ClusterIP`，如需外部访问可新增 Ingress、Gateway、LoadBalancer，或直接使用 `kubectl port-forward`。
+# 构建所有镜像（推荐）
+./build-images.sh all
 
-7. **后续运维建议**
-   - 默认副本为 1，适用于本地/测试。生产环境需结合 overlay 调整副本并配置 HPA/VPA、PDB。
-   - 为 Grafana、RocketMQ Dashboard、Prometheus 等敏感组件配置 NetworkPolicy、防火墙或额外认证。
-   - 针对 MySQL、RocketMQ Store、Prometheus 等数据卷规划备份（Velero、快照、CronJob）。
-   - 按需补充 Nacos/Consul、Elasticsearch/Kibana 以及业务服务清单，使其与 `deploy/` 脚本保持一致。
+# 或仅构建服务镜像
+./build-images.sh services
 
-## 自定义建议
+# 或仅构建网关镜像
+./build-images.sh gateway
 
-- **资源与副本**：默认副本为 1，适用于 PoC/测试；生产环境请在 overlay 中扩容并配置 HPA/VPA、PDB。
-- **网络暴露**：默认 `ClusterIP`，根据需要配置 Ingress/Gateway/LoadBalancer 并启用 TLS/认证。
-- **安全**：借助 Secret 管理敏感信息，为 Grafana、RocketMQ Dashboard、Prometheus 等增加 NetworkPolicy 或统一认证机制。
-- **备份**：MySQL、RocketMQ Store、Prometheus 等数据卷需制定备份策略（Velero、快照、CronJob）。
-- **持续扩展**：在 `k8s/` 中持续补充业务服务、Nacos/Consul、Elasticsearch/Kibana 等，使配置与 `deploy/` 脚本对齐。
+# 或构建指定服务
+./build-images.sh user
+./build-images.sh goods
 
-## 单机部署示例（从零开始）
+# 查看已构建的镜像
+./build-images.sh list
+```
 
-> 假设你有一台全新 Linux 云主机（>=4 vCPU / 8 GB RAM / 50 GB SSD）。以下步骤以 k3s 为例，Minikube/kind 同理。
+**注意**: 如果遇到 Docker iptables 错误，请参考 [故障排查](#-故障排查) 部分。
 
-1. **准备环境**
-   1. 安装依赖：
-      ```bash
-      curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--write-kubeconfig-mode 644" sh -
-      sudo ln -sf /usr/local/bin/kubectl /usr/bin/kubectl
-      curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
-      sudo mv kustomize /usr/local/bin/
-      ```
-   2. 验证集群：
-      ```bash
-      kubectl get nodes
-      ```
-      输出 Ready 即可继续。
-   3. 拉取仓库：
-      ```bash
-      git clone https://github.com/<your-org>/lushop-kratos.git
-      cd lushop-kratos
-      ```
+### 一键部署
 
-2. **命名空间与存储**
-   - 默认使用 `lushop` 命名空间。若想变更（例如 `prod`），需同步修改 `k8s/base/namespace.yaml` 与 overlay。
-   - k3s 自动提供 `local-path` StorageClass，不需要额外配置。如果你用 Minikube/kind，请提前启用对应 CSI 或把各组件的 `storageClassName` 改为你实际可用的名称。
+```bash
+cd k8s
 
-3. **配置 Secret 与 ConfigMap**
-   1. 替换示例 Secret，可直接编辑对应文件或使用命令：
-      ```bash
-      cd k8s/base
-      kustomize edit set secret redis-auth --from-literal=password=<redis_pwd>
-      kustomize edit set secret mysql-auth --from-literal=rootPassword=<mysql_root> --from-literal=appPassword=<mysql_app>
-      kustomize edit set secret rocketmq-credentials --from-literal=accessKey=<ak> --from-literal=secretKey=<sk>
-      kustomize edit set secret grafana-admin --from-literal=admin-user=admin --from-literal=admin-password=<grafana_pwd>
-      cd ../../
-      ```
-   2. 将 `deploy/` 目录中的 `.env` 或脚本内环境变量抄写进 ConfigMap/Secret，确保微服务在集群上能读取（推荐放在 `k8s/base/services/config/`）。
-   3. 如需自定义 Prometheus 抓取目标，编辑 `deploy/prometheus/conf/prometheus.yaml` 或在 overlay 中提供 patches。
+# 部署所有服务
+./deploy.sh deploy
 
-4. **部署基础组件**
-   ```bash
-   kubectl apply -k k8s/base
-   kubectl get pods -n lushop
-   ```
-   - 等待所有 Pod 进入 `Running`/`Ready`。如 PVC Pending，可执行 `kubectl describe pvc <name> -n lushop` 查看 storageClass 是否匹配。
-   - RocketMQ 依赖多组件，若其中一个 CrashLoop，使用 `kubectl logs <pod> -n lushop` 排查端口/配置。
+# 查看状态
+./deploy.sh status
 
-5. **部署业务服务**
-   1. 在 `k8s/base/services/` 下为每个微服务创建 `Deployment` 与 `Service`（可参考 `deploy/` 中 docker-compose 的镜像与环境变量）。
-   2. 通过 `envFrom`/`volumeMounts` 引用第 3 步准备好的 ConfigMap/Secret。
-   3. 如果需要按环境差异调整镜像 tag、资源、副本，复制 `k8s/overlays/dev` 为 `k8s/overlays/local-single-node`（或 `prod`），并在 `kustomization.yaml` 中引用对应 patches。
-   4. 应用服务：
-      ```bash
-      kustomize build k8s/overlays/local-single-node | kubectl apply -f -
-      ```
+# 查看日志
+./deploy.sh logs gateway-service
+```
 
-6. **暴露与验证**
-   - 查看服务状态：
-     ```bash
-     kubectl get svc -n lushop
-     ```
-   - 本地调试可 `kubectl port-forward svc/grafana 3000:3000 -n lushop`、`svc/api-gateway 8080:80` 等。
-   - 需要外部访问时创建 Ingress（k3s 自带 Traefik）：
-     ```bash
-     kubectl apply -f k8s/base/ingress/lushop-dashboard.yaml
-     ```
-   - 登录 Grafana（默认 admin/<你的密码>），添加 Prometheus 数据源 `http://prometheus:9090` 并导入仪表盘；访问 RocketMQ Dashboard 验证 ACL。
+### 手动部署
 
-7. **运维加固**
-   - 资源：在 overlay 中为关键服务设置 `resources.requests/limits` 并开启 HPA：
-     ```bash
-     kubectl autoscale deployment api-gateway -n lushop --cpu-percent=80 --min=1 --max=3
-     ```
-   - 网络：为 Grafana、Prometheus、RocketMQ Dashboard 编写 NetworkPolicy 限制来源 IP；单机可使用 `namespaceSelector` + `podSelector`。
-   - 备份：使用 Velero 或 `kubectl cp` + CronJob 对 MySQL 数据卷和 RocketMQ Store 做快照；Prometheus tsdb 同理。
-   - 监控告警：在 Prometheus 中加入 Exporter（node-exporter、kube-state-metrics），并在 Grafana 配置仪表盘/告警规则。
+```bash
+# 部署所有资源
+kubectl apply -k base/
 
-完成以上 7 个步骤，即可在单机环境从零拉起 Kubernetes、部署 `lushop` 所需中间件与业务服务，并具备基本的访问、监控与运维能力。
+# 或分步部署
+kubectl apply -k base/redis
+kubectl apply -k base/mysql
+kubectl apply -k base/nacos
+kubectl apply -k base/consul
+kubectl apply -k base/jaeger
+kubectl apply -k base/services/
+```
+
+## 📋 部署步骤（详细）
+
+### 1. 准备命名空间与存储
+
+- 所有清单默认部署到 `lushop` 命名空间
+- Redis、MySQL、RocketMQ、Prometheus 的 PVC 默认使用集群 `default` StorageClass
+- 如需指定 StorageClass（例如 `local-path`、`rook-ceph`），请在各 YAML 中显式设置 `storageClassName`
+
+### 2. 准备 Secret 与配置
+
+**重要**: 仓库中的 Secret 仅为演示值，部署前务必替换！
+
+需要替换的 Secret：
+- `redis-auth`（`k8s/base/redis/secret.yaml`）：Redis 密码
+- `mysql-auth`（`k8s/base/mysql/secret.yaml`）：MySQL root/业务账号
+- `nacos-auth`（`k8s/base/nacos/secret.yaml`）：Nacos MySQL 连接信息
+- `rocketmq-credentials`（`k8s/base/rocketmq/secret.yaml`）：RocketMQ ACL 凭据
+- `grafana-admin`（`k8s/base/grafana/secret.yaml`）：Grafana 管理员账号
+
+### 3. 初始化数据库
+
+部署 MySQL 后，需要初始化数据库：
+
+```bash
+# 等待 MySQL 就绪
+kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=mysql -n lushop --timeout=300s
+
+# 导入数据库脚本（使用 port-forward）
+kubectl port-forward -n lushop svc/mysql 3306:3306
+mysql -h 127.0.0.1 -uroot -proot123456 < scripts/init_db.sql
+```
+
+### 4. 配置 Nacos
+
+1. 等待 Nacos 就绪
+2. 访问 Nacos 控制台: http://localhost:8848/nacos (nacos/nacos)
+3. 创建命名空间: `de9c6a0e-1fbc-425d-8d3b-09066fea6889`
+4. 为每个服务创建配置（参考 `service/*/configs/nacos-config.yaml`）
+
+### 5. 应用基础设施组件
+
+```bash
+kubectl apply -k k8s/base
+```
+
+使用 `kubectl get pods -n lushop` 观察所有组件进入 `Ready` 状态。
+
+### 6. 部署业务服务
+
+业务服务配置在 `k8s/base/services/` 目录下，通过 ConfigMap 注入配置。
+
+### 7. 使用 overlays（可选）
+
+`k8s/overlays/dev` 为示例，可复制成 `stage`、`prod`。利用 overlay patches 覆盖镜像 tag、副本数、资源限制等。
+
+```bash
+kustomize build k8s/overlays/dev | kubectl apply -f -
+```
+
+## 🔧 配置说明
+
+### 服务端口映射
+
+| 服务 | HTTP 端口 | gRPC 端口 | 说明 |
+|------|-----------|-----------|------|
+| Gateway | 8001 | 9001 | API 网关（NodePort: 30080/30090） |
+| User | 8011 | 50051 | 用户服务 |
+| Goods | 8012 | 50052 | 商品服务 |
+| Order | 8013 | 50053 | 订单服务 |
+| Inventory | 8014 | 50054 | 库存服务 |
+| UserOp | 8015 | 50055 | 用户操作服务 |
+| UserAuth | 8016 | 50056 | 认证服务 |
+
+### 资源配置
+
+**单机测试环境**（默认）:
+- 请求: 128Mi 内存, 100m CPU
+- 限制: 512Mi 内存, 500m CPU
+- 副本数: 1
+
+**生产环境建议**:
+- 根据实际负载调整资源限制
+- 增加副本数实现高可用
+- 配置 HPA/VPA 自动扩缩容
+
+### 存储配置
+
+- MySQL: 20Gi PVC
+- Redis: 5Gi PVC
+- RocketMQ: 10Gi PVC
+- Prometheus: 10Gi PVC
+
+## 🌐 访问服务
+
+### NodePort（已配置）
+
+Gateway 服务已配置为 NodePort：
+
+```bash
+# 获取节点 IP
+NODE_IP=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[?(@.type=="InternalIP")].address}')
+
+# 访问 API
+curl http://$NODE_IP:30080/api/goods/list
+```
+
+### Port Forward
+
+```bash
+# 转发 Gateway 服务
+kubectl port-forward -n lushop svc/gateway-service 8001:8001
+
+# 访问 API
+curl http://localhost:8001/api/goods/list
+```
+
+### Ingress（需要安装 Ingress Controller）
+
+参考 `DEPLOY.md` 中的 Ingress 配置示例。
+
+## 📊 监控与可观测
+
+- **Prometheus**: 服务监控指标收集
+- **Grafana**: 可视化仪表盘
+- **Jaeger**: 分布式链路追踪（端口 16686）
+
+访问方式：
+```bash
+# Prometheus
+kubectl port-forward -n lushop svc/prometheus 9090:9090
+
+# Grafana
+kubectl port-forward -n lushop svc/grafana 3000:3000
+
+# Jaeger
+kubectl port-forward -n lushop svc/jaeger 16686:16686
+```
+
+## 🐛 故障排查
+
+### Docker 构建问题
+
+**问题**: `iptables: no such file or directory` 或网络相关错误
+
+**解决方案**:
+```bash
+# 1. 检查 iptables 是否安装
+sudo apt-get install iptables -y  # Ubuntu/Debian
+sudo yum install iptables -y      # CentOS/RHEL
+
+# 2. 重启 Docker 服务
+sudo systemctl restart docker
+
+# 3. 检查 Docker 网络
+docker network ls
+docker network inspect bridge
+
+# 4. 如果使用 rootless Docker，可能需要配置
+# 参考: https://docs.docker.com/engine/security/rootless/
+```
+
+**问题**: 构建时找不到目录
+
+**解决方案**:
+- 确保在项目根目录执行构建脚本
+- 使用提供的 `build-images.sh` 脚本，它会自动处理路径问题
+
+### Pod 无法启动
+
+```bash
+# 查看 Pod 状态
+kubectl describe pod <pod-name> -n lushop
+
+# 查看日志
+kubectl logs <pod-name> -n lushop
+
+# 查看事件
+kubectl get events -n lushop --sort-by='.lastTimestamp'
+```
+
+### 服务无法连接
+
+```bash
+# 检查服务端点
+kubectl get endpoints -n lushop
+
+# 测试 DNS 解析
+kubectl run -it --rm debug --image=busybox --restart=Never -- nslookup user-service.lushop.svc.cluster.local
+
+# 测试服务连通性
+kubectl run -it --rm debug --image=curlimages/curl --restart=Never -- curl http://user-service.lushop.svc.cluster.local:8011/health
+```
+
+### 配置问题
+
+```bash
+# 查看 ConfigMap
+kubectl get configmap -n lushop
+kubectl describe configmap <configmap-name> -n lushop
+
+# 查看 Secret
+kubectl get secret -n lushop
+kubectl describe secret <secret-name> -n lushop
+```
+
+### 镜像拉取失败
+
+```bash
+# 检查镜像是否存在
+docker images | grep lushop
+
+# 如果使用私有仓库，检查镜像拉取 Secret
+kubectl get secret -n lushop | grep docker
+
+# 如果镜像在本地，需要导入到集群
+# 对于 kind: kind load docker-image lushop/user:latest
+# 对于 minikube: minikube image load lushop/user:latest
+# 对于 k3s: 使用 k3d 或直接使用本地镜像
+```
+
+## 📝 后续优化建议
+
+1. **高可用**: 增加副本数，配置 HPA/VPA、PDB
+2. **监控**: 配置 ServiceMonitor，完善 Prometheus 监控
+3. **日志**: 集成 ELK 或 Loki 进行日志收集
+4. **安全**: 配置 NetworkPolicy，使用 TLS 加密，SealedSecret 管理敏感信息
+5. **备份**: MySQL、RocketMQ Store、Prometheus 等数据卷需制定备份策略（Velero、快照、CronJob）
+6. **CI/CD**: 集成 CI/CD 流水线自动构建和部署
+7. **持续扩展**: 补充 Elasticsearch/Kibana、完善业务服务配置
+
+## 📚 相关文档
+
+- [详细部署文档](DEPLOY.md) - 完整的部署步骤和配置说明
+- [项目主 README](../README.md) - 项目架构和功能介绍
+
+## 🔗 快速命令参考
+
+### 镜像构建
+
+```bash
+# 构建所有镜像
+./build-images.sh all
+
+# 构建指定服务
+./build-images.sh user
+./build-images.sh gateway
+
+# 查看镜像列表
+./build-images.sh list
+```
+
+### 服务部署
+
+```bash
+# 部署所有服务
+./deploy.sh deploy
+
+# 删除所有服务
+./deploy.sh delete
+
+# 查看状态
+./deploy.sh status
+
+# 查看日志
+./deploy.sh logs [service-name]
+
+# 仅部署基础设施
+./deploy.sh infrastructure
+
+# 仅部署业务服务
+./deploy.sh services
+```
 

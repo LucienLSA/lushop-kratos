@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nacos-config
+data:
+  application.properties: |
+    server.contextPath=/nacos
+    server.servlet.contextPath=/nacos
+    server.port=8848
+    spring.datasource.platform=mysql
+    db.num=1
+    db.url.0=jdbc:mysql://mysql:3306/nacos?characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useUnicode=true&useSSL=false&serverTimezone=UTC
+    db.user.0=root
+    db.password.0=root123456
+    nacos.cmdb.dumpTaskInterval=3600
+    nacos.cmdb.eventTaskInterval=10
+    nacos.cmdb.labelTaskInterval=300
+    nacos.cmdb.loadDataAtStart=false
+    management.endpoints.web.exposure.include=*
+    management.metrics.export.prometheus.enabled=true
+    server.tomcat.accesslog.enabled=true
+    server.tomcat.accesslog.pattern=%h %l %u %t "%r" %s %b %D %{User-Agent}i
+    nacos.security.ignore.urls=/,/error,/**/css/**,/**/js/**,/**/html/**,/**/img/**,/**/fonts/**,/**/favicon.ico,/**/*.map
+    nacos.core.auth.system.type=nacos
+    nacos.core.auth.enabled=true
+    nacos.core.auth.default.token.secret.key=SecretKey012345678901234567890123456789012345678901234567890123456789
+    nacos.core.auth.default.token.expire.seconds=18000
+    nacos.core.auth.caching.enabled=true
+

@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consul
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: consul
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: consul
+    spec:
+      containers:
+        - name: consul
+          image: hashicorp/consul:1.16
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8500
+              name: http
+            - containerPort: 8301
+              name: serf-lan
+            - containerPort: 8302
+              name: serf-wan
+            - containerPort: 8300
+              name: server
+            - containerPort: 8600
+              name: dns
+              protocol: UDP
+          args:
+            - agent
+            - -dev
+            - -client=0.0.0.0
+          readinessProbe:
+            httpGet:
+              path: /v1/status/leader
+              port: 8500
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /v1/status/leader
+              port: 8500
+            initialDelaySeconds: 20
+            periodSeconds: 10
+

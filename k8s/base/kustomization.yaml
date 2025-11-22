@@ -3,9 +3,21 @@ kind: Kustomization
 namespace: lushop
 resources:
   - namespace.yaml
+  # 基础设施
   - redis
   - mysql
   - rocketmq
   - prometheus
   - grafana
+  - nacos
+  - consul
+  - jaeger
+  # 业务服务
+  - services/user
+  - services/goods
+  - services/order
+  - services/inventory
+  - services/userop
+  - services/userauth
+  - services/gateway
 

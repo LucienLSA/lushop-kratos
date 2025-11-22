@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: userop-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: userop-service
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: userop-service
+    spec:
+      containers:
+        - name: userop
+          image: lushop/userop:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8015
+              name: http
+            - containerPort: 50055
+              name: grpc
+          volumeMounts:
+            - name: config
+              mountPath: /data/conf
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          readinessProbe:
+            tcpSocket:
+              port: 50055
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 50055
+            initialDelaySeconds: 30
+            periodSeconds: 10
+      volumes:
+        - name: config
+          configMap:
+            name: userop-config
+
