@@ -912,6 +912,8 @@ open coverage.html
 ### 📖 项目文档
 - [📊 项目分析总结](docs/PROJECT_ANALYSIS.md) - **项目优势、存在的问题、改进方向** ⭐
 - [🐳 Docker 部署指南](docs/DOCKER_DEPLOY.md) - 完整部署文档
+- [🖥️ Ubuntu 24.04 单机部署指南](docs/UBUNTU_SINGLE_NODE_DEPLOY.md) - **Ubuntu 服务器单机部署详细教程** ⭐
+- [☸️ Kubernetes 部署指引](k8s/README.md) - Kubernetes 集群部署文档
 - [📂 项目结构说明](docs/PROJECT_STRUCTURE.md) - 项目目录结构
 - [🧪 测试计划](docs/LUSHOP_TESTING_PLAN.md) - 测试策略和计划
 - [🛡️ Sentinel 限流调用流程](lushop/docs/SENTINEL_CALL_FLOW.md) - **Sentinel 限流实现详解** ⭐

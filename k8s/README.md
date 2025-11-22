@@ -16,6 +16,8 @@ k8s/
 │   ├── rocketmq/           # RocketMQ 消息队列
 │   ├── prometheus/         # Prometheus 监控
 │   ├── grafana/            # Grafana 可视化
+│   ├── elasticsearch/      # Elasticsearch 日志存储
+│   ├── kibana/             # Kibana 日志可视化
 │   └── services/           # 业务服务
 │       ├── user/           # 用户服务
 │       ├── goods/          # 商品服务
@@ -92,6 +94,8 @@ kubectl apply -k base/mysql
 kubectl apply -k base/nacos
 kubectl apply -k base/consul
 kubectl apply -k base/jaeger
+kubectl apply -k base/elasticsearch
+kubectl apply -k base/kibana
 kubectl apply -k base/services/
 ```
 
@@ -113,6 +117,7 @@ kubectl apply -k base/services/
 - `nacos-auth`（`k8s/base/nacos/secret.yaml`）：Nacos MySQL 连接信息
 - `rocketmq-credentials`（`k8s/base/rocketmq/secret.yaml`）：RocketMQ ACL 凭据
 - `grafana-admin`（`k8s/base/grafana/secret.yaml`）：Grafana 管理员账号
+- `elasticsearch-auth`（`k8s/base/elasticsearch/secret.yaml`）：Elasticsearch/Kibana 密码
 
 ### 3. 初始化数据库
 
@@ -171,9 +176,13 @@ kustomize build k8s/overlays/dev | kubectl apply -f -
 ### 资源配置
 
 **单机测试环境**（默认）:
-- 请求: 128Mi 内存, 100m CPU
-- 限制: 512Mi 内存, 500m CPU
+- 业务服务请求: 128Mi 内存, 100m CPU
+- 业务服务限制: 512Mi 内存, 500m CPU
+- Gateway 请求: 256Mi 内存, 200m CPU
+- Gateway 限制: 1Gi 内存, 1000m CPU
 - 副本数: 1
+- 所有服务已配置启动探针、就绪探针和存活探针
+- 已添加时区和日志级别环境变量
 
 **生产环境建议**:
 - 根据实际负载调整资源限制
@@ -186,6 +195,7 @@ kustomize build k8s/overlays/dev | kubectl apply -f -
 - Redis: 5Gi PVC
 - RocketMQ: 10Gi PVC
 - Prometheus: 10Gi PVC
+- Elasticsearch: 20Gi PVC (数据) + 5Gi PVC (日志)
 
 ## 🌐 访问服务
 
@@ -220,6 +230,8 @@ curl http://localhost:8001/api/goods/list
 - **Prometheus**: 服务监控指标收集
 - **Grafana**: 可视化仪表盘
 - **Jaeger**: 分布式链路追踪（端口 16686）
+- **Elasticsearch**: 日志存储和搜索（端口 9200）
+- **Kibana**: 日志可视化和分析（端口 5601，NodePort: 30561）
 
 访问方式：
 ```bash
@@ -231,6 +243,20 @@ kubectl port-forward -n lushop svc/grafana 3000:3000
 
 # Jaeger
 kubectl port-forward -n lushop svc/jaeger 16686:16686
+
+# Elasticsearch
+kubectl port-forward -n lushop svc/elasticsearch 9200:9200
+# 或直接访问: http://localhost:9200
+# 默认用户名: elastic，密码在 elasticsearch-auth secret 中
+
+# Kibana
+# 方式1: NodePort (如果集群支持)
+NODE_IP=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[?(@.type=="InternalIP")].address}')
+# 访问: http://$NODE_IP:30561
+# 方式2: Port Forward
+kubectl port-forward -n lushop svc/kibana 5601:5601
+# 访问: http://localhost:5601
+# 默认用户名: elastic，密码在 elasticsearch-auth secret 中
 ```
 
 ## 🐛 故障排查
@@ -319,11 +345,11 @@ kubectl get secret -n lushop | grep docker
 
 1. **高可用**: 增加副本数，配置 HPA/VPA、PDB
 2. **监控**: 配置 ServiceMonitor，完善 Prometheus 监控
-3. **日志**: 集成 ELK 或 Loki 进行日志收集
+3. **日志**: 已集成 Elasticsearch/Kibana，可配置 Filebeat 或 Logstash 进行日志收集
 4. **安全**: 配置 NetworkPolicy，使用 TLS 加密，SealedSecret 管理敏感信息
-5. **备份**: MySQL、RocketMQ Store、Prometheus 等数据卷需制定备份策略（Velero、快照、CronJob）
+5. **备份**: MySQL、RocketMQ Store、Prometheus、Elasticsearch 等数据卷需制定备份策略（Velero、快照、CronJob）
 6. **CI/CD**: 集成 CI/CD 流水线自动构建和部署
-7. **持续扩展**: 补充 Elasticsearch/Kibana、完善业务服务配置
+7. **服务配置**: 已完善业务服务配置，包括健康检查、环境变量、资源限制等
 
 ## 📚 相关文档
 

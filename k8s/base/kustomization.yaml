@@ -12,6 +12,8 @@ resources:
   - nacos
   - consul
   - jaeger
+  - elasticsearch
+  - kibana
   # 业务服务
   - services/user
   - services/goods

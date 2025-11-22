@@ -21,6 +21,11 @@ spec:
               name: http
             - containerPort: 50054
               name: grpc
+          env:
+            - name: TZ
+              value: "Asia/Shanghai"
+            - name: LOG_LEVEL
+              value: "info"
           volumeMounts:
             - name: config
               mountPath: /data/conf
@@ -31,16 +36,27 @@ spec:
             limits:
               memory: "512Mi"
               cpu: "500m"
-          readinessProbe:
+          startupProbe:
             tcpSocket:
               port: 50054
             initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 30
+          readinessProbe:
+            tcpSocket:
+              port: 50054
+            initialDelaySeconds: 5
             periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
           livenessProbe:
             tcpSocket:
               port: 50054
             initialDelaySeconds: 30
             periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
       volumes:
         - name: config
           configMap:
