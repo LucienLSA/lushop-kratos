@@ -1,0 +1,53 @@
+name: Deploy to Kubernetes
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: 'Image tag to deploy (sha or tag)'
+        required: true
+        default: '${{ github.sha }}'
+      service:
+        description: 'Service to deploy (e.g. goods)'
+        required: true
+        default: 'goods'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_TAG: ${{ github.event.inputs.image_tag }}
+      SERVICE: ${{ github.event.inputs.service }}
+      REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
+      PREFIX: ${{ secrets.IMAGE_REPOSITORY_PREFIX }}
+      NAMESPACE: ${{ secrets.K8S_NAMESPACE }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+
+      - name: Configure kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 --decode > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+
+      - name: Verify cluster access
+        run: kubectl version --client && kubectl get ns
+
+      - name: Update deployment image
+        run: |
+          IMAGE="${REGISTRY}/${PREFIX}/${SERVICE}:${IMAGE_TAG}"
+          echo "Setting image for deployment ${SERVICE} -> ${IMAGE}"
+          kubectl -n "${NAMESPACE}" set image deployment/${SERVICE} ${SERVICE}=${IMAGE} --record
+
+      - name: Wait rollout
+        run: |
+          kubectl -n "${NAMESPACE}" rollout status deployment/${SERVICE} --timeout=2m
+
+

@@ -1,0 +1,93 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Build & Test Services
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: lushop
+            path: lushop
+          - name: goods
+            path: service/goods
+          - name: inventory
+            path: service/inventory
+          - name: order
+            path: service/order
+          - name: user
+            path: service/user
+          - name: userauth
+            path: service/userauth
+          - name: userop
+            path: service/userop
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.20'
+
+      - name: Cache Go modules and build cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Install golangci-lint
+        run: |
+          set -e
+          # install a pinned version of golangci-lint for checks
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.53.3
+
+      - name: Run checks, tests and build
+        env:
+          SERVICE_NAME: ${{ matrix.name }}
+          SERVICE_PATH: ${{ matrix.path }}
+        run: |
+          set -euo pipefail
+          echo "Service: $SERVICE_NAME Path: $SERVICE_PATH"
+          # Move into the service directory
+          cd "$SERVICE_PATH"
+          echo "Running gofmt..."
+          gofmt -l .
+          echo "Running go vet..."
+          go vet ./...
+          echo "Running golangci-lint..."
+          golangci-lint run ./... || true
+          echo "Running tests..."
+          go test ./...
+          echo "Building binary..."
+          mkdir -p ../build
+          go build -o ../build/"${SERVICE_NAME}" ./...
+          cd -
+          echo "Attempting docker build (local verification only)..."
+          if [ -f "${{ matrix.path }}/Dockerfile" ]; then
+            docker build --file "${{ matrix.path }}/Dockerfile" --tag "${SERVICE_NAME}:ci-${{ github.sha }}" "${{ matrix.path }}" || true
+          else
+            echo "No Dockerfile found for ${SERVICE_NAME}, skipping docker build."
+          fi
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.name }}-build
+          path: |
+            build/${{ matrix.name }}
+            # include any logs or files in build dir
+
+
