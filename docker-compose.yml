@@ -1,0 +1,342 @@
+version: '3.8'
+
+services:
+  # Infrastructure Services
+  mysql:
+    image: mysql:8.0
+    container_name: lushop-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: lushop
+      MYSQL_USER: lushop
+      MYSQL_PASSWORD: lushoppass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./scripts/datasources:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: lushop-redis
+    restart: always
+    command: redis-server --requirepass redispass
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      timeout: 20s
+      retries: 10
+
+  consul:
+    image: consul:1.15
+    container_name: lushop-consul
+    restart: always
+    ports:
+      - "8500:8500"
+      - "8600:8600/udp"
+    command: agent -server -bootstrap -ui -node=server-1 -client=0.0.0.0
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8500/v1/status/leader"]
+      timeout: 20s
+      retries: 10
+
+  nacos:
+    image: nacos/nacos-server:v2.2.3
+    container_name: lushop-nacos
+    restart: always
+    environment:
+      MODE: standalone
+      SPRING_DATASOURCE_PLATFORM: mysql
+      MYSQL_SERVICE_HOST: mysql
+      MYSQL_SERVICE_PORT: 3306
+      MYSQL_SERVICE_DB_NAME: nacos
+      MYSQL_SERVICE_USER: nacos
+      MYSQL_SERVICE_PASSWORD: nacospass
+      MYSQL_SERVICE_DB_PARAM: characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useSSL=false
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+      - "9849:9849"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8848/nacos/v1/console/health/readiness"]
+      timeout: 20s
+      retries: 10
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.47
+    container_name: lushop-jaeger
+    restart: always
+    ports:
+      - "16686:16686"
+      - "14268:14268"
+    environment:
+      COLLECTOR_OTLP_ENABLED: true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:14269/health"]
+      timeout: 20s
+      retries: 10
+
+  rocketmq-namesrv:
+    image: apache/rocketmq:5.1.4
+    container_name: lushop-rocketmq-namesrv
+    restart: always
+    ports:
+      - "9876:9876"
+    command: sh mqnamesrv
+    healthcheck:
+      test: ["CMD", "sh", "-c", "echo 'namesrv' | nc localhost 9876"]
+      timeout: 20s
+      retries: 10
+
+  rocketmq-broker:
+    image: apache/rocketmq:5.1.4
+    container_name: lushop-rocketmq-broker
+    restart: always
+    ports:
+      - "10909:10909"
+      - "10911:10911"
+      - "10912:10912"
+    command: sh mqbroker -n rocketmq-namesrv:9876 -c /opt/rocketmq-5.1.4/conf/broker.conf
+    depends_on:
+      rocketmq-namesrv:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "sh", "-c", "echo 'broker' | nc localhost 10911"]
+      timeout: 20s
+      retries: 10
+
+  # Application Services
+  lushop-gateway:
+    build:
+      context: ./lushop
+      dockerfile: Dockerfile
+    container_name: lushop-gateway
+    restart: always
+    ports:
+      - "8001:8001"
+      - "9001:9001"
+    environment:
+      - NACOS_ADDR=127.0.0.1:8848
+      - CONSUL_ADDR=127.0.0.1:8500
+      - MYSQL_HOST=mysql:3306
+      - MYSQL_USER=lushop
+      - MYSQL_PASSWORD=lushoppass
+      - MYSQL_DATABASE=lushop
+      - REDIS_ADDR=redis:6379
+      - REDIS_PASSWORD=redispass
+      - JAEGER_ENDPOINT=http://jaeger:14268/api/traces
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
+      nacos:
+        condition: service_healthy
+      jaeger:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      timeout: 20s
+      retries: 10
+
+  goods-service:
+    build:
+      context: ./service/goods
+      dockerfile: Dockerfile
+    container_name: lushop-goods
+    restart: always
+    ports:
+      - "50052:50051"
+    environment:
+      - NACOS_ADDR=nacos:8848
+      - CONSUL_ADDR=consul:8500
+      - MYSQL_HOST=mysql:3306
+      - MYSQL_USER=lushop
+      - MYSQL_PASSWORD=lushoppass
+      - MYSQL_DATABASE=lushop_goods_srv
+      - REDIS_ADDR=redis:6379
+      - REDIS_PASSWORD=redispass
+      - JAEGER_ENDPOINT=http://jaeger:14268/api/traces
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
+      nacos:
+        condition: service_healthy
+      jaeger:
+        condition: service_healthy
+
+  inventory-service:
+    build:
+      context: ./service/inventory
+      dockerfile: Dockerfile
+    container_name: lushop-inventory
+    restart: always
+    ports:
+      - "50054:50051"
+    environment:
+      - NACOS_ADDR=nacos:8848
+      - CONSUL_ADDR=consul:8500
+      - MYSQL_HOST=mysql:3306
+      - MYSQL_USER=lushop
+      - MYSQL_PASSWORD=lushoppass
+      - MYSQL_DATABASE=lushop_inventory_srv
+      - REDIS_ADDR=redis:6379
+      - REDIS_PASSWORD=redispass
+      - JAEGER_ENDPOINT=http://jaeger:14268/api/traces
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
+      nacos:
+        condition: service_healthy
+      jaeger:
+        condition: service_healthy
+
+  order-service:
+    build:
+      context: ./service/order
+      dockerfile: Dockerfile
+    container_name: lushop-order
+    restart: always
+    ports:
+      - "50053:50051"
+    environment:
+      - NACOS_ADDR=nacos:8848
+      - CONSUL_ADDR=consul:8500
+      - MYSQL_HOST=mysql:3306
+      - MYSQL_USER=lushop
+      - MYSQL_PASSWORD=lushoppass
+      - MYSQL_DATABASE=lushop_order_srv
+      - REDIS_ADDR=redis:6379
+      - REDIS_PASSWORD=redispass
+      - JAEGER_ENDPOINT=http://jaeger:14268/api/traces
+      - ROCKETMQ_NAMESRV_ADDR=rocketmq-namesrv:9876
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
+      nacos:
+        condition: service_healthy
+      jaeger:
+        condition: service_healthy
+      rocketmq-namesrv:
+        condition: service_healthy
+      rocketmq-broker:
+        condition: service_healthy
+
+  user-service:
+    build:
+      context: ./service/user
+      dockerfile: Dockerfile
+    container_name: lushop-user
+    restart: always
+    ports:
+      - "50051:50051"
+    environment:
+      - NACOS_ADDR=nacos:8848
+      - CONSUL_ADDR=consul:8500
+      - MYSQL_HOST=mysql:3306
+      - MYSQL_USER=lushop
+      - MYSQL_PASSWORD=lushoppass
+      - MYSQL_DATABASE=lushop_user_srv
+      - REDIS_ADDR=redis:6379
+      - REDIS_PASSWORD=redispass
+      - JAEGER_ENDPOINT=http://jaeger:14268/api/traces
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
+      nacos:
+        condition: service_healthy
+      jaeger:
+        condition: service_healthy
+
+  userauth-service:
+    build:
+      context: ./service/userauth
+      dockerfile: Dockerfile
+    container_name: lushop-userauth
+    restart: always
+    ports:
+      - "50056:50051"
+    environment:
+      - NACOS_ADDR=nacos:8848
+      - CONSUL_ADDR=consul:8500
+      - MYSQL_HOST=mysql:3306
+      - MYSQL_USER=lushop
+      - MYSQL_PASSWORD=lushoppass
+      - MYSQL_DATABASE=lushop_user_srv
+      - REDIS_ADDR=redis:6379
+      - REDIS_PASSWORD=redispass
+      - JAEGER_ENDPOINT=http://jaeger:14268/api/traces
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
+      nacos:
+        condition: service_healthy
+      jaeger:
+        condition: service_healthy
+
+  userop-service:
+    build:
+      context: ./service/userop
+      dockerfile: Dockerfile
+    container_name: lushop-userop
+    restart: always
+    ports:
+      - "50055:50051"
+    environment:
+      - NACOS_ADDR=nacos:8848
+      - CONSUL_ADDR=consul:8500
+      - MYSQL_HOST=mysql:3306
+      - MYSQL_USER=lushop
+      - MYSQL_PASSWORD=lushoppass
+      - MYSQL_DATABASE=lushop_user_srv
+      - REDIS_ADDR=redis:6379
+      - REDIS_PASSWORD=redispass
+      - JAEGER_ENDPOINT=http://jaeger:14268/api/traces
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
+      nacos:
+        condition: service_healthy
+      jaeger:
+        condition: service_healthy
+
+volumes:
+  mysql_data:
+  redis_data:

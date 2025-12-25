@@ -1,0 +1,55 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: lushop
+
+# Include all resource files
+resources:
+  - namespace.yaml
+  - common-configmap.yaml
+  - common-secret.yaml
+  - deployments.yaml
+  - services.yaml
+  - ingress.yaml
+
+# Common labels applied to all resources
+commonLabels:
+  app.kubernetes.io/name: lushop
+  app.kubernetes.io/version: v1.0.0
+  app.kubernetes.io/component: microservice
+  app.kubernetes.io/part-of: lushop-system
+
+# Namespace for all resources
+namespace: lushop
+
+# Image transformations
+images:
+  - name: crpi-t2nj22cqo7df6n3a.cn-shanghai.personal.cr.aliyuncs.com/aliyun1123466419/lushop
+    newTag: latest
+  - name: crpi-t2nj22cqo7df6n3a.cn-shanghai.personal.cr.aliyuncs.com/aliyun1123466419/goods
+    newTag: latest
+  - name: crpi-t2nj22cqo7df6n3a.cn-shanghai.personal.cr.aliyuncs.com/aliyun1123466419/inventory
+    newTag: latest
+  - name: crpi-t2nj22cqo7df6n3a.cn-shanghai.personal.cr.aliyuncs.com/aliyun1123466419/order
+    newTag: latest
+  - name: crpi-t2nj22cqo7df6n3a.cn-shanghai.personal.cr.aliyuncs.com/aliyun1123466419/user
+    newTag: latest
+  - name: crpi-t2nj22cqo7df6n3a.cn-shanghai.personal.cr.aliyuncs.com/aliyun1123466419/userauth
+    newTag: latest
+  - name: crpi-t2nj22cqo7df6n3a.cn-shanghai.personal.cr.aliyuncs.com/aliyun1123466419/userop
+    newTag: latest
+
+# ConfigMap generator (alternative way to create configmaps)
+# configMapGenerator:
+# - name: lushop-config
+#   literals:
+#   - APP_ENV=production
+#   - LOG_LEVEL=info
+
+# Secret generator (alternative way to create secrets)
+# secretGenerator:
+# - name: lushop-secret
+#   literals:
+#   - MYSQL_PASSWORD=lushoppass
+#   - REDIS_PASSWORD=redispass

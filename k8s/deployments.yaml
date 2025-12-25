@@ -1,0 +1,371 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lushop-gateway
+  namespace: lushop
+  labels:
+    app: lushop-gateway
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: lushop-gateway
+  template:
+    metadata:
+      labels:
+        app: lushop-gateway
+    spec:
+      containers:
+      - name: lushop-gateway
+        image: crpi-t2nj22cqo7df6n3a.cn-shanghai.personal.cr.aliyuncs.com/aliyun1123466419/lushop:latest
+        ports:
+        - containerPort: 8000
+          name: http
+        - containerPort: 9000
+          name: grpc
+        envFrom:
+        - configMapRef:
+            name: lushop-config
+        - secretRef:
+            name: lushop-secret
+        env:
+        - name: SERVICE_NAME
+          value: "lushop-gateway"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: goods-service
+  namespace: lushop
+  labels:
+    app: goods-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: goods-service
+  template:
+    metadata:
+      labels:
+        app: goods-service
+    spec:
+      containers:
+      - name: goods-service
+        image: crpi-t2nj22cqo7df6n3a.cn-shanghai.personal.cr.aliyuncs.com/aliyun1123466419/goods:latest
+        ports:
+        - containerPort: 8000
+          name: http
+        - containerPort: 9000
+          name: grpc
+        envFrom:
+        - configMapRef:
+            name: lushop-config
+        - secretRef:
+            name: lushop-secret
+        env:
+        - name: SERVICE_NAME
+          value: "goods-service"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory-service
+  namespace: lushop
+  labels:
+    app: inventory-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: inventory-service
+  template:
+    metadata:
+      labels:
+        app: inventory-service
+    spec:
+      containers:
+      - name: inventory-service
+        image: crpi-t2nj22cqo7df6n3a.cn-shanghai.personal.cr.aliyuncs.com/aliyun1123466419/inventory:latest
+        ports:
+        - containerPort: 8000
+          name: http
+        - containerPort: 9000
+          name: grpc
+        envFrom:
+        - configMapRef:
+            name: lushop-config
+        - secretRef:
+            name: lushop-secret
+        env:
+        - name: SERVICE_NAME
+          value: "inventory-service"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-service
+  namespace: lushop
+  labels:
+    app: order-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: order-service
+  template:
+    metadata:
+      labels:
+        app: order-service
+    spec:
+      containers:
+      - name: order-service
+        image: crpi-t2nj22cqo7df6n3a.cn-shanghai.personal.cr.aliyuncs.com/aliyun1123466419/order:latest
+        ports:
+        - containerPort: 8000
+          name: http
+        - containerPort: 9000
+          name: grpc
+        envFrom:
+        - configMapRef:
+            name: lushop-config
+        - secretRef:
+            name: lushop-secret
+        env:
+        - name: SERVICE_NAME
+          value: "order-service"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  namespace: lushop
+  labels:
+    app: user-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+      - name: user-service
+        image: crpi-t2nj22cqo7df6n3a.cn-shanghai.personal.cr.aliyuncs.com/aliyun1123466419/user:latest
+        ports:
+        - containerPort: 8000
+          name: http
+        - containerPort: 9000
+          name: grpc
+        envFrom:
+        - configMapRef:
+            name: lushop-config
+        - secretRef:
+            name: lushop-secret
+        env:
+        - name: SERVICE_NAME
+          value: "user-service"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: userauth-service
+  namespace: lushop
+  labels:
+    app: userauth-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: userauth-service
+  template:
+    metadata:
+      labels:
+        app: userauth-service
+    spec:
+      containers:
+      - name: userauth-service
+        image: crpi-t2nj22cqo7df6n3a.cn-shanghai.personal.cr.aliyuncs.com/aliyun1123466419/userauth:latest
+        ports:
+        - containerPort: 8000
+          name: http
+        - containerPort: 9000
+          name: grpc
+        envFrom:
+        - configMapRef:
+            name: lushop-config
+        - secretRef:
+            name: lushop-secret
+        env:
+        - name: SERVICE_NAME
+          value: "userauth-service"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: userop-service
+  namespace: lushop
+  labels:
+    app: userop-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: userop-service
+  template:
+    metadata:
+      labels:
+        app: userop-service
+    spec:
+      containers:
+      - name: userop-service
+        image: crpi-t2nj22cqo7df6n3a.cn-shanghai.personal.cr.aliyuncs.com/aliyun1123466419/userop:latest
+        ports:
+        - containerPort: 8000
+          name: http
+        - containerPort: 9000
+          name: grpc
+        envFrom:
+        - configMapRef:
+            name: lushop-config
+        - secretRef:
+            name: lushop-secret
+        env:
+        - name: SERVICE_NAME
+          value: "userop-service"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5

@@ -1,0 +1,62 @@
+name: Build and Push Images
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [lushop, goods, inventory, order, user, userauth, userop]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to registry
+        uses: docker/login-action@v2
+        with:
+          registry: crpi-t2nj22cqo7df6n3a.cn-shanghai.personal.cr.aliyuncs.com
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Determine Dockerfile & context
+        id: paths
+        run: |
+          svc="${{ matrix.service }}"
+          if [ -f "service/${svc}/Dockerfile" ]; then
+            echo "dockerfile=service/${svc}/Dockerfile" >> $GITHUB_OUTPUT
+            echo "context=service/${svc}" >> $GITHUB_OUTPUT
+          elif [ -f "${svc}/Dockerfile" ]; then
+            echo "dockerfile=${svc}/Dockerfile" >> $GITHUB_OUTPUT
+            echo "context=${svc}" >> $GITHUB_OUTPUT
+          elif [ "${svc}" = "lushop" ] && [ -f "lushop/Dockerfile" ]; then
+            echo "dockerfile=lushop/Dockerfile" >> $GITHUB_OUTPUT
+            echo "context=lushop" >> $GITHUB_OUTPUT
+          else
+            echo "dockerfile=" >> $GITHUB_OUTPUT
+            echo "context=" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build and push
+        if: steps.paths.outputs.dockerfile != ''
+        uses: docker/build-push-action@v4
+        with:
+          context: ${{ steps.paths.outputs.context }}
+          file: ${{ steps.paths.outputs.dockerfile }}
+          push: true
+          platforms: linux/amd64
+          tags: |
+            crpi-t2nj22cqo7df6n3a.cn-shanghai.personal.cr.aliyuncs.com/aliyun1123466419/${{ matrix.service }}:${{ github.sha }}
+            crpi-t2nj22cqo7df6n3a.cn-shanghai.personal.cr.aliyuncs.com/aliyun1123466419/${{ matrix.service }}:latest
+
+

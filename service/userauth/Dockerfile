@@ -1,45 +1,40 @@
-# Build stage
-FROM golang:1.25-alpine AS builder
+FROM golang:1.25 AS builder
 
-# 设置工作目录
+COPY . /src
 WORKDIR /src
 
-# 复制 go.mod 和 go.sum
-COPY go.mod go.sum ./
+ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64
+ENV GOPROXY=https://goproxy.cn,https://goproxy.io,https://proxy.golang.org,direct
+ENV GOPRIVATE=""
+ENV GOSUMDB=sum.golang.org
+ENV GOTIMEOUT=300
 
-# 下载依赖
-RUN GOPROXY=https://goproxy.cn go mod download
+# 下载依赖（带重试机制）
+RUN go mod download || sleep 10 && go mod download || sleep 10 && go mod download
 
-# 复制源代码
-COPY . .
+# 整理依赖并构建二进制（使用仓库的 make build）
+RUN go mod tidy && make build
 
-# 编译
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o /app/userauth ./cmd/userauth
+FROM debian:stable-slim
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        netbase \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get autoremove -y && apt-get autoclean -y
 
-# Runtime stage
-FROM alpine:latest
+# 非 root 用户
+RUN groupadd --system app && useradd --system --gid app --create-home --home-dir /nonexistent app || true
+RUN mkdir -p /app && chown -R app:app /app
 
-# 安装必要的运行时依赖
-RUN apk --no-cache add ca-certificates tzdata
-
-# 设置时区
-ENV TZ=Asia/Shanghai
-
-# 创建应用目录
-WORKDIR /app
-
-# 从构建阶段复制二进制文件
-COPY --from=builder /app/userauth .
-
-# 从构建阶段复制配置文件
+COPY --from=builder /src/bin /app
 COPY --from=builder /src/configs /app/configs
 
-# 暴露端口
+USER app
+WORKDIR /app
+
 EXPOSE 50056
 
-# 健康检查
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD nc -z localhost 50056 || exit 1
 
-# 运行服务
 CMD ["./userauth", "-conf", "/app/configs"]
