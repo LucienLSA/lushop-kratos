@@ -1,0 +1,133 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: nacos
+  namespace: lushop
+spec:
+  serviceName: nacos
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: nacos
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: nacos
+    spec:
+      containers:
+      - name: nacos
+        image: nacos/nacos-server:v2.3.2
+        ports:
+        - containerPort: 8848
+          name: nacos
+        - containerPort: 9848
+          name: client-rpc
+        - containerPort: 9849
+          name: raft-rpc
+        - containerPort: 7848
+          name: old-raft-rpc
+        env:
+        - name: NACOS_SERVERS
+          value: "nacos-0.nacos.lushop.svc.cluster.local:8848"
+        - name: MODE
+          value: "standalone"
+        - name: SPRING_DATASOURCE_PLATFORM
+          value: "mysql"
+        - name: MYSQL_SERVICE_HOST
+          value: "mysql"
+        - name: MYSQL_SERVICE_PORT
+          value: "3306"
+        - name: MYSQL_SERVICE_DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: mysql-auth
+              key: mysql-database
+        - name: MYSQL_SERVICE_USER
+          valueFrom:
+            secretKeyRef:
+              name: mysql-auth
+              key: mysql-user
+        - name: MYSQL_SERVICE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-auth
+              key: mysql-password
+        - name: NACOS_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: nacos-auth
+              key: password
+        volumeMounts:
+        - name: nacos-data
+          mountPath: /home/nacos/data
+        - name: nacos-logs
+          mountPath: /home/nacos/logs
+        readinessProbe:
+          httpGet:
+            path: /nacos/v1/console/health/readiness
+            port: 8848
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /nacos/v1/console/health/liveness
+            port: 8848
+          initialDelaySeconds: 30
+          periodSeconds: 30
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "200m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+  volumeClaimTemplates:
+  - metadata:
+      name: nacos-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 5Gi
+      storageClassName: local-path
+  - metadata:
+      name: nacos-logs
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 2Gi
+      storageClassName: local-path
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nacos-headless
+  namespace: lushop
+spec:
+  selector:
+    app.kubernetes.io/name: nacos
+  clusterIP: None
+  ports:
+  - port: 8848
+    targetPort: 8848
+    name: server
+  - port: 9848
+    targetPort: 9848
+    name: client-rpc
+  - port: 9849
+    targetPort: 9849
+    name: raft-rpc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nacos
+  namespace: lushop
+spec:
+  selector:
+    app.kubernetes.io/name: nacos
+  ports:
+  - port: 8848
+    targetPort: 8848
+    name: nacos

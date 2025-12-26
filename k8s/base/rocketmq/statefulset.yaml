@@ -1,3 +1,57 @@
+---
+# RocketMQ NameServer
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rocketmq-namesrv
+  namespace: lushop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rocketmq-namesrv
+  template:
+    metadata:
+      labels:
+        app: rocketmq-namesrv
+    spec:
+      containers:
+      - name: namesrv
+        image: apache/rocketmq:5.3.3
+        command: ["sh", "-c", "/home/rocketmq/rocketmq-5.3.3/bin/mqnamesrv"]
+        ports:
+        - containerPort: 9876
+        env:
+        - name: TZ
+          value: "Asia/Shanghai"
+        volumeMounts:
+        - name: rocketmq-logs
+          mountPath: /home/rocketmq/logs/rocketmqlogs
+        readinessProbe:
+          tcpSocket:
+            port: 9876
+          initialDelaySeconds: 15
+          periodSeconds: 5
+        livenessProbe:
+          tcpSocket:
+            port: 9876
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "200m"
+      volumes:
+      - name: rocketmq-logs
+        hostPath:
+          path: /tmp/rocketmq-namesrv-logs
+          type: DirectoryOrCreate
+
+---
+# RocketMQ Broker
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -8,66 +62,78 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: rocketmq
+      app: rocketmq-broker
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: rocketmq
+        app: rocketmq-broker
     spec:
       containers:
-      - name: rocketmq
-        image: apache/rocketmq:5.1.4
+      - name: broker
+        image: apache/rocketmq:5.3.3
+        command: ["sh", "-c", "/home/rocketmq/rocketmq-5.3.3/bin/mqbroker -c /home/rocketmq/rocketmq-5.3.3/conf/broker.conf"]
         ports:
         - containerPort: 10911
           name: broker
         - containerPort: 10909
           name: vip
+        - containerPort: 10912
+          name: fast-broker
         env:
+        - name: TZ
+          value: "Asia/Shanghai"
         - name: NAMESRV_ADDR
           value: "rocketmq-namesrv:9876"
         volumeMounts:
-        - name: rocketmq-data
+        - name: broker-config
+          mountPath: /home/rocketmq/rocketmq-5.3.3/conf
+        - name: broker-logs
+          mountPath: /home/rocketmq/logs/rocketmqlogs
+        - name: broker-store
           mountPath: /home/rocketmq/store
+        readinessProbe:
+          tcpSocket:
+            port: 10911
+          initialDelaySeconds: 90
+          periodSeconds: 20
+          timeoutSeconds: 5
+        livenessProbe:
+          tcpSocket:
+            port: 10911
+          initialDelaySeconds: 180
+          periodSeconds: 30
+          timeoutSeconds: 10
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "200m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
       volumes:
-      - name: rocketmq-data
-        persistentVolumeClaim:
-          claimName: rocketmq-pvc
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: rocketmq-namesrv
-  namespace: lushop
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: rocketmq-namesrv
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: rocketmq-namesrv
+      - name: broker-config
+        configMap:
+          name: rocketmq-broker-config
+  volumeClaimTemplates:
+  - metadata:
+      name: broker-logs
     spec:
-      containers:
-      - name: namesrv
-        image: apache/rocketmq:5.1.4
-        command: ["sh", "-c", "mqnamesrv"]
-        ports:
-        - containerPort: 9876
-          name: namesrv
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: "1Gi"
+      storageClassName: local-path
+  - metadata:
+      name: broker-store
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: "5Gi"
+      storageClassName: local-path
+
 ---
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: rocketmq-pvc
-  namespace: lushop
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 10Gi
----
+# NameServer Service
 apiVersion: v1
 kind: Service
 metadata:
@@ -75,11 +141,13 @@ metadata:
   namespace: lushop
 spec:
   selector:
-    app.kubernetes.io/name: rocketmq-namesrv
+    app: rocketmq-namesrv
   ports:
   - port: 9876
     targetPort: 9876
+
 ---
+# Broker Service
 apiVersion: v1
 kind: Service
 metadata:
@@ -87,7 +155,7 @@ metadata:
   namespace: lushop
 spec:
   selector:
-    app.kubernetes.io/name: rocketmq
+    app: rocketmq-broker
   ports:
   - port: 10911
     targetPort: 10911
@@ -95,3 +163,6 @@ spec:
   - port: 10909
     targetPort: 10909
     name: vip
+  - port: 10912
+    targetPort: 10912
+    name: fast-broker

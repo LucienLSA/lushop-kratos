@@ -1,0 +1,32 @@
+# Broker Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rocketmq-broker-config
+  namespace: lushop
+data:
+  broker.conf: |
+    # RocketMQ Broker Configuration (based on pre.sh)
+    brokerClusterName=DefaultCluster
+    brokerName=broker-a
+    brokerId=0
+    deleteWhen=04
+    fileReservedTime=48
+    brokerRole=ASYNC_MASTER
+    flushDiskType=ASYNC_FLUSH
+    storePathRootDir=/home/rocketmq/store
+    storePathCommitLog=/home/rocketmq/store/commitlog
+    storePathConsumeQueue=/home/rocketmq/store/consumequeue
+    storePathIndex=/home/rocketmq/store/index
+    storeCheckpoint=/home/rocketmq/store/checkpoint
+    abortFile=/home/rocketmq/store/abort
+    maxMessageSize=65536
+    listenPort=10911
+    namesrvAddr=rocketmq-namesrv:9876
+    autoCreateTopicEnable=true
+
+  tools.yml: |
+    # RocketMQ Tools Configuration
+    namesrvAddr: rocketmq-namesrv:9876
+
+

@@ -28,6 +28,7 @@ NACOS_MYSQL_PORT="${NACOS_MYSQL_PORT:-3306}"
 NACOS_MYSQL_DB="${NACOS_MYSQL_DB:-nacos}"
 NACOS_MYSQL_USER="${NACOS_MYSQL_USER:-nacos}"
 NACOS_MYSQL_PASSWORD="${NACOS_MYSQL_PASSWORD:-Nacos@123}"
+NACOS_ADMIN_PASSWORD="${NACOS_ADMIN_PASSWORD:-NacosAdmin@123}"
 
 ROCKETMQ_USERNAME="${ROCKETMQ_USERNAME:-rocketmq}"
 ROCKETMQ_PASSWORD="${ROCKETMQ_PASSWORD:-Rmq@123}"
@@ -116,6 +117,7 @@ generate_nacos_secret() {
         --from-literal=mysql-db="$NACOS_MYSQL_DB" \
         --from-literal=mysql-user="$NACOS_MYSQL_USER" \
         --from-literal=mysql-password="$NACOS_MYSQL_PASSWORD" \
+        --from-literal=password="$NACOS_ADMIN_PASSWORD" \
         -n "$NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
 
     log_success "Nacos Secret 已创建"

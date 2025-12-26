@@ -1,0 +1,114 @@
+# Lushop 服务基础配置 ConfigMap
+# 为所有服务提供 Nacos 连接配置
+
+---
+# Gateway ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gateway-config
+  namespace: lushop
+data:
+  config.yaml: |
+    nacos:
+      addr: nacos:8848
+      port: 8848
+      namespaceId: de9c6a0e-1fbc-425d-8d3b-09066fea6889
+      dataId: gateway.yaml
+      groupId: lushop_grpc
+
+---
+# User Service ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-config
+  namespace: lushop
+data:
+  config.yaml: |
+    nacos:
+      addr: nacos:8848
+      port: 8848
+      namespaceId: de9c6a0e-1fbc-425d-8d3b-09066fea6889
+      dataId: user.yaml
+      groupId: lushop_grpc
+
+---
+# Goods Service ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: goods-config
+  namespace: lushop
+data:
+  config.yaml: |
+    nacos:
+      addr: nacos:8848
+      port: 8848
+      namespaceId: de9c6a0e-1fbc-425d-8d3b-09066fea6889
+      dataId: goods.yaml
+      groupId: lushop_grpc
+
+---
+# Order Service ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: order-config
+  namespace: lushop
+data:
+  config.yaml: |
+    nacos:
+      addr: nacos:8848
+      port: 8848
+      namespaceId: de9c6a0e-1fbc-425d-8d3b-09066fea6889
+      dataId: order.yaml
+      groupId: lushop_grpc
+
+---
+# Inventory Service ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: inventory-config
+  namespace: lushop
+data:
+  config.yaml: |
+    nacos:
+      addr: nacos:8848
+      port: 8848
+      namespaceId: de9c6a0e-1fbc-425d-8d3b-09066fea6889
+      dataId: inventory.yaml
+      groupId: lushop_grpc
+
+---
+# UserAuth Service ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: userauth-config
+  namespace: lushop
+data:
+  config.yaml: |
+    nacos:
+      addr: nacos:8848
+      port: 8848
+      namespaceId: de9c6a0e-1fbc-425d-8d3b-09066fea6889
+      dataId: userauth.yaml
+      groupId: lushop_grpc
+
+---
+# UserOp Service ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: userop-config
+  namespace: lushop
+data:
+  config.yaml: |
+    nacos:
+      addr: nacos:8848
+      port: 8848
+      namespaceId: de9c6a0e-1fbc-425d-8d3b-09066fea6889
+      dataId: userop.yaml
+      groupId: lushop_grpc
