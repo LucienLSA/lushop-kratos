@@ -1,5 +1,5 @@
 nacos:
-  addr: 127.0.0.1
+  addr: nacos
   port: 8848
   namespaceId: de9c6a0e-1fbc-425d-8d3b-09066fea6889
   dataId: userop.yaml

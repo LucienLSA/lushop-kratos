@@ -1,0 +1,83 @@
+server:
+  http:
+    addr: 0.0.0.0:8001
+    timeout: 1s
+    rate_limit:
+      enabled: true
+      whitelist:
+        - "/lushop.lushop.v1.User/Captcha"
+        - "/lushop.lushop.v1.User/Login"
+        - "/lushop.lushop.v1.User/Register"
+        - "/lushop.lushop.v1.Goods/GetGoodsList"
+        - "/lushop.lushop.v1.Goods/GetGoodsDetail"
+        - "/metrics"
+      flow_rules:
+        - resource: "/lushop.lushop.v1.Order/CreateOrder"
+          threshold: 1000
+          stat_interval_ms: 1000
+          control_behavior: 0
+        - resource: "/lushop.lushop.v1.Cart/AddCart"
+          threshold: 2000
+          stat_interval_ms: 1000
+          control_behavior: 0
+        - resource: "/lushop.lushop.v1.Cart/UpdateCart"
+          threshold: 2000
+          stat_interval_ms: 1000
+          control_behavior: 0
+        - resource: "/lushop.lushop.v1.Inventory/SetInv"
+          threshold: 500
+          stat_interval_ms: 1000
+          control_behavior: 0
+        - resource: "/lushop.lushop.v1.UserOp/CreateAddress"
+          threshold: 1000
+          stat_interval_ms: 1000
+          control_behavior: 0
+      cb_rules: []
+      system_rules: []
+  grpc:
+    addr: 0.0.0.0:9001
+    timeout: 1s
+
+data:
+  database:
+    driver: mysql
+    source: lushop:YourDBPasswordHere@tcp(mysql:3306)/lushop_user?charset=utf8mb4&parseTime=True&loc=Local
+  redis:
+    addr: redis:6379
+    dial_timeout: 1s
+    password: "YourRedisPasswordHere"
+    read_timeout: 0.5s
+    write_timeout: 0.5s
+
+trace:
+  endpoint: http://jaeger:14268/api/traces
+
+auth:
+  jwt_key: "lCBOKwLE5w9JHriyihpaKKXiQGnqztgA/lmDYtfExC1BwYDdarpdW0hsVHGf0m9x"
+
+service:
+  user:
+    endpoint: discovery:///lushop.user.service
+  goods:
+    endpoint: discovery:///lushop.goods.service
+  user_auth:
+    endpoint: "discovery:///lushop.userauth.service"
+  order:
+    endpoint: "discovery:///lushop.order.service"
+  inventory:
+    endpoint: "discovery:///lushop.inventory.service"
+  userop:
+    endpoint: "discovery:///lushop.userop.service"
+
+sms:
+  api_key: 'Ali_ApiKey'
+  api_secret: 'Ali_ApiSecret'
+  sign_name: '阿里云短信测试'
+  template_code: 'SMS_154950909'
+  phone_number: '19821216806'
+  region_id: 'cn-hangzhou'
+
+registry:
+  consul:
+    address: consul:8500
+    scheme: http

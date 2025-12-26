@@ -123,6 +123,30 @@ deploy_infrastructure() {
     log_success "Infrastructure deployment completed"
 }
 
+# Configure Nacos
+configure_nacos() {
+    log_info "Configuring Nacos with service configurations..."
+
+    # Port forward Nacos
+    kubectl port-forward -n "$NAMESPACE" svc/nacos 8848:8848 &
+    NACOS_PF_PID=$!
+
+    # Wait for port forward
+    sleep 3
+
+    # Import configurations using the configure script
+    if ! ./configure-nacos.sh import; then
+        log_error "Failed to configure Nacos"
+        kill $NACOS_PF_PID 2>/dev/null || true
+        return 1
+    fi
+
+    # Stop port forward
+    kill $NACOS_PF_PID 2>/dev/null || true
+
+    log_success "Nacos configuration completed"
+}
+
 # Deploy application services
 deploy_application() {
     log_info "Deploying Lushop application services..."
@@ -325,6 +349,7 @@ main() {
     check_prerequisites
     setup_prerequisites
     deploy_infrastructure
+    configure_nacos
     deploy_application
 
     if [ "${SKIP_WAIT:-false}" != "true" ]; then

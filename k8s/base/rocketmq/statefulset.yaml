@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: rocketmq-broker
+  namespace: lushop
+spec:
+  serviceName: rocketmq-broker
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: rocketmq
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: rocketmq
+    spec:
+      containers:
+      - name: rocketmq
+        image: apache/rocketmq:5.1.4
+        ports:
+        - containerPort: 10911
+          name: broker
+        - containerPort: 10909
+          name: vip
+        env:
+        - name: NAMESRV_ADDR
+          value: "rocketmq-namesrv:9876"
+        volumeMounts:
+        - name: rocketmq-data
+          mountPath: /home/rocketmq/store
+      volumes:
+      - name: rocketmq-data
+        persistentVolumeClaim:
+          claimName: rocketmq-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rocketmq-namesrv
+  namespace: lushop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: rocketmq-namesrv
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: rocketmq-namesrv
+    spec:
+      containers:
+      - name: namesrv
+        image: apache/rocketmq:5.1.4
+        command: ["sh", "-c", "mqnamesrv"]
+        ports:
+        - containerPort: 9876
+          name: namesrv
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rocketmq-pvc
+  namespace: lushop
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rocketmq-namesrv
+  namespace: lushop
+spec:
+  selector:
+    app.kubernetes.io/name: rocketmq-namesrv
+  ports:
+  - port: 9876
+    targetPort: 9876
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rocketmq-broker
+  namespace: lushop
+spec:
+  selector:
+    app.kubernetes.io/name: rocketmq
+  ports:
+  - port: 10911
+    targetPort: 10911
+    name: broker
+  - port: 10909
+    targetPort: 10909
+    name: vip

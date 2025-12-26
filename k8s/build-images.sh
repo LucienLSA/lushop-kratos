@@ -13,9 +13,9 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 # Configuration
-REGISTRY="${REGISTRY:-localhost:5000}"
+REGISTRY="${REGISTRY:-lushop}"
 TAG="${TAG:-latest}"
-SERVICES=("lushop" "goods" "inventory" "order" "user" "userauth" "userop")
+SERVICES=("gateway" "user" "goods" "order" "inventory" "userauth" "userop")
 
 # Functions
 log_info() {
@@ -50,20 +50,17 @@ check_docker() {
 # Build service image
 build_service() {
     local service="$1"
-    local image_name="${REGISTRY}/lushop-${service}:${TAG}"
+    local image_name="${REGISTRY}/${service}:${TAG}"
 
     log_info "Building image for ${service}..."
 
-    # Determine Dockerfile location
-    if [ -f "service/${service}/Dockerfile" ]; then
-        DOCKERFILE="service/${service}/Dockerfile"
-        CONTEXT="service/${service}"
-    elif [ -f "${service}/Dockerfile" ]; then
-        DOCKERFILE="${service}/Dockerfile"
-        CONTEXT="${service}"
-    elif [ "${service}" = "lushop" ] && [ -f "lushop/Dockerfile" ]; then
-        DOCKERFILE="lushop/Dockerfile"
-        CONTEXT="lushop"
+    # Determine Dockerfile location (relative to project root)
+    if [ "${service}" = "gateway" ] && [ -f "../lushop/Dockerfile" ]; then
+        DOCKERFILE="../lushop/Dockerfile"
+        CONTEXT="../lushop"
+    elif [ -f "../service/${service}/Dockerfile" ]; then
+        DOCKERFILE="../service/${service}/Dockerfile"
+        CONTEXT="../service/${service}"
     else
         log_warning "Dockerfile not found for ${service}, skipping..."
         return 1
@@ -79,7 +76,7 @@ build_service() {
 # Push image
 push_service() {
     local service="$1"
-    local image_name="${REGISTRY}/lushop-${service}:${TAG}"
+    local image_name="${REGISTRY}/${service}:${TAG}"
 
     log_info "Pushing ${image_name}..."
     docker push "${image_name}"

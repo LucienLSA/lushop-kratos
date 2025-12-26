@@ -5,17 +5,17 @@ server:
   grpc:
     addr: 0.0.0.0:50056
     timeout: 1s
-    
+
 service:
   name: "lushop.userauth.service"
 
 data:
   database:
     driver: mysql
-    source: root:123456@tcp(127.0.0.1:3306)/lushop_userauth?charset=utf8mb4&parseTime=True&loc=Local
+    source: lushop:YourDBPasswordHere@tcp(mysql:3306)/lushop_userauth?charset=utf8mb4&parseTime=True&loc=Local
   redis:
-    addr: 192.168.185.128:6379
-    password: ""
+    addr: redis:6379
+    password: "YourRedisPasswordHere"
     db: 0
     dial_timeout: 1s
     read_timeout: 0.2s
@@ -33,5 +33,5 @@ sms:
 
 registry:
   consul:
-    address: 127.0.0.1:8500
+    address: consul:8500
     scheme: http

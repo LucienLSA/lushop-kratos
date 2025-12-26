@@ -5,31 +5,37 @@ server:
   grpc:
     addr: 0.0.0.0:50053
     timeout: 1s
+
 service:
   name: "lushop.order.service"
-  goods:
-    endpoint: "discovery:///lushop.goods.service"
+
+goods:
+  endpoint: "discovery:///lushop.goods.service"
+
 data:
   database:
     driver: mysql
-    source: root:123456@tcp(127.0.0.1:3306)/lushop_order?charset=utf8mb4&parseTime=True&loc=Local
+    source: lushop:YourDBPasswordHere@tcp(mysql:3306)/lushop_order?charset=utf8mb4&parseTime=True&loc=Local
   redis:
-    addr: 192.168.185.128:6379
-    password: ""
+    addr: redis:6379
+    password: "YourRedisPasswordHere"
     dial_timeout: 1s
     read_timeout: 0.2s
     write_timeout: 0.2s
-  elastic:  
-    addr: http://192.168.185.128:9200
+  elastic:
+    addr: http://elasticsearch:9200
+
 trace:
-  endpoint: http://192.168.185.128:14268/api/traces
+  endpoint: http://jaeger:14268/api/traces
+
 registry:
   consul:
-    address: 127.0.0.1:8500
+    address: consul:8500
     scheme: http
+
 rocketmq:
   name_server:
-    - "127.0.0.1:9876"
+    - "rocketmq:9876"
   group_name: "order_producer_group"
   topic: "order_inventory_topic"
   retry_times: 2
