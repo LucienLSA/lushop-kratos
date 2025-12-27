@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: lushop
+  labels:
+    name: lushop
+    app.kubernetes.io/name: lushop
+    app.kubernetes.io/component: namespace
+  annotations:
+    description: "Namespace for Lushop microservices platform"
+    maintainer: "lushop-team"
+    created-by: "kustomize"

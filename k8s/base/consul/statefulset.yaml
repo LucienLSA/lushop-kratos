@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: consul
+  namespace: lushop
+spec:
+  serviceName: consul
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: consul
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: consul
+    spec:
+      containers:
+      - name: consul
+        image: hashicorp/consul:1.16
+        command:
+        - consul
+        - agent
+        - -dev
+        - -client=0.0.0.0
+        - -bind=0.0.0.0
+        ports:
+        - containerPort: 8500
+          name: http
+        - containerPort: 8600
+          name: dns
+          protocol: UDP
+        - containerPort: 8301
+          name: serf-lan
+        - containerPort: 8302
+          name: serf-wan
+        - containerPort: 8300
+          name: server
+        volumeMounts:
+        - name: consul-data
+          mountPath: /consul/data
+        readinessProbe:
+          httpGet:
+            path: /v1/status/leader
+            port: 8500
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /v1/status/leader
+            port: 8500
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "200m"
+  volumeClaimTemplates:
+  - metadata:
+      name: consul-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 5Gi
+      storageClassName: local-path
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: consul
+  namespace: lushop
+spec:
+  type: NodePort
+  selector:
+    app.kubernetes.io/name: consul
+  ports:
+  - port: 8500
+    targetPort: 8500
+    nodePort: 30500
+    name: http
+  - port: 8600
+    targetPort: 8600
+    protocol: UDP
+    nodePort: 30600
+    name: dns
+  - port: 8301
+    targetPort: 8301
+    nodePort: 30301
+    name: serf-lan
+  - port: 8302
+    targetPort: 8302
+    nodePort: 30302
+    name: serf-wan
+  - port: 8300
+    targetPort: 8300
+    nodePort: 30300
+    name: server

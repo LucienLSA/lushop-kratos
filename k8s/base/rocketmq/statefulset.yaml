@@ -84,6 +84,10 @@ spec:
           value: "Asia/Shanghai"
         - name: NAMESRV_ADDR
           value: "rocketmq-namesrv:9876"
+        - name: ROCKETMQ_ACCESS_KEY
+          value: "lushop"
+        - name: ROCKETMQ_SECRET_KEY
+          value: "lushop123456"
         volumeMounts:
         - name: broker-config
           mountPath: /home/rocketmq/rocketmq-5.3.3/conf
@@ -105,10 +109,10 @@ spec:
           timeoutSeconds: 10
         resources:
           requests:
-            memory: "512Mi"
+            memory: "1Gi"
             cpu: "200m"
           limits:
-            memory: "1Gi"
+            memory: "2Gi"
             cpu: "500m"
       volumes:
       - name: broker-config

@@ -21,12 +21,33 @@ data:
     storeCheckpoint=/home/rocketmq/store/checkpoint
     abortFile=/home/rocketmq/store/abort
     maxMessageSize=65536
+    brokerIP1=
     listenPort=10911
     namesrvAddr=rocketmq-namesrv:9876
     autoCreateTopicEnable=true
+    aclEnable=true
 
   tools.yml: |
     # RocketMQ Tools Configuration
+    accessKey: lushop
+    secretKey: lushop123456
     namesrvAddr: rocketmq-namesrv:9876
+
+  plain_acl.yml: |
+    # RocketMQ ACL Configuration
+    globalWhiteRemoteAddresses: *
+    accounts:
+    - accessKey: lushop
+      secretKey: lushop123456
+      whiteRemoteAddress:
+      admin: true
+      defaultTopicPerm: DENY
+      defaultGroupPerm: DENY
+      topicPerms: []
+      groupPerms: []
+    - accessKey: rocketmq
+      secretKey: 12345678
+      whiteRemoteAddress:
+      admin: true
 
 

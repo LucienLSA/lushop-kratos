@@ -1,0 +1,36 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Namespace for all resources
+namespace: lushop
+
+# Include namespace definition
+resources:
+  - base/namespace.yaml
+
+# Include all base services
+bases:
+  - base/mysql
+  - base/redis
+  - base/consul
+  - base/nacos
+  - base/rocketmq
+  - base/prometheus
+  - base/grafana
+  - base/elasticsearch
+  - base/jaeger
+
+# Include application deployments
+resources:
+  - deployments.yaml
+  - common-configmap.yaml
+
+# Common labels applied to all resources
+commonLabels:
+  app.kubernetes.io/part-of: lushop
+  app.kubernetes.io/managed-by: kustomize
+
+# Common annotations
+commonAnnotations:
+  maintainer: lushop-team
+  description: Lushop microservices platform
