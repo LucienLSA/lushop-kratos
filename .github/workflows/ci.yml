@@ -58,6 +58,7 @@ jobs:
         env:
           SERVICE_NAME: ${{ matrix.name }}
           SERVICE_PATH: ${{ matrix.path }}
+          GITHUB_WORKSPACE: ${{ github.workspace }}
         run: |
           set -euo pipefail
           echo "Service: $SERVICE_NAME Path: $SERVICE_PATH"
@@ -68,12 +69,13 @@ jobs:
           echo "Running go vet..."
           go vet ./...
           echo "Running golangci-lint..."
-          golangci-lint run ./... || true
+          golangci-lint run ./...
           echo "Running tests..."
           go test ./...
           echo "Building binary..."
-          mkdir -p ../build
-          go build -o ../build/"${SERVICE_NAME}" ./...
+          BUILD_DIR="${GITHUB_WORKSPACE}/build"
+          mkdir -p "$BUILD_DIR"
+          go build -o "$BUILD_DIR/${SERVICE_NAME}" ./...
           cd -
           echo "Attempting docker build (local verification only)..."
           if [ -f "${{ matrix.path }}/Dockerfile" ]; then

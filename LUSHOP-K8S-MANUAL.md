@@ -414,14 +414,35 @@ Nacos 中的配置包含：
 ### 6.1 部署业务服务
 
 ```bash
-# 部署所有业务服务
-kubectl apply -k .
+# 推荐：一键部署（deploy-lushop.sh）
+# 脚本会：
+#  - 创建命名空间 lushop（如不存在）
+#  - （可选）通过 k8s/build-images.sh 构建服务镜像（使用 --build）
+#  - 应用 k8s/ 目录下的 kustomize 清单
+#  - 等待核心业务部署（gateway + 6 个微服务）就绪（超时提示）
+cd /home/zzx/lucien/projects/lushop-kratos
+chmod +x ./deploy-lushop.sh
+./deploy-lushop.sh            # 只应用 manifests（不构建镜像）
+./deploy-lushop.sh --build    # 构建镜像后再应用 manifests（本地构建）
+
+# 手动方式（等同于一键脚本所做的应用步骤）：
+kubectl apply -k k8s
 
 # 或者分别部署
 kubectl apply -f deployments.yaml
 kubectl apply -f services.yaml
 kubectl apply -f common-configmap.yaml
 ```
+
+#### deploy-lushop.sh 详情
+- 用法：`./deploy-lushop.sh [--build]`
+- `--build`：调用 `k8s/build-images.sh all` 构建镜像（需要宿主机有构建环境）
+- 输出与等待：脚本会等待指定的核心 deployments 可用（默认 5 分钟），如未就绪会输出 Warning
+- 建议：生产环境建议直接使用已推到 registry 的镜像，跳过 `--build`；在本地或离线环境使用 `--build` 并按文档将镜像导入到集群运行时（containerd）
+
+#### 常见排错
+- 若某个 Deployment 未就绪，先 `kubectl logs -n lushop <pod>` 查看错误日志
+- 若镜像拉取失败，请确保 `imagePullSecrets` 或已把镜像导入到节点运行时
 
 ### 6.2 等待服务就绪
 
@@ -725,6 +746,38 @@ kubectl delete pvc,pv --all
 docker rmi $(docker images | grep lushop | awk '{print $3}')
 sudo ctr -n k8s.io images ls | grep lushop | awk '{print $1}' | xargs sudo ctr -n k8s.io images rm
 ```
+
+### 一键删除 Lushop 相关资源（推荐，带备份）
+
+仓库提供 `delete-lushop.sh` 脚本用于备份并**选择性**删除 Lushop 命名空间内的业务资源（Deployments/Services/ConfigMaps/Ingress/CronJobs 等）。脚本默认**不会**删除命名空间本身或 PVC（可以避免误删持久数据）。
+
+使用方法：
+```bash
+cd /home/zzx/lucien/projects/lushop-kratos
+chmod +x delete-lushop.sh
+./delete-lushop.sh
+```
+
+脚本行为（默认安全模式）：
+- 将 `lushop` 命名空间内资源导出到 `./lushop-backup-<timestamp>/` 目录作为备份（包含 all、rbac 等）。
+- 删除带有 `app.kubernetes.io/name` 标签的 Deployments/StatefulSets/DaemonSets/ReplicaSets/Jobs/CronJobs，删除带标签的 Services/Ingress。
+- 删除符合命名规则的 ConfigMaps（以 `-config` 结尾）和 Secrets（以 `-secret` 结尾）以降低误删风险。
+- 脚本不会删除 PVC 或 PV；如需删除持久数据，请谨慎手动执行 `kubectl delete pvc <name> -n lushop` 或删除命名空间（见下）。
+
+示例：仅备份，不删除（dry-run 手动步骤）
+```bash
+TS=$(date +%Y%m%dT%H%M%S)
+kubectl get all,cm,secret,ing,sts,daemonset,cronjob,pvc -n lushop -o yaml > "./lushop-backup-${TS}/lushop-all-resources.yaml"
+```
+
+如需彻底移除命名空间及所有资源（含 PVC/PV），在确认备份后运行：
+```bash
+kubectl delete namespace lushop
+```
+
+注意事项与恢复
+- 备份文件位于运行脚本的当前目录下 `./lushop-backup-<timestamp>/`，包含资源清单，可用于审计或部分恢复。
+- 恢复流程通常为解析备份 YAML 并按需 `kubectl apply -f <resource>`（Secret 内容为 base64，注意安全）。
 
 ### 部分清理
 

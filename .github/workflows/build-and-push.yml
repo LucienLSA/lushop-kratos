@@ -25,9 +25,9 @@ jobs:
       - name: Login to registry
         uses: docker/login-action@v2
         with:
-          registry: crpi-t2nj22cqo7df6n3a.cn-shanghai.personal.cr.aliyuncs.com
-          username: ${{ secrets.ACR_USERNAME }}
-          password: ${{ secrets.ACR_PASSWORD }}
+          registry: ${{ secrets.DOCKER_REGISTRY }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Determine Dockerfile & context
         id: paths
@@ -54,9 +54,9 @@ jobs:
           context: ${{ steps.paths.outputs.context }}
           file: ${{ steps.paths.outputs.dockerfile }}
           push: true
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
           tags: |
-            crpi-t2nj22cqo7df6n3a.cn-shanghai.personal.cr.aliyuncs.com/aliyun1123466419/${{ matrix.service }}:${{ github.sha }}
-            crpi-t2nj22cqo7df6n3a.cn-shanghai.personal.cr.aliyuncs.com/aliyun1123466419/${{ matrix.service }}:latest
+            ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.IMAGE_REPOSITORY_PREFIX }}/${{ matrix.service }}:${{ github.sha }}
+            ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.IMAGE_REPOSITORY_PREFIX }}/${{ matrix.service }}:latest
 
 
