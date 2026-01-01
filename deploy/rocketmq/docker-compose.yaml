@@ -1,8 +1,11 @@
 version: "3.9"
 
+# 镜像仓库配置 - 可通过环境变量覆盖
+# REGISTRY=crpi-t2nj22cqo7df6n3a.cn-shanghai.personal.cr.aliyuncs.com/k8s_study6
+
 services:
   namesrv:
-    image: apache/rocketmq:5.3.3
+    image: ${REGISTRY:-crpi-t2nj22cqo7df6n3a.cn-shanghai.personal.cr.aliyuncs.com/k8s_study6}/rocketmq:5.3.3
     container_name: rmqnamesrv
     ports:
       - 9876:9876
@@ -13,7 +16,7 @@ services:
       - TZ=Asia/Shanghai
     command: sh mqnamesrv
   broker:
-    image: apache/rocketmq:5.3.3
+    image: ${REGISTRY:-crpi-t2nj22cqo7df6n3a.cn-shanghai.personal.cr.aliyuncs.com/k8s_study6}/rocketmq:5.3.3
     container_name: rmqbroker
     ports:
       - 10909:10909
@@ -32,9 +35,9 @@ services:
       - namesrv
     networks:
       - rocketmq
-    command: sh mqbroker -c /home/rocketmq/rocketmq-5.3.3/conf/broker.conf 
+    command: sh mqbroker -c /home/rocketmq/rocketmq-5.3.3/conf/broker.conf
   proxy:
-    image: apache/rocketmq:5.3.3
+    image: ${REGISTRY:-crpi-t2nj22cqo7df6n3a.cn-shanghai.personal.cr.aliyuncs.com/k8s_study6}/rocketmq:5.3.3
     container_name: rmqproxy
     networks:
       - rocketmq
@@ -53,7 +56,7 @@ services:
       - NAMESRV_ADDR=rmqnamesrv:9876
     command: sh mqproxy -pc /home/rocketmq/rocketmq-5.3.3/conf/rmq-proxy.json
   dashboard:
-    image: apacherocketmq/rocketmq-dashboard:2.0.1
+    image: ${REGISTRY:-crpi-t2nj22cqo7df6n3a.cn-shanghai.personal.cr.aliyuncs.com/k8s_study6}/rocketmq-dashboard:2.0.1
     container_name: rmqdashboard
     networks:
       - rocketmq
@@ -63,7 +66,7 @@ services:
       - ${ROCKETMQ_DATA_DIR:-./data}/dashboard/conf/users.properties:/tmp/rocketmq-console/data/users.properties
     environment:
       - TZ=Asia/Shanghai
-      - JAVA_OPTS=-Drocketmq.config.namesrvAddrs=rmqnamesrv:9876 -Drocketmq.config.proxyAddrs=rmqproxy:18680 -Drocketmq.config.accessKey=${ROCKETMQ_ACCESS_KEY:-lushop} -Drocketmq.config.secretKey=${ROCKETMQ_SECRET_KEY:-lushop123456} -Drocketmq.config.loginRequired=true
+      - JAVA_OPTS=-Drocketmq.config.namesrvAddrs=rmqnamesrv:9876 -Drocketmq.config.proxyAddrs=rmqproxy:18680 -Drocketmq.config.accessKey=lushop -Drocketmq.config.secretKey=lushop123456 -Drocketmq.config.loginRequired=true
     restart: always
     depends_on:
       - broker
